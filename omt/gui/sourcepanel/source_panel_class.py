@@ -13,8 +13,8 @@ class SourcePanel(AbstractPanel):
         and the values is where the object is define.
         """
         altenatives = {
-            'AbstractSource':'omt.gui.sourcepanel.alternatives.abstract_source',
-            'lll':'omt.gui.sourcepanel.alternatives.ss',
+            'Vacio':'omt.gui.empty',
+            'RodeSchwartz':'omt.gui.sourcepanel.alternatives.rodeschwartz',
         }
 
         return altenatives

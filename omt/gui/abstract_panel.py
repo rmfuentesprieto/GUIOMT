@@ -65,11 +65,11 @@ class AbstractPanel(BoxLayout):
             mod = getattr(mod, comp)
         return mod
 
-    def extract_object(self, dict):
+    def extract_object(self, dictionary):
 
         obj_names = []
-        for key in dict:
-            path_to_class = dict[key]
+        for key in dictionary:
+            path_to_class = dictionary[key]
 
             class_obj = __import__(path_to_class,fromlist=key)
             obj_names.append(key)
