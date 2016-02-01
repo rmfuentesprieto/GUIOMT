@@ -108,8 +108,8 @@ class RodeSchwartz(AbstractSource):
             if len(frec_final) == 0 or len(frec_initial) == 0:
                 return
 
-            frec_final = float(frec_final)
-            frec_initial = float(frec_initial)
+            frec_final = float(frec_final) * self.final_frec_unit.get_unit_norm()
+            frec_initial = float(frec_initial) * self.init_frec_unit.get_unit_norm()
 
             points = self.puntos_frec_value.text
             delta = self.delta_frec_value.text
@@ -117,7 +117,10 @@ class RodeSchwartz(AbstractSource):
             if len(points) != 0 and points != '1':
                 points = int(points)
                 print (frec_final - frec_initial)/(int(points) - 1)
-                self.delta_frec_value.text = str((frec_final - frec_initial)/(int(points) - 1))
+                aux_delta = str((frec_final - frec_initial)/(int(points) - 1))
+                if len(aux_delta) > 9:
+                    aux_delta = aux_delta[0:8]
+                self.delta_frec_value.text = aux_delta
                 return
 
             if len(delta) != 0:
@@ -128,13 +131,25 @@ class RodeSchwartz(AbstractSource):
         else:
             pass
 
-    def change_frec_final(self, instance, value):
-        self._check_input_number(instance, value)
-        pass
-
     def change_delta_frec(self, instance, value):
         self._check_input_number(instance, value)
-        pass
+
+        frec_initial = self.init_frec_value.text
+        frec_final = self.final_frec_value.text
+
+        if len(frec_final) == 0 or len(frec_initial) == 0:
+            return
+
+        frec_final = float(frec_final) * self.final_frec_unit.get_unit_norm()
+        frec_initial = float(frec_initial) * self.init_frec_unit.get_unit_norm()
+
+        delta_frec = value * self.delta_frec_unit.get_unit_norm()
+
+        number_of_points = str((frec_final - frec_initial) / (delta_frec))
+
+        while( number_of_points < 1 or number_of_points > 999):
+            break
+
 
     def change_points_number(self, instance, value):
         self._check_input_number(instance, value)

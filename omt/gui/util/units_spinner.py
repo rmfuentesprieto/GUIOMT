@@ -9,14 +9,19 @@ class UnitSpinner(Spinner):
 
     def __init__(self, units):
 
-        units_dict = {}
+        self.units_dict = {}
 
         if units == 'hz':
-            units_dict = {'Hz' : 1, 'KHz' : 10**3, 'MHz' : 10**6, 'GHz' : 10**9, 'THz' : 10**12}
+            self.units_dict = {'Hz' : 1, 'KHz' : 10**3, 'MHz' : 10**6, 'GHz' : 10**9, 'THz' : 10**12}
         elif units == 'dB':
-            units_dict = {'dBm': 'algo', 'dB':'nop'}
+            self.units_dict = {'dBm': 'algo', 'dB':'nop'}
         elif units == 'simple':
-            units_dict = {' ' : 1, 'K' : 10**3, 'M' : 10**6, 'G' : 10**9, 'T' : 10**12}
-        values = units_dict.keys()
+            self.units_dict = {'n':10**(-9), 'u':10**(-6), 'm' : 10**(-3),' ' : 1, 'K' : 10**3, 'M' : 10**6, 'G' : 10**9, 'T' : 10**12}
+        values = self.units_dict.keys()
 
         super(UnitSpinner, self).__init__(text=values[0], values=values, size_hint=(None, None), size = (35,44))
+
+    def get_unit_norm(self):
+        a_key = self.text
+        print 'aa', a_key
+        return self.units_dict[a_key]
