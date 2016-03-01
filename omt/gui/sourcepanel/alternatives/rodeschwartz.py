@@ -82,6 +82,9 @@ class RodeSchwartz(AbstractSource):
 
         self.add_widget(main_layout)
 
+        self.ip_addres = '192.168.1.33'
+        self.port = '5025'
+
     def sweepe_or_not(self, spinner, text):
         self.final_frec_value.disabled = not text
         self.delta_frec_value.disabled = not text
