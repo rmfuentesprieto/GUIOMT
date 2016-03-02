@@ -1,8 +1,11 @@
+import threading
 
-class Process(object):
+
+class Process(threading.Thread):
 
     def __init__(self, init_monitor, end_monitor):
-
+        
+        super(Process, self).__init__()
         self.initialize_monitor = init_monitor
         self.end_monitor = end_monitor
 
@@ -12,5 +15,5 @@ class Process(object):
     def get_end_iteration_alert_monitor(self):
         return self.end_monitor
 
-    def parrallel(self):
+    def close_process(self):
         pass
