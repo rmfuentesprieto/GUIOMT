@@ -46,5 +46,5 @@ class DataThread(Process):
 
         self.end_monitor.set()
 
-    def end_process(self):
+    def close_process(self):
         pass

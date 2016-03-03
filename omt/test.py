@@ -21,13 +21,25 @@ data_dic_d = {}
 
         print self.ask_a_command('power'), data_dic['power']
 '''
-
+souce_dic = {}
+data_dic_s = {}
+data_dic_d = {}
 data_dic_s['frec_init'] = 10000
 data_dic_s['frec_end']  = 1000000
-data_dic_s['frec_number_point'] =  11
+data_dic_s['frec_number_point'] =  101
 data_dic_s['power'] = '-6'
 data_dic_s['ip'] = '192.168.1.34'
-data_dic_s['port'] = '5024'
+data_dic_s['port'] = '5023'
 
-controller = Coordinator(data_dic_s,data_dic_d)
+data_dic_tone = {}
+data_dic_tone['ip'] = '192.168.1.34'
+data_dic_tone['port'] = '5023'
+data_dic_tone['frec'] = 123100
+data_dic_tone['power'] = '-6'
+
+#souce_dic['sweep'] = data_dic_s
+souce_dic['tone'] = [data_dic_tone,]
+controller = Coordinator(souce_dic,data_dic_d)
 controller.start()
+raw_input('hit me: ')
+controller.stop_the_process()

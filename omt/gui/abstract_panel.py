@@ -40,6 +40,8 @@ class AbstractPanel(BoxLayout):
         pass
 
     def loadClases(self):
+        '''this method use reflection to load the
+        different source GUI'''
 
         package_path_dict = self.packagePath()
 

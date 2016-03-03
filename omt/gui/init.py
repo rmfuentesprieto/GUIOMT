@@ -10,11 +10,20 @@ from omt.gui.sourcepanel.source_panel_class import SourcePanel
 
 class RootWidget(BoxLayout):
     def __init__(self):
-        super(RootWidget, self).__init__(orientation = 'horizontal')
+        super(RootWidget, self).__init__(orientation = 'vertical')
+        self.menu = BoxLayout(orientation='horizontal',size_hint=(1,None), size=(1,40))
+        self.panels = BoxLayout(orientation='horizontal')
+        button = Button(text='Start', font_size=14)
 
-        self.add_widget(DataPanel(),0)
-        self.add_widget(ExtractPanel(),1)
-        self.add_widget(SourcePanel(),2)
+        self.menu.add_widget(button)
+
+
+        self.panels.add_widget(DataPanel(),0)
+        self.panels.add_widget(ExtractPanel(),1)
+        self.panels.add_widget(SourcePanel(),2)
+
+        self.add_widget(self.menu)
+        self.add_widget(self.panels)
 
 
 
