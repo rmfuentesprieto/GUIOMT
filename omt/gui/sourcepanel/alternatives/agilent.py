@@ -12,10 +12,10 @@ from omt.gui.sourcepanel.alternatives.tipical_source import CommonSource
 from omt.gui.util.units_spinner import UnitSpinner
 
 
-class RodeSchwartz(CommonSource):
+class Agilent(CommonSource):
 
     def get_my_ip(self):
-        return '192.168.1.33'
+        return '192.168.1.34'
 
     def get_my_port(self):
-        return '5025'
+        return '5023'

@@ -14,16 +14,23 @@ class RootWidget(BoxLayout):
         self.menu = BoxLayout(orientation='horizontal',size_hint=(1,None), size=(1,40))
         self.panels = BoxLayout(orientation='horizontal')
         button = Button(text='Start', font_size=14)
+        button.bind(on_press=self.configure_and_turn_on_sources)
 
         self.menu.add_widget(button)
 
+        self.proces = DataPanel()
+        self.data = ExtractPanel()
+        self.source = SourcePanel()
 
-        self.panels.add_widget(DataPanel(),0)
-        self.panels.add_widget(ExtractPanel(),1)
-        self.panels.add_widget(SourcePanel(),2)
+        self.panels.add_widget(self.proces,0)
+        self.panels.add_widget(self.data,1)
+        self.panels.add_widget(self.source,2)
 
         self.add_widget(self.menu)
         self.add_widget(self.panels)
+
+    def configure_and_turn_on_sources(self, instance):
+        print 'pre'
 
 
 
