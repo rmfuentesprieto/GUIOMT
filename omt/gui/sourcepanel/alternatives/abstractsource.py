@@ -1,7 +1,7 @@
-from omt.gui.empty import Vacio
+from omt.gui.empty import Empty
 
 
-class AbstractSource(Vacio):
+class AbstractSource(Empty):
 
     def do_swipe(self):
         return False

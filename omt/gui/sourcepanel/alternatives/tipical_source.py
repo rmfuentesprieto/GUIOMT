@@ -22,6 +22,9 @@ class CommonSource(AbstractSource):
         sweep_layout = BoxLayout(orientation='horizontal', size_hint=(1,None), size=(1,40))
         buttons_configuration = GridLayout(cols=3, row_force_default=True, row_default_height=40)
 
+        self.is_source_active = False
+        self.do_a_sweep = False
+
         on_off_label = Label(text='Usar Fuente')
         self.on_off_switch = Switch(active=False)
         self.on_off_switch.bind(active=self.on_off)
@@ -97,11 +100,14 @@ class CommonSource(AbstractSource):
         pass
 
     def sweepe_or_not(self, spinner, text):
+        self.do_a_sweep = text
         self.final_frec_value.disabled = not text
         self.delta_frec_value.disabled = not text
         self.puntos_frec_value.disabled = not text
 
     def on_off(self, spinner, text):
+        self.is_source_active = text
+        print self.is_source_active
         self.final_frec_value.disabled = not text
         self.delta_frec_value.disabled = not text
         self.puntos_frec_value.disabled = not text
@@ -176,3 +182,10 @@ class CommonSource(AbstractSource):
     def change_points_number(self, instance, value):
         self._check_input_number(instance, value)
         pass
+
+    def is_active(self):
+        return self.is_source_active
+
+    def do_sweep(self):
+        return self.do_a_sweep
+

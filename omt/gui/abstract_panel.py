@@ -10,6 +10,7 @@ class AbstractPanel(BoxLayout):
         super(AbstractPanel, self).__init__(kwargs=kwargs, orientation='vertical')
 
         self.panels_to_choose = {}
+        self.pannels_instants = []
         self.panel = ScreenManager()
 
         self.custom_config()
@@ -79,9 +80,13 @@ class AbstractPanel(BoxLayout):
             self.panels_to_choose[key] = custom_panel
             instat = custom_panel()
             instat.name = key
+            self.pannels_instants.append(instat)
             self.panel.add_widget(instat)
 
         return obj_names
 
     def get_name(self):
+        pass
+
+    def get_configurations(self):
         pass

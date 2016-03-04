@@ -21,3 +21,17 @@ class SourcePanel(AbstractPanel):
 
     def get_name(self):
         return "Fuentes"
+
+    def get_configurations(self):
+        return_dic = {}
+        return_dic['tone'] = []
+        for source in self.pannels_instants:
+            if source.is_active():
+                if source.do_sweep():
+                    if 'sweep' in return_dic:
+                        raise Exception('Only one sweep')
+                    return_dic['sweep'] = source.get_source_config()
+                else:
+                    return_dic['tone'].append(source).get_source_config()
+
+        return return_dic

@@ -4,8 +4,10 @@ from kivy.uix.button import Label
 from kivy.uix.screenmanager import Screen
 
 
-class Vacio(Screen):
+class Empty(Screen):
 
-     def __init__(self,**kwargs):
+    def __init__(self,**kwargs):
+         super(Empty, self).__init__(kwargs=kwargs)
 
-         super(Vacio, self).__init__(kwargs=kwargs)
+    def is_active(self):
+        return False
