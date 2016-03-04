@@ -67,6 +67,8 @@ class CommonSource(AbstractSource):
         self.amplitud_frec_value.bind(text=self._check_input_number)
         self.amplitud_frec_unit = UnitSpinner(UnitSpinner.db)
 
+
+
         buttons_configuration.add_widget(init_frec_label)
         buttons_configuration.add_widget(self.init_frec_value)
         buttons_configuration.add_widget(self.init_frec_unit)
@@ -188,4 +190,21 @@ class CommonSource(AbstractSource):
 
     def do_sweep(self):
         return self.do_a_sweep
+
+    def get_source_config(self):
+        data_dic = {}
+        data_dic['ip'] = self.get_my_ip()
+        data_dic['port'] = self.get_my_port()
+        data_dic['power'] = self.amplitud_frec_value._get_text()
+
+        if self.do_a_sweep:
+            data_dic['frec_init'] = self.init_frec_value._get_text()
+            data_dic['frec_end'] = self.final_frec_value._get_text()
+            data_dic['frec_number_point'] = self.puntos_frec_value._get_text()
+
+        else:
+            data_dic['frec'] = self.init_frec_value._get_text()
+
+        return data_dic
+
 
