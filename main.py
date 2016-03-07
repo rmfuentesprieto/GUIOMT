@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 """
 This is the main of the controller to test de digital OMT.
 This is a develop made by Amermelao.
@@ -10,6 +11,8 @@ Install:
     sudo apt-get install python-kivy
 
 """
+import sys
+sys.path.append("/home/roach/Desktop/Roberto/git/GUIOMT")
 from omt.gui.init import GUIStart
 
 if __name__ == "__main__":

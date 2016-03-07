@@ -32,9 +32,11 @@ class DataThread(Process):
             if self.kill_me.ask_if_stop():
                 break
 
-            time.sleep(0.5)
+            time.sleep(2)
 
-            if self.ask_channel.get_number_of_channels() == current_channel:
+            print 'addquiere ' + str(current_channel)
+            #raw_input()
+            if self.ask_channel.get_number_of_channels() == (current_channel+1):
                 break
             current_channel += 1
 
@@ -43,7 +45,8 @@ class DataThread(Process):
             self.initialize_monitor.clear()
             # ask for the following sinal
             self.end_monitor.set()
-
+        self.kill_me.stop_all()
+        print 'sleep'
         self.end_monitor.set()
 
     def close_process(self):

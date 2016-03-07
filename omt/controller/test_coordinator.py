@@ -1,7 +1,7 @@
 from unittest import TestCase
 import time
 from omt.controller.controller_starter import Coordinator
-from omt.controller.source.source_thread_function import FailToConnectTelonet
+from omt.controller.source.source_thread_function import FailToConnectTelnet
 
 
 class TestCoordinator(TestCase):
@@ -44,4 +44,4 @@ class TestCoordinator(TestCase):
 
         data_dic_s['sweep'] = data_dic_sw
 
-        self.assertRaises(FailToConnectTelonet, lambda :Coordinator(data_dic_s,data_dic_d))
+        self.assertRaises(FailToConnectTelnet, lambda :Coordinator(data_dic_s, data_dic_d))

@@ -2,7 +2,7 @@ import socket
 import telnetlib
 import time
 
-from omt.controller.source.source_thread_function import FailToConnectTelonet
+from omt.controller.source.source_thread_function import FailToConnectTelnet
 
 
 class ToneDCSource(object):
@@ -17,7 +17,7 @@ class ToneDCSource(object):
         try:
             self.connection = telnetlib.Telnet(self.ip, self.port)# for test purpuses timeout=3)
         except socket.error, exc:
-            raise FailToConnectTelonet(self.ip, self.port)
+            raise FailToConnectTelnet(self.ip, self.port)
 
         self.connection.write('power %s dbm\r\n'% self.power)
         self.connection.write('freq %s\r\n'% str(self.frec))

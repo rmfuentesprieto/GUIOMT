@@ -123,62 +123,17 @@ class CommonSource(AbstractSource):
                 float(value)
 
         except ValueError:
-            instance.text = value[0:-1]
-            popup = Popup(title='Error', content=Label(text='Mal valor,\nsolo numeros'),\
+            if not value == '-':
+                instance.text = value[0:-1]
+                popup = Popup(title='Error', content=Label(text='Mal valor,\nsolo numeros'),\
                           size_hint=(None, None), size=(120, 100))
-            popup.open()
+                popup.open()
 
     def update_values(self, instance, value):
-        self._check_input_number(instance, value)
-        if self.sweep_switch.active:
-
-            frec_initial = self.init_frec_value.text
-            frec_final = self.final_frec_value.text
-
-            if len(frec_final) == 0 or len(frec_initial) == 0:
-                return
-
-            frec_final = float(frec_final) * self.final_frec_unit.get_unit_norm()
-            frec_initial = float(frec_initial) * self.init_frec_unit.get_unit_norm()
-
-            points = self.puntos_frec_value.text
-            delta = self.delta_frec_value.text
-
-            if len(points) != 0 and points != '1':
-                points = int(points)
-                print (frec_final - frec_initial)/(int(points) - 1)
-                aux_delta = str((frec_final - frec_initial)/(int(points) - 1))
-                if len(aux_delta) > 9:
-                    aux_delta = aux_delta[0:8]
-                self.delta_frec_value.text = aux_delta
-                return
-
-            if len(delta) != 0:
-                delta = float(delta)
-                self.puntos_frec_value.text = str(int((frec_final - frec_initial)/delta) + 1)
-
-
-        else:
-            pass
+        pass
 
     def change_delta_frec(self, instance, value):
-        self._check_input_number(instance, value)
-
-        frec_initial = self.init_frec_value.text
-        frec_final = self.final_frec_value.text
-
-        if len(frec_final) == 0 or len(frec_initial) == 0:
-            return
-
-        frec_final = float(frec_final) * self.final_frec_unit.get_unit_norm()
-        frec_initial = float(frec_initial) * self.init_frec_unit.get_unit_norm()
-
-        delta_frec = value * self.delta_frec_unit.get_unit_norm()
-
-        number_of_points = str((frec_final - frec_initial) / (delta_frec))
-
-        while( number_of_points < 1 or number_of_points > 999):
-            break
+        pass
 
 
     def change_points_number(self, instance, value):
@@ -198,12 +153,12 @@ class CommonSource(AbstractSource):
         data_dic['power'] = self.amplitud_frec_value._get_text()
 
         if self.do_a_sweep:
-            data_dic['frec_init'] = self.init_frec_value._get_text()
-            data_dic['frec_end'] = self.final_frec_value._get_text()
-            data_dic['frec_number_point'] = self.puntos_frec_value._get_text()
+            data_dic['frec_init'] = float(self.init_frec_value._get_text())
+            data_dic['frec_end'] = float(self.final_frec_value._get_text())
+            data_dic['frec_number_point'] = int(self.puntos_frec_value._get_text())
 
         else:
-            data_dic['frec'] = self.init_frec_value._get_text()
+            data_dic['frec'] = float(self.init_frec_value._get_text())
 
         return data_dic
 

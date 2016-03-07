@@ -36,7 +36,7 @@ class SourceThread(AbstractSource):
             #self.connection = telnetlib.Telnet(self.ip, self.port,timeout=3) # for test purpuses, time in secconds
             self.connection = telnetlib.Telnet(self.ip, self.port)
         except socket.error, exc:
-            raise FailToConnectTelonet(self.ip, self.port)
+            raise FailToConnectTelnet(self.ip, self.port)
         self.connection.write('power ' + config_dic['power'] + ' dbm\r\n')
 
     def ask_a_command(self, a_command):
@@ -47,21 +47,25 @@ class SourceThread(AbstractSource):
     def run(self):
         self.connection.write('outp on\r\n')
 
-        for current_channel in range(self.frec_number_of_points+1):
+        #for current_channel in range(self.frec_number_of_points):
+        current_channel = 0
+        while True:
 
             self.initialize_monitor.wait()
             if self.kill_me.ask_if_stop():
-                return
+                break
 
             self.channel_obj.next_channel()
             self.connection.write('freq ' + str(current_channel * self.frec_step + self.frec_init) + '\r\n')
+            print 'addquiere ' + str(current_channel)
             # wait for the tone to adjust well
             time.sleep(0.5)
             self.initialize_monitor.clear()
             self.end_monitor.set()
-
+            current_channel += 1
         self.initialize_monitor.wait()
         self.connection.write('outp off\r\n')
+        print 'sleep source'
 
     def close_process(self):
         self.connection.close()
@@ -95,7 +99,7 @@ class DummySourceThread(Process):
     def close_process(self):
         print 'dummy stop'
 
-class FailToConnectTelonet(Exception):
+class FailToConnectTelnet(Exception):
 
     def __init__(self, ip, port):
         self.value = 'fail to conect to %s:%s'% (ip, port)
