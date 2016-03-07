@@ -13,7 +13,7 @@ class ExtractPanel(AbstractPanel):
         and the values is where the object is define.
         """
         altenatives = {
-
+            'ROACH':'omt.gui.extract_data_panel.alternatives.roach',
         }
 
         return altenatives

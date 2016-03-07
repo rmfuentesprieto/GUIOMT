@@ -16,10 +16,6 @@ class DataThread(Process):
         self.ask_channel = channel_obj
         self.kill_me = end_signal
 
-        #self.ip = data_dic['ip']
-        #self.port = data_dic['port']
-
-        #self.fpga_data = data_dic['fpga_obj']
 
     def run(self):
 
