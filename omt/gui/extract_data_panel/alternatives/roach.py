@@ -35,14 +35,12 @@ class ROACH(Empty):
         new_reg = Button(text='nuevo registro')
         new_reg.bind(on_press=self.add_registers)
 
-
-
         roach_register.add_widget(new_reg)
 
-        self.reg_container = GridLayout(cols=1, spacing = 1, size_hint_y = None)
+        self.reg_container = GridLayout(cols=1, spacing = 1,size_hint=(1,None), size=(1,30))
         self.reg_container.bind(minimum_height=self.reg_container.setter('height'))
 
-        scroll_root = ScrollView(size_hint=(1,None), size=(400,100))
+        scroll_root = ScrollView(size_hint=(1,None), size=(1,100))
         scroll_root.add_widget(self.reg_container)
 
         # acc layout
@@ -52,10 +50,10 @@ class ROACH(Empty):
 
         free_running.add_widget(add_free_running)
 
-        self.free_run_container = GridLayout(cols=1, spacing = 1, size_hint_y = None)
-        self.free_run_container.bind(minimum_height=self.reg_container.setter('height'))
+        self.free_run_container = GridLayout(cols=1, spacing = 1,size_hint=(1,None), size=(1,30))
+        self.free_run_container.bind(minimum_height=self.free_run_container.setter('height'))
 
-        scroll_root_free_run = ScrollView(size_hint=(1,None), size=(400,100))
+        scroll_root_free_run = ScrollView(size_hint=(1,None), size=(1,100))
         scroll_root_free_run.add_widget(self.free_run_container)
 
         big_one.add_widget(roach_connection_info)
@@ -69,10 +67,39 @@ class ROACH(Empty):
         self.register_list = []
 
     def add_registers(self, instance):
-        btn = Button(text=str(2), size_hint_y=None, height=30)
+        btn = Register(orientation='horizontal')
         self.reg_container.add_widget(btn)
 
     def add_free_running(self, instance):
-        btn = Button(text=str(2), size_hint_y=None, height=30)
+        btn = Register(orientation='horizontal')
         self.free_run_container.add_widget(btn)
 
+
+class Register(BoxLayout):
+
+    def __init__(self,**kwargs):
+        super(Register, self).__init__(kwargs=kwargs)
+
+        name_layout = BoxLayout(orientation='horizontal')
+        value_layout = BoxLayout(orientation='horizontal')
+
+        name_label = Label(text='Nombre\nreg')
+        self.name_value = TextInput()
+
+        name_layout.add_widget(name_label)
+        name_layout.add_widget(self.name_value)
+
+        values_label = Label(text='Valor\nreg')
+        self.values_value = TextInput()
+
+        value_layout.add_widget(values_label)
+        value_layout.add_widget(self.values_value)
+
+        self.add_widget(name_layout)
+        self.add_widget(value_layout)
+
+    def get_name(self):
+        return self.name_value._get_text()
+
+    def get_value(self):
+        return self.values_value._get_text()
