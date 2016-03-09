@@ -1,4 +1,5 @@
 from kivy.app import App
+from kivy.core.window import Window
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
 
@@ -11,7 +12,7 @@ from omt.gui.sourcepanel.source_panel_class import SourcePanel
 
 class RootWidget(BoxLayout):
     def __init__(self):
-        super(RootWidget, self).__init__(orientation = 'vertical')
+        super(RootWidget, self).__init__(orientation = 'vertical', size = (800,400))
         self.menu = BoxLayout(orientation='horizontal',size_hint=(1,None), size=(1,40))
         self.panels = BoxLayout(orientation='horizontal')
 
@@ -60,5 +61,6 @@ class RootWidget(BoxLayout):
 
 class GUIStart(App):
     def build(self):
+        Window.size = (1200,600)
         app = RootWidget()
         return app
