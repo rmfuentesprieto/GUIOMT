@@ -11,3 +11,6 @@ class Empty(Screen):
 
     def is_active(self):
         return False
+
+    def get_source_config(self):
+        return {}

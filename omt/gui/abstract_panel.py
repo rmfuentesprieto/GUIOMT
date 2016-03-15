@@ -3,6 +3,7 @@ from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.uix.spinner import Spinner
 from kivy.uix.label import Label
 
+
 class AbstractPanel(BoxLayout):
 
     def __init__(self, **kwargs):

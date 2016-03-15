@@ -20,3 +20,10 @@ class ExtractPanel(AbstractPanel):
 
     def get_name(self):
         return "Obtener Datos"
+
+    def get_configurations(self):
+        return_dic = {}
+        for roach_config in self.pannels_instants:
+            return_dic['roach'] = roach_config.get_source_config()
+
+        return return_dic
