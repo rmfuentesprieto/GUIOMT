@@ -47,7 +47,7 @@ class ROACH(Empty):
         self.reg_container = GridLayout(cols=1, spacing=0, size_hint_y=None)#row_default_height=30)
         self.reg_container.bind(minimum_height=self.reg_container.setter('height'))
 
-        scroll_root = ScrollView(size_hint=(1,None),  size=(1, 175))
+        scroll_root = ScrollView(size_hint=(1,None),  size=(1, 125))
         scroll_root.add_widget(self.reg_container)
         ####
 
@@ -60,10 +60,19 @@ class ROACH(Empty):
         self.free_run_container = GridLayout(cols=1, spacing = 3,size_hint=(1,None), size=(1,30))
         self.free_run_container.bind(minimum_height=self.free_run_container.setter('height'))
 
-        scroll_root_free_run = ScrollView(size_hint=(1,None), size=(1,175))
+        scroll_root_free_run = ScrollView(size_hint=(1,None), size=(1,195))
         scroll_root_free_run.add_widget(self.free_run_container)
         ####
 
+        size_ = 30
+        name_config = Label(text='Nombre',size_hint=(0.25,None), height=size_)
+        name_config_input = TextInput(size_hint=(0.75,None), height=size_)
+
+        name = BoxLayout(orientation='horizontal', size_hint=(1,None), size=(1,30))
+        name.add_widget(name_config)
+        name.add_widget(name_config_input)
+
+        big_one.add_widget(name)
         big_one.add_widget(roach_connection_info)
         big_one.add_widget(roach_register)
         big_one.add_widget(scroll_root)
@@ -118,21 +127,13 @@ class ROACH(Empty):
         size_input = TextInput(size_hint=(0.45,None), height=size_)
 
         add_new_array_to_merge = Button(text='+',size_hint=(None,None), height=size_, wide = 3*size_)
-        #add_new_array_to_merge.bind(on_press=)
 
-        real_imag = GridLayout(cols=1, spacing = 3,size_hint=(1,None), size=(1,30))
-        real_imag.bind(minimum_height=self.free_run_container.setter('height'))
+        real_imag = GridLayout(cols=1, spacing = 3,size_hint=(1,None), size=(1,60))
+        real_imag.size
+        #real_imag.bind(minimum_height=real_imag.setter('height'))
 
-        scroll_real_imag = ScrollView(size_hint=(0.8,None), size=(1,2*size_))
-        scroll_real_imag.add_widget(real_imag)
-        space_begin = Label(text='  ',size_hint=(0.1,None), height=2*size_)
-        space_end = Label(text='  ',size_hint=(0.1,None), height=2*size_)
-
-        real_label = Label(text='real', size_hint=(0.25,None), height=size_)
-        real_input = TextInput(size_hint=(0.25,None), height=size_)
-
-        imag_label = Label(text='imag', size_hint=(0.25,None), height=size_)
-        imag_input = TextInput(size_hint=(0.25,None), height=size_)
+        #scroll_real_imag = ScrollView(size_hint=(0.8,None), size=(1,2*size_))
+        #scroll_real_imag.add_widget(real_imag)
 
         acc_len_reg_name_label = Label(text='acc len reg_name',size_hint=(0.5,None), height=size_)
         acc_len_reg_name_input = TextInput(size_hint=(0.5,None), height=size_)
@@ -151,10 +152,7 @@ class ROACH(Empty):
         data_add_merge_data.add_widget(add_new_array_to_merge)
 
         data_name = BoxLayout(orientation='horizontal',size_hint=(1, None), size=(1,2*size_))
-        data_name.add_widget(space_begin)
-        data_name.add_widget(scroll_real_imag)
-        data_name.add_widget(space_end)
-
+        data_name.add_widget(real_imag)
 
         data_acc_len_reg = BoxLayout(orientation='horizontal',size_hint=(1, None), size=(1,size_))
         data_acc_len_reg.add_widget(acc_len_reg_name_label)
@@ -166,10 +164,12 @@ class ROACH(Empty):
         data.add_widget(data_name)
         data.add_widget(data_acc_len_reg)
 
-        bram = BRAMArray(data_type_spinner, size_input, acc_len_reg_name_input)
+        bram = BRAMArray(data_type_spinner, size_input, acc_len_reg_name_input,real_imag)
+
+        add_new_array_to_merge.bind(on_press=lambda instance: bram.add_real_imag_widget())
+
         self.bram_array[str(self.bram_cont)] = bram
         self.bram_cont += 1
-
         self.free_run_container.add_widget(data)
 
     def is_active(self):
@@ -208,14 +208,53 @@ class Register(object):
         return self.value._get_text()
 
 class BRAMArray(object):
-    def __init__(self, data_type, size_array, acc_len_reg):
+    def __init__(self, data_type, size_array, acc_len_reg, grid_layout):
         self.data_type = data_type
         self.size_array = size_array
         self.real_imag_bram = {}
         self.acc_len_reg = acc_len_reg
+        self.grid_layout = grid_layout
+        self.cont = 0
 
     def add_real_imag(self, real_bram, imag_bram, key):
         self.real_imag_bram[key] = (real_bram,imag_bram)
 
     def del_bram(self, key):
         del self.real_imag_bram[key]
+
+    def del_widget(self, wid):
+        self.grid_layout.remove_widget(wid)
+
+    def add_real_imag_widget(self):
+        size_ = 30
+
+        real_label = Label(text='real', size_hint=(0.225,None), height=size_)
+        real_input = TextInput(size_hint=(0.225,None), height=size_)
+
+        imag_label = Label(text='imag', size_hint=(0.225,None), height=size_)
+        imag_input = TextInput(size_hint=(0.225,None), height=size_)
+
+        del_button = Button(text='-', size_hint=(0.1,None), height=size_)
+
+
+        data = BoxLayout(orientation='horizontal',size_hint=(1, None), size=(1,size_))
+
+        data.add_widget(real_label)
+        data.add_widget(real_input)
+        data.add_widget(imag_label)
+        data.add_widget(imag_input)
+        data.add_widget(del_button)
+
+        self.grid_layout.add_widget(data)
+        self.grid_layout.width += 30
+
+        a_key = self.cont
+        self.cont += 1
+        del_button.bind(on_press=lambda instant: self.remove_all(data, a_key))
+
+        self.add_real_imag(real_input, imag_input, a_key)
+
+
+    def remove_all(self, data, key):
+        self.del_widget(data)
+        self.del_bram(key)

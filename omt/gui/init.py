@@ -61,6 +61,6 @@ class RootWidget(BoxLayout):
 
 class GUIStart(App):
     def build(self):
-        Window.size = (1200,600)
         app = RootWidget()
+
         return app
