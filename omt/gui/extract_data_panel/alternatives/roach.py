@@ -8,6 +8,8 @@ from kivy.uix.spinner import Spinner
 from kivy.uix.textinput import TextInput
 
 from omt.gui.empty import Empty
+from omt.gui.extract_data_panel.alternatives import BofFileChooser
+from omt.gui.extract_data_panel.alternatives.BofFileChooser import BofFileChooserIconView
 
 
 class ROACH(Empty):
@@ -23,6 +25,8 @@ class ROACH(Empty):
 
         self.bram_array = {}
         self.bram_cont = 0
+
+        self.bof_path = ''
 
         # reg layout
         roach_connection_info = BoxLayout(orientation='horizontal',  size_hint=(1,None), size=(1,30))
@@ -60,17 +64,22 @@ class ROACH(Empty):
         self.free_run_container = GridLayout(cols=1, spacing = 3,size_hint=(1,None), size=(1,30))
         self.free_run_container.bind(minimum_height=self.free_run_container.setter('height'))
 
-        scroll_root_free_run = ScrollView(size_hint=(1,None), size=(1,195))
+        scroll_root_free_run = ScrollView(size_hint=(1,None), size=(1,195), scroll_type=['bars'])
         scroll_root_free_run.add_widget(self.free_run_container)
+        scroll_root_free_run.bar_width = 10
         ####
 
         size_ = 30
         name_config = Label(text='Nombre',size_hint=(0.25,None), height=size_)
-        name_config_input = TextInput(size_hint=(0.75,None), height=size_)
+        name_config_input = TextInput(size_hint=(0.5,None), height=size_)
+        buton_bof_file = Button(text='Add bof',size_hint=(0.25,None), height=size_)
+        file_chooser = BofFileChooserIconView(self.set_bof_path)
+        buton_bof_file.bind(on_press=file_chooser.run)
 
         name = BoxLayout(orientation='horizontal', size_hint=(1,None), size=(1,30))
         name.add_widget(name_config)
         name.add_widget(name_config_input)
+        name.add_widget(buton_bof_file)
 
         big_one.add_widget(name)
         big_one.add_widget(roach_connection_info)
@@ -129,11 +138,10 @@ class ROACH(Empty):
         add_new_array_to_merge = Button(text='+',size_hint=(None,None), height=size_, wide = 3*size_)
 
         real_imag = GridLayout(cols=1, spacing = 3,size_hint=(1,None), size=(1,60))
-        real_imag.size
-        #real_imag.bind(minimum_height=real_imag.setter('height'))
+        real_imag.bind(minimum_height=real_imag.setter('height'))
 
-        #scroll_real_imag = ScrollView(size_hint=(0.8,None), size=(1,2*size_))
-        #scroll_real_imag.add_widget(real_imag)
+        scroll_real_imag = ScrollView(size_hint=(0.8,None), size=(1,2*size_))
+        scroll_real_imag.add_widget(real_imag)
 
         acc_len_reg_name_label = Label(text='acc len reg_name',size_hint=(0.5,None), height=size_)
         acc_len_reg_name_input = TextInput(size_hint=(0.5,None), height=size_)
@@ -152,7 +160,7 @@ class ROACH(Empty):
         data_add_merge_data.add_widget(add_new_array_to_merge)
 
         data_name = BoxLayout(orientation='horizontal',size_hint=(1, None), size=(1,2*size_))
-        data_name.add_widget(real_imag)
+        data_name.add_widget(scroll_real_imag)
 
         data_acc_len_reg = BoxLayout(orientation='horizontal',size_hint=(1, None), size=(1,size_))
         data_acc_len_reg.add_widget(acc_len_reg_name_label)
@@ -193,6 +201,10 @@ class ROACH(Empty):
             pass
 
         return dic_return
+
+    def set_bof_path(self, path):
+        self.bof_path = path
+        print path
 
 class Register(object):
 
