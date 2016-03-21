@@ -51,7 +51,7 @@ class RootWidget(BoxLayout):
 
         # coordinator runs in a new thread
         # and launch some new ones
-        self.coordinator.start()
+        # self.coordinator.start()
 
     def turn_off(self, instance):
         self.stop_the_sources()
