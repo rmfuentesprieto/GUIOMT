@@ -2,11 +2,13 @@ import telnetlib
 import time
 
 from omt.controller.abstract_parallel_proces import Process
+from omt.controller.data.roach_2 import Roach2
 
 '''
 this class is thoiught to handle the data aquasition
 comming from the roach board
 '''
+
 
 class DataThread(Process):
 
@@ -16,10 +18,17 @@ class DataThread(Process):
         self.ask_channel = channel_obj
         self.kill_me = end_signal
 
+        self.roach = Roach2(data_dic)
+
 
     def run(self):
-
         current_channel = 0
+
+        self.roach.connect_to_roach()
+        self.roach.config_register()
+
+        if not self.roach.is_conected():
+            raise Exception('Not connected')
         while(True):
 
             # waits for the source to emit the rigth signal
@@ -30,7 +39,7 @@ class DataThread(Process):
 
             time.sleep(2)
 
-            print 'addquiere ' + str(current_channel)
+            print 'addquiere ' + self.roach.aquare_data()
             #raw_input()
             if self.ask_channel.get_number_of_channels() == (current_channel+1):
                 break

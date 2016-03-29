@@ -1,6 +1,7 @@
 import threading
 
 from omt.controller.data.data_thread_function import DataThread
+from omt.controller.data.roach_2 import Roach2
 from omt.controller.source.source_thread_function import SourceThread, DummySourceThread
 from omt.controller.source.source_tone_or_dc import ToneDCSource
 
@@ -24,14 +25,14 @@ class Coordinator(threading.Thread):
             self.thread_source = SourceThread(sweep_source_dic, self.event_source, self.event_data, channel_comunicator, self.signal_kill)
         else:
             channel_comunicator = CurrentChanel(-1)
-            self.thread_source = DummySourceThread(data_dictionary, self.event_data, self.event_source, channel_comunicator, self.signal_kill)
+            self.thread_source = DummySourceThread(source_dictionary, self.event_data, self.event_source, channel_comunicator, self.signal_kill)
 
         self.tone_source = []
         if 'tone' in source_dictionary:
             for source_config in source_dictionary['tone']:
                 self.tone_source.append(ToneDCSource(source_config))
 
-        self.thread_data = DataThread(data_dictionary, self.event_data, self.event_source, channel_comunicator, self.signal_kill)
+        self.thread_data = Roach2(data_dictionary['roach'], self.event_data, self.event_source, channel_comunicator, self.signal_kill)
 
         self.event_source.set()
         self.event_data.clear()

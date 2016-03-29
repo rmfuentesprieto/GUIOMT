@@ -43,11 +43,12 @@ class RootWidget(BoxLayout):
         source_dictionary = self.source.get_configurations()
         data_dictionary = self.data.get_configurations()
         # processing_dictionary = {}
+        print data_dictionary
 
         try:
             self.coordinator = Coordinator(source_dictionary, data_dictionary)
         except FailToConnectTelnet:
-            print 'No se puedo connectar'
+            print 'No se puede connectar'
 
         # coordinator runs in a new thread
         # and launch some new ones

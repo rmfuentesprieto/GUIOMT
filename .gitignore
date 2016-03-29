@@ -45,3 +45,7 @@ fabric.propertiesa
 
 # Pycharm
 build/*
+*.pyc
+
+# things
+*~
