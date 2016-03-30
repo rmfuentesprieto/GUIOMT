@@ -49,10 +49,11 @@ class RootWidget(BoxLayout):
             self.coordinator = Coordinator(source_dictionary, data_dictionary)
         except FailToConnectTelnet:
             print 'No se puede connectar'
+            return
 
         # coordinator runs in a new thread
         # and launch some new ones
-        # self.coordinator.start()
+        self.coordinator.start()
 
     def turn_off(self, instance):
         self.stop_the_sources()

@@ -22,37 +22,54 @@ class DataThread(Process):
 
 
     def run(self):
-        current_channel = 0
+        #try:
+            current_channel = 0
 
-        self.roach.connect_to_roach()
-        self.roach.config_register()
+            self.roach.connect_to_roach()
 
-        if not self.roach.is_conected():
-            raise Exception('Not connected')
-        while(True):
 
-            # waits for the source to emit the rigth signal
-            self.initialize_monitor.wait()
+            print 'conection made'
 
-            if self.kill_me.ask_if_stop():
-                break
+            if not self.roach.is_conected():
+                raise Exception('Not connected')
+                self.kill_me.stop_all()
+                self.end_monitor.set()
 
-            time.sleep(2)
+            self.roach.program_fpga()
+            self.roach.config_register()
+            while(True):
 
-            print 'addquiere ' + self.roach.aquare_data()
-            #raw_input()
-            if self.ask_channel.get_number_of_channels() == (current_channel+1):
-                break
-            current_channel += 1
+                # waits for the source to emit the rigth signal
+                self.initialize_monitor.wait()
 
-            #looks the initializer monitor and awaits
-            #for the source thread to clear it
-            self.initialize_monitor.clear()
-            # ask for the following sinal
+                if self.kill_me.ask_if_stop():
+                    break
+
+                time.sleep(2)
+
+                print 'addquiere ' , self.roach.aquare_data()
+                #raw_input()
+                if self.ask_channel.get_number_of_channels() == (current_channel+1):
+                    break
+                current_channel += 1
+
+                #looks the initializer monitor and awaits
+                #for the source thread to clear it
+                self.initialize_monitor.clear()
+                # ask for the following sinal
+                self.end_monitor.set()
+            self.kill_me.stop_all()
+            print 'sleep'
             self.end_monitor.set()
-        self.kill_me.stop_all()
-        print 'sleep'
-        self.end_monitor.set()
+        #except Exception as e:
+            #print e.args
+            #self.kill_me.stop_all()
+            #self.end_monitor.set()
+            #self.roach.stop()
+            #raise e
+
+            print 'all has been kill'
+
 
     def close_process(self):
         pass
