@@ -32,7 +32,7 @@ class Coordinator(threading.Thread):
             for source_config in source_dictionary['tone']:
                 self.tone_source.append(ToneDCSource(source_config))
 
-        self.thread_data = Roach2(data_dictionary['roach'], self.event_data, self.event_source, channel_comunicator, self.signal_kill)
+        self.thread_data = DataThread(data_dictionary['roach'], self.event_data, self.event_source, channel_comunicator, self.signal_kill)
 
         self.event_source.set()
         self.event_data.clear()
@@ -63,7 +63,7 @@ class Coordinator(threading.Thread):
         self.end_sweep = True
 
     def stop_the_process(self):
-
+        print 'kill sigbal'
         self.signal_kill.stop_all()
         while not self.end_sweep:
             self.event_data.set()

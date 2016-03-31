@@ -53,7 +53,9 @@ class SourceThread(AbstractSource):
 
             self.initialize_monitor.wait()
             if self.kill_me.ask_if_stop():
+                print 100
                 break
+
 
             self.channel_obj.next_channel()
             self.connection.write('freq ' + str(current_channel * self.frec_step + self.frec_init) + '\r\n')
