@@ -22,7 +22,6 @@ class DataThread(Process):
 
         self.roach = Roach2(data_dic)
 
-
     def run(self):
         try:
             current_channel = 0
@@ -36,7 +35,8 @@ class DataThread(Process):
                 raise Exception('Connection Fail')
                 self.kill_me.stop_all()
                 self.end_monitor.set()
-
+            self.roach.send_bof()
+            time.sleep(1)
             self.roach.program_fpga()
             self.roach.config_register()
             while(True):

@@ -61,7 +61,7 @@ class SourceThread(AbstractSource):
             self.connection.write('freq ' + str(current_channel * self.frec_step + self.frec_init) + '\r\n')
             print 'addquiere ' + str(current_channel)
             # wait for the tone to adjust well
-            time.sleep(0.5)
+            time.sleep(2)
             self.initialize_monitor.clear()
             self.end_monitor.set()
             current_channel += 1

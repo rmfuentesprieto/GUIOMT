@@ -224,12 +224,12 @@ class CommonSource(AbstractSource):
         data_dic['power'] = self.amplitud_frec_value._get_text()
 
         if self.do_a_sweep:
-            data_dic['frec_init'] = float(self.init_frec_value._get_text())
-            data_dic['frec_end'] = float(self.final_frec_value._get_text())
-            data_dic['frec_number_point'] = int(self.puntos_frec_value._get_text())
+            data_dic['frec_init'] = float(self.init_frec_value._get_text())*self.init_frec_unit.get_unit_norm()
+            data_dic['frec_end'] = float(self.final_frec_value._get_text())*self.final_frec_unit.get_unit_norm()
+            data_dic['frec_number_point'] = int(self.puntos_frec_value._get_text())*self.puntos_frec_unit.get_unit_norm()
 
         else:
-            data_dic['frec'] = float(self.init_frec_value._get_text())
+            data_dic['frec'] = float(self.init_frec_value._get_text())*self.init_frec_unit.get_unit_norm()
 
         return data_dic
 

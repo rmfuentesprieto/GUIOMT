@@ -9,7 +9,7 @@ from kivy.uix.textinput import TextInput
 
 from omt.gui.empty import Empty
 from omt.gui.extract_data_panel.alternatives.BofFileChooser import BofFileChooserIconView
-
+import corr
 import os
 
 from omt.gui.extract_data_panel.alternatives.configuration_manager import LoadSaveConfig
@@ -104,7 +104,12 @@ class ROACH(Empty):
         big_one.add_widget(free_running)
         big_one.add_widget(scroll_root_free_run)
 
+        padding_layout = BoxLayout(size_hint=(1,1))
+        big_one.add_widget(padding_layout)
+
         self.add_widget(big_one)
+
+
 
     def add_registers(self, instance):
         self.load_registers("","")
@@ -147,6 +152,8 @@ class ROACH(Empty):
 
         regs = []
         keys = self.reg_array.keys()
+        keys.sort()
+
         for a_reg in keys:
             aux_data = self.reg_array[a_reg]
             reg_name = aux_data.get_name()
@@ -179,7 +186,7 @@ class ROACH(Empty):
             Popup(content=Label(text='Ingrese Nombre'), size_hint=(None,None),size=(200,100)).open()
             return
 
-        self.config_manager.copy_bof_to_folder(path, self.name_config_input._get_text())
+        self.bof_path = self.config_manager.copy_bof_to_folder(path, self.name_config_input._get_text())
 
     def load_data(self, path):
         path = path[0]
@@ -274,8 +281,7 @@ class ROACH(Empty):
         data.add_widget(data_name)
         data.add_widget(data_acc_len_reg)
 
-        bram = BRAMArray( size_input, acc_len_reg_name_input,real_imag, id_input)
-        data_type_spinner.bind(text=bram.selected_data_type)
+        bram = BRAMArray( size_input, acc_len_reg_name_input,real_imag, id_input, data_type_spinner)
 
         add_new_array_to_merge.bind(on_press=lambda instance: bram.add_real_imag_widget())
 
@@ -304,7 +310,7 @@ class Register(object):
         return self.value._get_text()
 
 class BRAMArray(object):
-    def __init__(self, size_array, acc_len_reg, grid_layout, array_id):
+    def __init__(self, size_array, acc_len_reg, grid_layout, array_id, data_type_):
         self.size_array = size_array
         self.real_imag_bram = {}
         self.acc_len_reg = acc_len_reg
@@ -312,7 +318,7 @@ class BRAMArray(object):
         self.cont = 0
         self.array_id = array_id
 
-        self.data_type = 'q'
+        self.data_type = data_type_
 
     def add_real_imag(self, real_bram, imag_bram, key):
         self.real_imag_bram[key] = (real_bram,imag_bram)
@@ -391,16 +397,13 @@ class BRAMArray(object):
     def info_dictionary(self):
         dictionary = {}
 
-        dictionary['data_type'] = self.data_type
+        dictionary['data_type'] = self.data_type.text
         dictionary['size'] = self.size_array._get_text()
         dictionary['acc_len_reg'] = self.acc_len_reg._get_text()
         dictionary['bram_names'] = self.get_names()
         dictionary['array_id'] = self.array_id._get_text()
 
         return dictionary
-
-    def selected_data_type(self, instant, text):
-        self.data_type = text
 
     def get_names(self):
         to_return = []

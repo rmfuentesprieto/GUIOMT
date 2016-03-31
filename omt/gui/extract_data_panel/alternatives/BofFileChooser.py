@@ -16,13 +16,15 @@ class BofFileChooserIconView(BoxLayout):
         ok_button = Button(text='Ok',  size_hint=(1,0.2))
         ok_button.bind(on_press=self.pree_m)
 
+
         self.add_widget(self.fc)
         self.add_widget(ok_button)
 
     def pree_m(self, instance):
-        self.return_to(self.fc.selection)
+        if len(self.fc.selection) > 0:
+            self.return_to(self.fc.selection)
         self.popup.dismiss()
-        
+
     def run(self, instance):
         super(BofFileChooserIconView, self).run()
 

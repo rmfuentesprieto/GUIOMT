@@ -1,9 +1,11 @@
+import os
 import struct
 import corr
 import logging
 import time
 
 import numpy
+from Gnuplot import Gnuplot
 
 from omt.controller.abstract_parallel_proces import Process
 from omt.util.data_type import data_type_dictionart
@@ -17,9 +19,20 @@ class Roach2(object):
         self.ip = data_dic['ip']
         self.register_list = data_dic['reg']
         self.bof_path = data_dic['bof_path']
+        print self.bof_path
         self.bitstream = data_dic['name'] + '.bof'
 
         self.brams_info = data_dic['bram']
+
+        self.plot_brams = []
+
+        for cont in range(len(self.brams_info)):
+            aplot = Gnuplot(debug=1)
+            aplot.clear()
+            aplot.title('plot of data array %s, acc count '%(self.brams_info[cont]['array_id']))
+            aplot('set style data linespoints')
+            self.plot_brams.append(aplot)
+
 
         self.fpga = None
 
@@ -27,8 +40,6 @@ class Roach2(object):
         self.logger = logging.getLogger(self.ip)
         self.logger.addHandler(self.handler)
         self.logger.setLevel(10)
-
-        self.send_bof()
 
     def connect_to_roach(self):
         print self.port
@@ -43,7 +54,14 @@ class Roach2(object):
         return to_return
 
     def send_bof(self):
-        pass
+        send_command = 'scp %s root@%s:/boffiles/%s' % (self.bof_path, self.ip, self.bitstream)
+        chmod_command = 'ssh root@%s chmod 777 /boffiles/%s'% ( self.ip, self.bitstream)
+
+        print send_command
+        print chmod_command
+
+        os.system(send_command)
+        os.system(chmod_command)
 
     def config_register(self):
         for reg_info in self.register_list:
@@ -55,17 +73,16 @@ class Roach2(object):
             return {}
 
         return_data = {}
-        cont_key = 0
-
-        print 'in'
+        bram_cont = 0
 
         for bram in self.brams_info:
-            print 'la'
             acc_len_ref = bram['acc_len_reg']
             data_type = bram['data_type']
             array_size = bram['size']
 
             acc_n = self.fpga.read_uint(acc_len_ref)
+
+            print acc_n
 
             have_real = True
             have_imag = True
@@ -79,9 +96,10 @@ class Roach2(object):
                 real_name = names[0]
                 imag_name = names[1]
 
+                print '>'+str(array_size) + data_type, real_name,str(int(array_size)*data_type_dictionart[data_type]), 0
+
                 if len(real_name) > 0:
-                    real_array = struct.unpack('>'+str(array_size) +
-                                               data_type, self.fpga.read(real_name,str(int(array_size)*data_type_dictionart[data_type]), 0))
+                    real_array = struct.unpack('>'+str(array_size) + data_type, self.fpga.read(real_name,str(int(array_size)*data_type_dictionart[data_type]), 0))
                     real_data.append(real_array)
                 else:
                     have_real = have_real and False
@@ -110,7 +128,15 @@ class Roach2(object):
 
                     final_array[cont0*nbram + cont1] = real_part + 1j*imag_part
 
-            return_data[str(cont_key)] = (final_array, acc_n)
+            return_data[bram['array_id']] = (final_array, acc_n)
+
+
+            aplot = self.plot_brams[bram_cont]
+
+            aplot.plot(numpy.absolute(final_array))
+            time.sleep(0.3)
+
+
 
         return return_data
 

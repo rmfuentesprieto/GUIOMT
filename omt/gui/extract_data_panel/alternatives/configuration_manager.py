@@ -35,6 +35,11 @@ class LoadSaveConfig(object):
 
         command = 'cp %s %s' %(path, os.path.dirname(os.path.realpath(__file__)) + '/roach_configurations/' \
                                + name + '/' + name + '.bof' )
-        os.system('echo %s|sudo -S %s' % (sudoPassword, command))
+        os.system('echo %s |sudo -S %s' % (sudoPassword, command))
+        command = 'chmod 777 %s' % (os.path.dirname(os.path.realpath(__file__)) + '/roach_configurations/' + name + '/' + name + '.bof')
+        os.system('echo %s |sudo -S %s' % (sudoPassword, command))
+
+        return os.path.dirname(os.path.realpath(__file__)) + '/roach_configurations/' \
+                               + name + '/' + name + '.bof'
 
 
