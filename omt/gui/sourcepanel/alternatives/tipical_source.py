@@ -95,6 +95,11 @@ class CommonSource(AbstractSource):
 
         self.add_widget(main_layout)
 
+        self.manual_change_delta = False
+        self.manual_change_puntos = False
+        self.manual_change_init = False
+        self.manual_change_final = False
+
     def get_my_ip(self):
         pass
 
@@ -103,16 +108,16 @@ class CommonSource(AbstractSource):
 
     def sweepe_or_not(self, spinner, text):
         self.do_a_sweep = text
-        self.final_frec_value.disabled = not text
-        self.delta_frec_value.disabled = not text
-        self.puntos_frec_value.disabled = not text
+        self.final_frec_value.disabled = not (text and self.is_source_active)
+        self.delta_frec_value.disabled = not (text and self.is_source_active)
+        self.puntos_frec_value.disabled = not (text and self.is_source_active)
 
     def on_off(self, spinner, text):
         self.is_source_active = text
-        print self.is_source_active
-        self.final_frec_value.disabled = not text
-        self.delta_frec_value.disabled = not text
-        self.puntos_frec_value.disabled = not text
+
+        self.final_frec_value.disabled = not (text and self.do_a_sweep)
+        self.delta_frec_value.disabled = not (text and self.do_a_sweep)
+        self.puntos_frec_value.disabled = not (text and self.do_a_sweep)
         self.init_frec_value.disabled = not text
         self.amplitud_frec_value.disabled = not text
 
@@ -130,15 +135,81 @@ class CommonSource(AbstractSource):
                 popup.open()
 
     def update_values(self, instance, value):
-        pass
+        self._check_input_number(instance, value)
 
     def change_delta_frec(self, instance, value):
-        pass
+        self._check_input_number(instance, value)
+        print 'frec'
 
+        if self.manual_change_delta:
+            self.manual_change_delta = False
+            return
+
+        frec_init = self.init_frec_value._get_text()
+        frec_final = self.final_frec_value._get_text()
+
+        if len(frec_init) < 1 or len(frec_final) < 1:
+            return
+
+        frec_init = float(frec_init)*self.init_frec_unit.get_unit_norm()
+        frec_final = float(frec_final)*self.final_frec_unit.get_unit_norm()
+
+        delta = float(self.delta_frec_value.text)*self.delta_frec_unit.get_unit_norm()
+
+        npoints = int((delta + frec_final - frec_init)/delta)
+
+        power10 = 1
+        while npoints >= 1000 or npoints < 1:
+            if npoints >= 1000:
+                power10 *= 10**3
+                npoints *= 10**-3
+            elif npoints < 1:
+                power10 *=10**-3
+                npoints *= 10**3
+
+        self.puntos_frec_value.text = str(npoints)
+        self.puntos_frec_unit.set_unit(power10)
+
+        self.manual_change_puntos = True
 
     def change_points_number(self, instance, value):
         self._check_input_number(instance, value)
-        pass
+
+        if self.manual_change_puntos:
+            self.manual_change_puntos = False
+            return
+
+        frec_init = self.init_frec_value._get_text()
+        frec_final = self.final_frec_value._get_text()
+
+        if len(frec_init) < 1 or len(frec_final) < 1:
+            return
+
+        frec_init = float(frec_init)*self.init_frec_unit.get_unit_norm()
+        frec_final = float(frec_final)*self.final_frec_unit.get_unit_norm()
+
+        npoint = float(self.puntos_frec_value.text)*self.puntos_frec_unit.get_unit_norm()
+        if npoint < 2:
+            return
+
+        delta = (frec_final - frec_init)/(npoint - 1)
+
+        power10 = 1
+        while delta >= 1000 or delta < 1:
+            if delta >= 1000:
+                power10 *= 10**3
+                delta *= 10**-3
+            elif delta < 1:
+                power10 *=10**-3
+                delta *= 10**3
+
+        self.delta_frec_unit.set_unit(power10)
+        self.delta_frec_value.text = str(delta)
+
+        self.manual_change_delta = True
+
+
+
 
     def is_active(self):
         return self.is_source_active

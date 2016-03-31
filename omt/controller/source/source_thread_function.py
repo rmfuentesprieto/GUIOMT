@@ -49,11 +49,11 @@ class SourceThread(AbstractSource):
 
         #for current_channel in range(self.frec_number_of_points):
         current_channel = 0
+
         while True:
 
             self.initialize_monitor.wait()
             if self.kill_me.ask_if_stop():
-                print 100
                 break
 
 
@@ -80,18 +80,13 @@ class DummySourceThread(Process):
         self.kill_me = end_signal
         self.channel_obj = channel_obj
 
-    def ask_a_command(self, a_command):
-        self.connection.write(a_command + '?\r\n')
-        response = self.connection.read_until(b"\n")
-        return response
-
     def run(self):
 
         while True:
-
             self.initialize_monitor.wait()
             if self.kill_me.ask_if_stop():
                 return
+
             self.channel_obj.next_channel()
             self.initialize_monitor.clear()
             self.end_monitor.set()

@@ -25,7 +25,7 @@ class Coordinator(threading.Thread):
             self.thread_source = SourceThread(sweep_source_dic, self.event_source, self.event_data, channel_comunicator, self.signal_kill)
         else:
             channel_comunicator = CurrentChanel(-1)
-            self.thread_source = DummySourceThread(source_dictionary, self.event_data, self.event_source, channel_comunicator, self.signal_kill)
+            self.thread_source = DummySourceThread(source_dictionary, self.event_source, self.event_data, channel_comunicator, self.signal_kill)
 
         self.tone_source = []
         if 'tone' in source_dictionary:
@@ -52,6 +52,7 @@ class Coordinator(threading.Thread):
         self.thread_data.join()
         self.thread_source.join()
 
+        print "stop it all lol"
         self.thread_data.close_process()
         self.thread_source.close_process()
 

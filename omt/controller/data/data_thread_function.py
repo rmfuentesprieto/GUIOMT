@@ -1,5 +1,7 @@
 import telnetlib
 import time
+from kivy.uix.label import Label
+from kivy.uix.popup import Popup
 
 from omt.controller.abstract_parallel_proces import Process
 from omt.controller.data.roach_2 import Roach2
@@ -22,7 +24,7 @@ class DataThread(Process):
 
 
     def run(self):
-        #try:
+        try:
             current_channel = 0
 
             self.roach.connect_to_roach()
@@ -31,7 +33,7 @@ class DataThread(Process):
             print 'conection made'
 
             if not self.roach.is_conected():
-                raise Exception('Not connected')
+                raise Exception('Connection Fail')
                 self.kill_me.stop_all()
                 self.end_monitor.set()
 
@@ -61,13 +63,13 @@ class DataThread(Process):
             self.kill_me.stop_all()
             print 'sleep'
             self.end_monitor.set()
-        #except Exception as e:
-            #print e.args
-            #self.kill_me.stop_all()
-            #self.end_monitor.set()
-            #self.roach.stop()
-            #raise e
+        except Exception as e:
+            print e.args
+            self.kill_me.stop_all()
+            self.end_monitor.set()
+            self.roach.stop()
 
+            Popup(title='Error ROACH', content= Label(text=e.message), size_hint=(None,None), size=(200,200)).open()
             print 'all has been kill'
 
 

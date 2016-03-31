@@ -107,6 +107,9 @@ class ROACH(Empty):
         self.add_widget(big_one)
 
     def add_registers(self, instance):
+        self.load_registers("","")
+
+    def load_registers(self, values_, name_):
 
         size_ = 30
         data = BoxLayout(orientation='horizontal',size_hint=(1, None), size=(1,size_))
@@ -130,72 +133,11 @@ class ROACH(Empty):
 
         self.reg_container.add_widget(data)
 
+        value_name._set_text(name_)
+        value_val._set_text(values_)
+
     def add_free_running(self, instance):
-        size_ = 30
-        data = BoxLayout(orientation='vertical',size_hint=(1, None), size=(1,6*size_))
-
-        data_type_label = Label(text='Tipo de Dato',size_hint=(0.4,None), height=size_)
-        data_type_spinner = Spinner(
-            # default value shown
-            text='i',
-            # available values
-            values=['i','q','Q'],
-            # just for positioning in our example
-            size_hint=(0.3, None),
-            size = (1,size_)
-        )
-        delate_label = Label(text='Quitar',size_hint=(0.2,None), height=size_)
-        delate_me = Button(text='-',size_hint=(0.1,None), height=size_)
-        delate_me.bind(on_press=lambda instant: self.free_run_container.remove_widget(data))
-
-        size_label = Label(text='tamano',size_hint=(0.45,None), height=size_)
-        size_input = TextInput(size_hint=(0.45,None), height=size_)
-
-        add_new_array_to_merge = Button(text='+',size_hint=(None,None), height=size_, wide = 3*size_)
-
-        real_imag = GridLayout(cols=1, spacing = 3,size_hint=(1,None), size=(1,60))
-        real_imag.bind(minimum_height=real_imag.setter('height'))
-
-        scroll_real_imag = ScrollView(size_hint=(0.8,None), size=(1,2*size_))
-        scroll_real_imag.add_widget(real_imag)
-
-        acc_len_reg_name_label = Label(text='acc len reg_name',size_hint=(0.5,None), height=size_)
-        acc_len_reg_name_input = TextInput(size_hint=(0.5,None), height=size_)
-
-        data_type = BoxLayout(orientation='horizontal',size_hint=(1, None), size=(1,size_))
-        data_type.add_widget(data_type_label)
-        data_type.add_widget(data_type_spinner)
-        data_type.add_widget(delate_label)
-        data_type.add_widget(delate_me)
-
-        data_size = BoxLayout(orientation='horizontal',size_hint=(1, None), size=(1,size_))
-        data_size.add_widget(size_label)
-        data_size.add_widget(size_input)
-
-        data_add_merge_data = BoxLayout(orientation='horizontal',size_hint=(1, None), size=(1,size_))
-        data_add_merge_data.add_widget(add_new_array_to_merge)
-
-        data_name = BoxLayout(orientation='horizontal',size_hint=(1, None), size=(1,2*size_))
-        data_name.add_widget(scroll_real_imag)
-
-        data_acc_len_reg = BoxLayout(orientation='horizontal',size_hint=(1, None), size=(1,size_))
-        data_acc_len_reg.add_widget(acc_len_reg_name_label)
-        data_acc_len_reg.add_widget(acc_len_reg_name_input)
-
-        data.add_widget(data_type)
-        data.add_widget(data_size)
-        data.add_widget(data_add_merge_data)
-        data.add_widget(data_name)
-        data.add_widget(data_acc_len_reg)
-
-        bram = BRAMArray( size_input, acc_len_reg_name_input,real_imag)
-        data_type_spinner.bind(text=bram.selected_data_type)
-
-        add_new_array_to_merge.bind(on_press=lambda instance: bram.add_real_imag_widget())
-
-        self.bram_array[str(self.bram_cont)] = bram
-        self.bram_cont += 1
-        self.free_run_container.add_widget(data)
+        self.load_free_running('i', '', [], '','')
 
     def is_active(self):
         return True
@@ -258,7 +200,7 @@ class ROACH(Empty):
         '''
 
         for a_bram in brams:
-            self.load_free_running(a_bram['data_type'],a_bram['size'],a_bram['bram_names'],a_bram['acc_len_reg'])
+            self.load_free_running(a_bram['data_type'],a_bram['size'],a_bram['bram_names'],a_bram['acc_len_reg'], a_bram['array_id'])
 
         self.ip._set_text(dic['ip'])
         self.port._set_text(dic['port'])
@@ -266,41 +208,14 @@ class ROACH(Empty):
         self.bof_path = dic['bof_path']
         self.name_config_input._set_text(dic['name'])
 
-    def load_registers(self, values_, name_):
-
+    def load_free_running(self, a_data_type, array_size_, real_imag_list_, acc_len_reg_name_, array_label_):
         size_ = 30
-        data = BoxLayout(orientation='horizontal',size_hint=(1, None), size=(1,size_))
-
-        label_name = Label(text='nombre', size_hint=(0.225,None), height=size_)
-        value_name = TextInput( size_hint=(0.225,None), height=size_)
-        label_val = Label(text='valor', size_hint=(0.225,None), height=size_)
-        value_val = TextInput( size_hint=(0.225,None), height=size_)
-        delate = Button(text='-', size_hint=(0.1,None), height=size_)
-        delate.bind(on_press=lambda instant: self.reg_container.remove_widget(data))
-
-        data.add_widget(label_name)
-        data.add_widget(value_name)
-        data.add_widget(label_val)
-        data.add_widget(value_val)
-        data.add_widget(delate)
-
-        reg_val = Register(value_name, value_val)
-        self.reg_array[str(self.reg_cont)] = reg_val
-        self.reg_cont += 1
-
-        self.reg_container.add_widget(data)
-
-        value_name._set_text(name_)
-        value_val._set_text(values_)
-
-    def load_free_running(self, data_type, array_size_, real_imag_list_, acc_len_reg_name_):
-        size_ = 30
-        data = BoxLayout(orientation='vertical',size_hint=(1, None), size=(1,6*size_))
+        data = BoxLayout(orientation='vertical',size_hint=(1, None), size=(1,7*size_))
 
         data_type_label = Label(text='Tipo de Dato',size_hint=(0.4,None), height=size_)
         data_type_spinner = Spinner(
             # default value shown
-            text=data_type,
+            text=a_data_type,
             # available values
             values=['i','q','Q'],
             # just for positioning in our example
@@ -310,6 +225,9 @@ class ROACH(Empty):
         delate_label = Label(text='Quitar',size_hint=(0.2,None), height=size_)
         delate_me = Button(text='-',size_hint=(0.1,None), height=size_)
         delate_me.bind(on_press=lambda instant: self.free_run_container.remove_widget(data))
+
+        id_label = Label(text='array name',size_hint=(0.45,None), height=size_)
+        id_input = TextInput(size_hint=(0.45,None), height=size_)
 
         size_label = Label(text='tamano',size_hint=(0.45,None), height=size_)
         size_input = TextInput(size_hint=(0.45,None), height=size_)
@@ -331,6 +249,10 @@ class ROACH(Empty):
         data_type.add_widget(delate_label)
         data_type.add_widget(delate_me)
 
+        data_id = BoxLayout(orientation='horizontal',size_hint=(1, None), size=(1,size_))
+        data_id.add_widget(id_label)
+        data_id.add_widget(id_input)
+
         data_size = BoxLayout(orientation='horizontal',size_hint=(1, None), size=(1,size_))
         data_size.add_widget(size_label)
         data_size.add_widget(size_input)
@@ -346,12 +268,13 @@ class ROACH(Empty):
         data_acc_len_reg.add_widget(acc_len_reg_name_input)
 
         data.add_widget(data_type)
+        data.add_widget(data_id)
         data.add_widget(data_size)
         data.add_widget(data_add_merge_data)
         data.add_widget(data_name)
         data.add_widget(data_acc_len_reg)
 
-        bram = BRAMArray( size_input, acc_len_reg_name_input,real_imag)
+        bram = BRAMArray( size_input, acc_len_reg_name_input,real_imag, id_input)
         data_type_spinner.bind(text=bram.selected_data_type)
 
         add_new_array_to_merge.bind(on_press=lambda instance: bram.add_real_imag_widget())
@@ -362,6 +285,7 @@ class ROACH(Empty):
 
         size_input._set_text(array_size_)
         acc_len_reg_name_input._set_text(acc_len_reg_name_)
+        id_input._set_text(array_label_)
 
         for real_imag_pair in real_imag_list_:
             bram.load_real_imag_widget(real_imag_pair[0], real_imag_pair[1])
@@ -380,12 +304,13 @@ class Register(object):
         return self.value._get_text()
 
 class BRAMArray(object):
-    def __init__(self, size_array, acc_len_reg, grid_layout):
+    def __init__(self, size_array, acc_len_reg, grid_layout, array_id):
         self.size_array = size_array
         self.real_imag_bram = {}
         self.acc_len_reg = acc_len_reg
         self.grid_layout = grid_layout
         self.cont = 0
+        self.array_id = array_id
 
         self.data_type = 'q'
 
@@ -470,6 +395,7 @@ class BRAMArray(object):
         dictionary['size'] = self.size_array._get_text()
         dictionary['acc_len_reg'] = self.acc_len_reg._get_text()
         dictionary['bram_names'] = self.get_names()
+        dictionary['array_id'] = self.array_id._get_text()
 
         return dictionary
 

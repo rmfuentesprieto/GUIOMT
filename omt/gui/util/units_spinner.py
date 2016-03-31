@@ -12,7 +12,7 @@ class UnitSpinner(Spinner):
         self.units_dict = {}
 
         if units == 'hz':
-            self.units_dict = {'Hz' : 1, 'KHz' : 10**3, 'MHz' : 10**6, 'GHz' : 10**9, 'THz' : 10**12}
+            self.units_dict = {'nHz':10**-9,'uHz':10**-6,'mHz':10**-3,'Hz' : 1, 'KHz' : 10**3, 'MHz' : 10**6, 'GHz' : 10**9, 'THz' : 10**12}
         elif units == 'dB':
             self.units_dict = {'dBm': 'algo', 'dB':'nop'}
         elif units == 'simple':
@@ -25,3 +25,11 @@ class UnitSpinner(Spinner):
         a_key = self.text
         print 'aa', a_key
         return self.units_dict[a_key]
+
+    def set_unit(self, val):
+        all_key = self.units_dict.keys()
+
+        for aKey in all_key:
+            if self.units_dict[aKey] == val:
+                self.text = aKey
+                return
