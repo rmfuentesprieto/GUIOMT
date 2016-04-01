@@ -7,20 +7,16 @@ from omt.controller.abstract_parallel_proces import Process
 
 class AbstractSource(Process):
 
-    def __init__(self,ini_monitor,end_monitor):
-        super(AbstractSource, self).__init__(ini_monitor,end_monitor)
-
     def is_dummy(self):
         return False
 
+    def set_generator(self, current_channel):
+        pass
+
+
 class SourceThread(AbstractSource):
 
-    def __init__(self, config_dic, ini_monitor, end_monitor, channel_obj, end_signal):
-        super(SourceThread, self).__init__(ini_monitor,end_monitor)
-
-        self.channel_obj = channel_obj
-        self.kill_me = end_signal
-
+    def __init__(self, config_dic):
         self.ip = config_dic['ip']
         self.port = config_dic['port']
 
@@ -44,57 +40,25 @@ class SourceThread(AbstractSource):
         response = self.connection.read_until(b"\n")
         return response
 
-    def run(self):
-        self.connection.write('outp on\r\n')
-
-        #for current_channel in range(self.frec_number_of_points):
-        current_channel = 0
-
-        while True:
-
-            self.initialize_monitor.wait()
-            if self.kill_me.ask_if_stop():
-                break
-
-
-            self.channel_obj.next_channel()
-            self.connection.write('freq ' + str(current_channel * self.frec_step + self.frec_init) + '\r\n')
-            print 'addquiere ' + str(current_channel)
-            # wait for the tone to adjust well
-            time.sleep(2)
-            self.initialize_monitor.clear()
-            self.end_monitor.set()
-            current_channel += 1
-        self.initialize_monitor.wait()
-        self.connection.write('outp off\r\n')
-        print 'sleep source'
+    def set_generator(self, current_channel):
+        self.connection.write('freq ' + str(current_channel * self.frec_step + self.frec_init) + '\r\n')
+        print 'addquiere ' + str(current_channel)
+        # wait for the tone to adjust well
+        time.sleep(2)
 
     def close_process(self):
         self.connection.close()
 
-class DummySourceThread(Process):
 
-    def __init__(self, data_dic, ini_monitor, end_monitor, channel_obj,  end_signal):
-        super(DummySourceThread, self).__init__(ini_monitor,end_monitor)
+class DummySourceThread(AbstractSource):
 
-        self.kill_me = end_signal
-        self.channel_obj = channel_obj
-
-    def run(self):
-
-        while True:
-            self.initialize_monitor.wait()
-            if self.kill_me.ask_if_stop():
-                return
-
-            self.channel_obj.next_channel()
-            self.initialize_monitor.clear()
-            self.end_monitor.set()
-
-        self.initialize_monitor.wait()
 
     def close_process(self):
         print 'dummy stop'
+
+    def is_dummy(self):
+        return True
+
 
 class FailToConnectTelnet(Exception):
 

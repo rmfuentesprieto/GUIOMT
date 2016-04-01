@@ -17,3 +17,4 @@ sudo pip install katcp
 sudo pip install corr
 sudo pip install aipy
 sudo pip install ephem
+sudo pip install gnuplotlib

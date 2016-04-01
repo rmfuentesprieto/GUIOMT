@@ -34,7 +34,7 @@ class ROACH(Empty):
 
         # reg layout
         roach_connection_info = BoxLayout(orientation='horizontal',  size_hint=(1,None), size=(1,30))
-        roach_register = BoxLayout(orientation='vertical', size_hint=(1,None), size=(1,40))
+        roach_register = BoxLayout(orientation='horizontal', size_hint=(1,None), size=(1,40))
 
         ip_label = Label(text='IP :')
         port_label = Label(text='Port :')
@@ -47,9 +47,11 @@ class ROACH(Empty):
         roach_connection_info.add_widget(port_label)
         roach_connection_info.add_widget(self.port)
 
-        new_reg = Button(text='nuevo registro')
+        new_reg_label = Label(text='Initial Values', size_hint=(0.6,None), height=40)
+        new_reg = Button(text='new reg', size_hint=(0.4,None), height=40)
         new_reg.bind(on_press=self.add_registers)
 
+        roach_register.add_widget(new_reg_label)
         roach_register.add_widget(new_reg)
         ##### Regiter container
         self.reg_container = GridLayout(cols=1, spacing=0, size_hint_y=None)#row_default_height=30)
@@ -60,9 +62,14 @@ class ROACH(Empty):
         ####
 
         free_running = BoxLayout(orientation='horizontal', size_hint=(1,None), size=(1,30))
-        add_free_running = Button(text = 'Adquirir Nuevo')
-        add_free_running.bind(on_press=self.add_free_running)
-        free_running.add_widget(add_free_running)
+        add_free_running_labe = Label(text="Free Running", size_hint=(0.45,1))
+        add_free_running_bram = Button(text = 'New BRAM', size_hint=(0.30,1))
+        add_free_running_reg = Button(text = 'New Reg', size_hint=(0.25,1))
+        add_free_running_bram.bind(on_press=self.add_free_running)
+
+        free_running.add_widget(add_free_running_labe)
+        free_running.add_widget(add_free_running_bram)
+        free_running.add_widget(add_free_running_reg)
 
         #### free run container
         self.free_run_container = GridLayout(cols=1, spacing = 3,size_hint=(1,None), size=(1,30))
@@ -74,19 +81,19 @@ class ROACH(Empty):
         ####
 
         size_ = 30
-        name_config = Button(text='Nombre',size_hint=(0.25,None), height=size_)
+        name_config = Button(text='Name',size_hint=(0.25,None), height=size_)
         self.name_config_input = TextInput(size_hint=(0.5,None), height=size_)
         buton_bof_file = Button(text='Add bof',size_hint=(0.25,None), height=size_)
 
         fc_conf = BofFileChooserIconView(self.load_data, path=os.path.dirname(os.path.realpath(__file__)) + '/roach_configurations' , filter=['*.pkl'])
-        file_roch_popup = Popup(title='Seleccione Configuracion', auto_dismiss=False, content=fc_conf,\
+        file_roch_popup = Popup(title='Choose Configuration', auto_dismiss=False, content=fc_conf,\
                                        size_hint=(None, None), size=(400,400)  )
         fc_conf.set_popup(file_roch_popup)
         name_config.bind(on_press=file_roch_popup.open)
 
 
         fc = BofFileChooserIconView(self.set_bof_path)
-        self.file_choose_popup = Popup(title='Seleccione Bof', auto_dismiss=False, content=fc,\
+        self.file_choose_popup = Popup(title='Choose Bof', auto_dismiss=False, content=fc,\
                                        size_hint=(None, None), size=(400,400))
         fc.set_popup(self.file_choose_popup)
 

@@ -5,7 +5,7 @@ import logging
 import time
 
 import numpy
-from Gnuplot import Gnuplot
+
 
 from omt.controller.abstract_parallel_proces import Process
 from omt.util.data_type import data_type_dictionart
@@ -26,12 +26,12 @@ class Roach2(object):
 
         self.plot_brams = []
 
-        for cont in range(len(self.brams_info)):
-            aplot = Gnuplot(debug=1)
-            aplot.clear()
-            aplot.title('plot of data array %s, acc count '%(self.brams_info[cont]['array_id']))
-            aplot('set style data linespoints')
-            self.plot_brams.append(aplot)
+        # for cont in range(len(self.brams_info)):
+        #     aplot = None#Gnuplot(debug=1)
+        #     aplot.clear()
+        #     aplot.title('plot of data array %s, acc count '%(self.brams_info[cont]['array_id']))
+        #     aplot('set style data linespoints')
+        #     self.plot_brams.append(aplot)
 
 
         self.fpga = None
@@ -67,7 +67,7 @@ class Roach2(object):
         for reg_info in self.register_list:
             self.fpga.write_int(reg_info[0],int(reg_info[1]))
 
-    def aquare_data(self):
+    def accuaire_data(self):
 
         if not self.is_conected():
             return {}

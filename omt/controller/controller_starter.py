@@ -1,6 +1,8 @@
 import threading
+from kivy.uix.label import Label
+from kivy.uix.popup import Popup
 
-from omt.controller.data.data_thread_function import DataThread
+from omt.controller.data.data_thread_function import DataThread, RoachException
 from omt.controller.data.roach_2 import Roach2
 from omt.controller.source.source_thread_function import SourceThread, DummySourceThread
 from omt.controller.source.source_tone_or_dc import ToneDCSource
@@ -11,48 +13,56 @@ class Coordinator(threading.Thread):
     def __init__(self, source_dictionary, data_dictionary):
 
         super(Coordinator, self).__init__()
-        self.event_source = threading.Event()
-        self.event_data = threading.Event()
 
-        self.signal_kill = EndSignal()
-
+        self.end_sweep = False
         # extract the settings for the source thats going to sweep
 
         sweep_source_dic = {}
         if 'sweep' in source_dictionary:
             sweep_source_dic = source_dictionary['sweep']
-            channel_comunicator = CurrentChanel(sweep_source_dic['frec_number_point'])
-            self.thread_source = SourceThread(sweep_source_dic, self.event_source, self.event_data, channel_comunicator, self.signal_kill)
+            self.frec_number_point = sweep_source_dic['frec_number_point']
+            self.thread_source = SourceThread(sweep_source_dic)
         else:
-            channel_comunicator = CurrentChanel(-1)
-            self.thread_source = DummySourceThread(source_dictionary, self.event_source, self.event_data, channel_comunicator, self.signal_kill)
+            self.frec_number_point = -1
+            self.thread_source = DummySourceThread()
 
         self.tone_source = []
         if 'tone' in source_dictionary:
             for source_config in source_dictionary['tone']:
                 self.tone_source.append(ToneDCSource(source_config))
 
-        self.thread_data = DataThread(data_dictionary['roach'], self.event_data, self.event_source, channel_comunicator, self.signal_kill)
-
-        self.event_source.set()
-        self.event_data.clear()
+        self.thread_data = DataThread(data_dictionary['roach'])
 
         self.end_sweep = False
 
     def run(self):
-
-        self.end_sweep = False
-
         for source in self.tone_source:
             source.turn_on()
 
-        self.thread_data.start()
-        self.thread_source.start()
+        try:
+            current_channel = 0
 
-        self.thread_data.join()
-        self.thread_source.join()
+            self.thread_data.start_connections()
+            while not self.end_sweep:
+                self.thread_source.set_generator(current_channel)
+                extract_dictionary = self.thread_data.accuaire_data()
+
+                print extract_dictionary
+
+                if self.frec_number_point == (current_channel):
+                    break
+                current_channel += 1
+
+
+        except RoachException as roach_e:
+            Popup(title='Error Roach', content=Label(text=roach_e.message),\
+                          size_hint=(None, None), size=(120, 100))
+        except Exception as e:
+            Popup(title='Error', content=Label(text=e.message),\
+                          size_hint=(None, None), size=(120, 100))
 
         print "stop it all lol"
+
         self.thread_data.close_process()
         self.thread_source.close_process()
 
@@ -64,10 +74,8 @@ class Coordinator(threading.Thread):
         self.end_sweep = True
 
     def stop_the_process(self):
-        print 'kill sigbal'
-        self.signal_kill.stop_all()
-        while not self.end_sweep:
-            self.event_data.set()
+        print 'kill signal'
+        self.end_sweep = True
 
 
 
