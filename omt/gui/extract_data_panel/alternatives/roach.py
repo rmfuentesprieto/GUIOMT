@@ -66,6 +66,7 @@ class ROACH(Empty):
         add_free_running_bram = Button(text = 'New BRAM', size_hint=(0.30,1))
         add_free_running_reg = Button(text = 'New Reg', size_hint=(0.25,1))
         add_free_running_bram.bind(on_press=self.add_free_running)
+        add_free_running_reg.bind(on_press=self.add_register_free_running)
 
         free_running.add_widget(add_free_running_labe)
         free_running.add_widget(add_free_running_bram)
@@ -116,12 +117,26 @@ class ROACH(Empty):
 
         self.add_widget(big_one)
 
+    def add_register_free_running(self, instance):
+        self.load_free_running('','')
+
+    def load_register_free_running(self, value_, name_):
+        bram = self.create_registers(value_, name_, self.free_run_container)
+
+        self.bram_array[str(self.bram_cont)] = bram
+        self.bram_cont += 1
 
 
     def add_registers(self, instance):
-        self.load_registers("","")
+        self.load_registers("","", self.reg_container)
 
-    def load_registers(self, values_, name_):
+    def load_registers(self, values_, name_, where_load_):
+        reg_val = self.create_registers(values_, name_, where_load_)
+
+        self.reg_array[str(self.reg_cont)] = reg_val
+        self.reg_cont += 1
+
+    def create_registers(self, values_, name_, where_load_):
 
         size_ = 30
         data = BoxLayout(orientation='horizontal',size_hint=(1, None), size=(1,size_))
@@ -131,7 +146,7 @@ class ROACH(Empty):
         label_val = Label(text='valor', size_hint=(0.225,None), height=size_)
         value_val = TextInput( size_hint=(0.225,None), height=size_)
         delate = Button(text='-', size_hint=(0.1,None), height=size_)
-        delate.bind(on_press=lambda instant: self.reg_container.remove_widget(data))
+        delate.bind(on_press=lambda instant: where_load_.remove_widget(data))
 
         data.add_widget(label_name)
         data.add_widget(value_name)
@@ -139,14 +154,12 @@ class ROACH(Empty):
         data.add_widget(value_val)
         data.add_widget(delate)
 
-        reg_val = Register(value_name, value_val)
-        self.reg_array[str(self.reg_cont)] = reg_val
-        self.reg_cont += 1
-
-        self.reg_container.add_widget(data)
-
         value_name._set_text(name_)
         value_val._set_text(values_)
+
+        where_load_.add_widget(data)
+
+        return Register(value_name, value_val)
 
     def add_free_running(self, instance):
         self.load_free_running('i', '', [], '','')
@@ -196,9 +209,9 @@ class ROACH(Empty):
         self.bof_path = self.config_manager.copy_bof_to_folder(path, self.name_config_input._get_text())
 
     def load_data(self, path):
+        self.clean_all()
         path = path[0]
         dic = self.config_manager.load_dictionary(path)
-        print 2
 
         regs = dic['reg']
 
@@ -214,7 +227,10 @@ class ROACH(Empty):
         '''
 
         for a_bram in brams:
-            self.load_free_running(a_bram['data_type'],a_bram['size'],a_bram['bram_names'],a_bram['acc_len_reg'], a_bram['array_id'])
+            if a_bram['is_bram']:
+                self.load_free_running(a_bram['data_type'],a_bram['size'],a_bram['bram_names'],a_bram['acc_len_reg'], a_bram['array_id'])
+            else:
+                self.load_register_free_running(a_bram['reg_name'], a_bram['reg_value'])
 
         self.ip._set_text(dic['ip'])
         self.port._set_text(dic['port'])
@@ -303,6 +319,16 @@ class ROACH(Empty):
         for real_imag_pair in real_imag_list_:
             bram.load_real_imag_widget(real_imag_pair[0], real_imag_pair[1])
 
+    def clean_all(self):
+        self.free_run_container.clear_widgets()
+        self.reg_container.clear_widgets()
+
+        self.bram_array = []
+        self.reg_array = []
+
+        self.bram_cont = 0
+        self.reg_cont = 0
+
 class Register(object):
 
     def __init__(self, name, value):
@@ -315,6 +341,18 @@ class Register(object):
 
     def get_value(self):
         return self.value._get_text()
+
+    def info_dictionary(self):
+        dictionary = {'is_bram': False, 'reg_name': self.name.text,
+                      'load_data': True if len(self.value.text) > 0 else False}
+
+        if dictionary['load_data']:
+            dictionary['reg_value'] = self.value.text
+        else:
+            dictionary['reg_value'] = ''
+
+
+        return dictionary
 
 class BRAMArray(object):
     def __init__(self, size_array, acc_len_reg, grid_layout, array_id, data_type_):
@@ -409,6 +447,7 @@ class BRAMArray(object):
         dictionary['acc_len_reg'] = self.acc_len_reg._get_text()
         dictionary['bram_names'] = self.get_names()
         dictionary['array_id'] = self.array_id._get_text()
+        dictionary['is_bram'] = True
 
         return dictionary
 

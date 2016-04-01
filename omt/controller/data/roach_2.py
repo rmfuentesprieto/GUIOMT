@@ -19,9 +19,7 @@ class Roach2(object):
         self.ip = data_dic['ip']
         self.register_list = data_dic['reg']
         self.bof_path = data_dic['bof_path']
-        print self.bof_path
         self.bitstream = data_dic['name'] + '.bof'
-
         self.brams_info = data_dic['bram']
 
         self.plot_brams = []
@@ -32,7 +30,6 @@ class Roach2(object):
         #     aplot.title('plot of data array %s, acc count '%(self.brams_info[cont]['array_id']))
         #     aplot('set style data linespoints')
         #     self.plot_brams.append(aplot)
-
 
         self.fpga = None
 
