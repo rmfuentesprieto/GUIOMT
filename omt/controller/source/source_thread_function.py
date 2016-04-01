@@ -35,18 +35,24 @@ class SourceThread(AbstractSource):
             raise FailToConnectTelnet(self.ip, self.port)
         self.connection.write('power ' + config_dic['power'] + ' dbm\r\n')
 
+        self.is_on = False
+
     def ask_a_command(self, a_command):
         self.connection.write(a_command + '?\r\n')
         response = self.connection.read_until(b"\n")
         return response
 
     def set_generator(self, current_channel):
+        if not self.is_on:
+            self.connection.write('outp on\r\n')
         self.connection.write('freq ' + str(current_channel * self.frec_step + self.frec_init) + '\r\n')
         print 'addquiere ' + str(current_channel)
         # wait for the tone to adjust well
         time.sleep(2)
 
     def close_process(self):
+        if self.is_on:
+            self.connection.write('outp off\r\n')
         self.connection.close()
 
 

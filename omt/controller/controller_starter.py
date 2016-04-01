@@ -43,23 +43,21 @@ class Coordinator(threading.Thread):
             current_channel = 0
 
             self.thread_data.start_connections()
+
             while not self.end_sweep:
                 self.thread_source.set_generator(current_channel)
                 extract_dictionary = self.thread_data.accuaire_data()
-
-                print extract_dictionary
 
                 if self.frec_number_point == (current_channel):
                     break
                 current_channel += 1
 
-
         except RoachException as roach_e:
             Popup(title='Error Roach', content=Label(text=roach_e.message),\
-                          size_hint=(None, None), size=(120, 100))
+                          size_hint=(None, None), size=(120, 100)).open()
         except Exception as e:
             Popup(title='Error', content=Label(text=e.message),\
-                          size_hint=(None, None), size=(120, 100))
+                          size_hint=(None, None), size=(120, 100)).open()
 
         print "stop it all lol"
 

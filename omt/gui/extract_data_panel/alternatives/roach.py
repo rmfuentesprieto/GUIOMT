@@ -6,6 +6,7 @@ from kivy.uix.popup import Popup
 from kivy.uix.scrollview import ScrollView
 from kivy.uix.spinner import Spinner
 from kivy.uix.textinput import TextInput
+from kivy.uix.togglebutton import ToggleButton
 
 from omt.gui.empty import Empty
 from omt.gui.extract_data_panel.alternatives.BofFileChooser import BofFileChooserIconView
@@ -105,10 +106,21 @@ class ROACH(Empty):
         name.add_widget(self.name_config_input)
         name.add_widget(buton_bof_file)
 
+        ## store or plot
+
+        #plot_label = Label(text='Plot data:', size_hint=(0.4,1))
+        self.plot_toogle = ToggleButton(text='Plot Data', size_hint=(0.5,1))
+        self.store_data = ToggleButton(text='Store Data', size_hint=(0.5,1))
+        handle_data = BoxLayout(orientation='horizontal', size_hint=(1,None), size=(1,30))
+        handle_data.add_widget(self.plot_toogle)
+        handle_data.add_widget(self.store_data)
+
+
         big_one.add_widget(name)
         big_one.add_widget(roach_connection_info)
         big_one.add_widget(roach_register)
         big_one.add_widget(scroll_root)
+        big_one.add_widget(handle_data)
         big_one.add_widget(free_running)
         big_one.add_widget(scroll_root_free_run)
 
@@ -195,6 +207,9 @@ class ROACH(Empty):
         dic_return['bof_path'] = self.bof_path
         dic_return['name'] = self.name_config_input._get_text()
 
+        dic_return['plot'] = not self.plot_toogle.state == 'normal'
+        dic_return['store'] = not self.store_data.state == 'normal'
+
         self.config_manager.store_dictionary(dic_return)
 
         return dic_return
@@ -216,7 +231,7 @@ class ROACH(Empty):
         regs = dic['reg']
 
         for a_reg in regs:
-            self.load_registers(a_reg[1], a_reg[0])
+            self.load_registers(a_reg[1], a_reg[0], self.reg_container)
 
         brams = dic['bram']
         '''
@@ -238,6 +253,9 @@ class ROACH(Empty):
         self.bof_path = dic['bof_path']
         self.name_config_input._set_text(dic['name'])
 
+        self.plot_toogle.state = 'normal' if not dic['plot'] else 'down'
+        self.plot_toogle.state = 'normal' if not dic['store'] else 'down'
+
     def load_free_running(self, a_data_type, array_size_, real_imag_list_, acc_len_reg_name_, array_label_):
         size_ = 30
         data = BoxLayout(orientation='vertical',size_hint=(1, None), size=(1,7*size_))
@@ -247,7 +265,7 @@ class ROACH(Empty):
             # default value shown
             text=a_data_type,
             # available values
-            values=['i','q','Q'],
+            values=['c','b','B','h','H','i','I','l','L','q','Q','f','d'],
             # just for positioning in our example
             size_hint=(0.3, None),
             size = (1,size_)
@@ -323,8 +341,8 @@ class ROACH(Empty):
         self.free_run_container.clear_widgets()
         self.reg_container.clear_widgets()
 
-        self.bram_array = []
-        self.reg_array = []
+        self.bram_array = {}
+        self.reg_array = {}
 
         self.bram_cont = 0
         self.reg_cont = 0

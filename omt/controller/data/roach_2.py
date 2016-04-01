@@ -1,11 +1,13 @@
+import csv
 import os
 import struct
 import corr
 import logging
 import time
 
+import datetime
 import numpy
-
+from Gnuplot import Gnuplot
 
 from omt.controller.abstract_parallel_proces import Process
 from omt.util.data_type import data_type_dictionart
@@ -23,13 +25,34 @@ class Roach2(object):
         self.brams_info = data_dic['bram']
 
         self.plot_brams = []
+        self.store_drams = []
 
-        # for cont in range(len(self.brams_info)):
-        #     aplot = None#Gnuplot(debug=1)
-        #     aplot.clear()
-        #     aplot.title('plot of data array %s, acc count '%(self.brams_info[cont]['array_id']))
-        #     aplot('set style data linespoints')
-        #     self.plot_brams.append(aplot)
+        for cont in range(len(self.brams_info)):
+            aplot = None
+            if self.brams_info[cont]['plot']:
+                aplot = Gnuplot(debug=1)
+                aplot.clear()
+                aplot('set style data linespoints')
+                aplot.ylabel('Power AU (dB)')
+                aplot('set xrange [-50:2098]')
+                aplot('set yrange [0:100]')
+                aplot('set ytics 5')
+                aplot('set xtics 256')
+                aplot('set grid y')
+                aplot('set grid x')
+            self.plot_brams.append(aplot)
+
+            astore = None
+
+            if self.self.brams_info[cont]['store']:
+                ts = time.time()
+                time_stamp = st = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S')
+                file_name = self.bof_path[:-len('.bof')] + time_stamp + '.csv'
+                file = open(file_name, 'w')
+
+                csv_writer = csv.writer(file, delimiter = ',')
+                astore = (csv_writer,file)
+            self. store_drams.append(astore)
 
         self.fpga = None
 
@@ -127,11 +150,15 @@ class Roach2(object):
 
             return_data[bram['array_id']] = (final_array, acc_n)
 
+            if bram['plot']:
+                aplot = self.plot_brams[bram_cont]
+                aplot.plot(numpy.absolute(final_array))
+                aplot.title('plot of data array %s, acc count %s'%(self.brams_info[bram_cont]['array_id'],str(acc_n)))
+                time.sleep(0.3)
 
-            aplot = self.plot_brams[bram_cont]
-
-            aplot.plot(numpy.absolute(final_array))
-            time.sleep(0.3)
+            if bram['store']:
+                files =  self.store_drams[bram_cont]
+                files[0].wirterow(final_array)
 
 
 
