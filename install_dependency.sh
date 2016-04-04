@@ -12,6 +12,7 @@ sudo apt-get --yes install python-kivy
 sudo apt-get --yes install python-numpy
 sudo apt-get --yes install libffi-dev
 sudo apt-get --yes install libhdf5-dev
+sudo apt-get --yes install python-gnuplot
 
 sudo pip install katcp
 sudo pip install corr

@@ -33,7 +33,7 @@ class SourceThread(AbstractSource):
             self.connection = telnetlib.Telnet(self.ip, self.port)
         except socket.error, exc:
             raise FailToConnectTelnet(self.ip, self.port)
-        self.connection.write('power ' + config_dic['power'] + ' dbm\r\n')
+        self.connection.write('power ' + str(config_dic['power']) + ' dbm\r\n')
 
         self.is_on = False
 
@@ -48,7 +48,7 @@ class SourceThread(AbstractSource):
         self.connection.write('freq ' + str(current_channel * self.frec_step + self.frec_init) + '\r\n')
         print 'addquiere ' + str(current_channel)
         # wait for the tone to adjust well
-        time.sleep(2)
+        #time.sleep(0.1)
 
     def close_process(self):
         if self.is_on:

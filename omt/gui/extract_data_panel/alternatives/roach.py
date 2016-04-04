@@ -31,6 +31,7 @@ class ROACH(Empty):
         self.bram_array = {}
         self.bram_cont = 0
 
+        self.prog_dev = False
         self.bof_path = ''
 
         # reg layout
@@ -108,19 +109,13 @@ class ROACH(Empty):
 
         ## store or plot
 
-        #plot_label = Label(text='Plot data:', size_hint=(0.4,1))
-        self.plot_toogle = ToggleButton(text='Plot Data', size_hint=(0.5,1))
-        self.store_data = ToggleButton(text='Store Data', size_hint=(0.5,1))
-        handle_data = BoxLayout(orientation='horizontal', size_hint=(1,None), size=(1,30))
-        handle_data.add_widget(self.plot_toogle)
-        handle_data.add_widget(self.store_data)
+
 
 
         big_one.add_widget(name)
         big_one.add_widget(roach_connection_info)
         big_one.add_widget(roach_register)
         big_one.add_widget(scroll_root)
-        big_one.add_widget(handle_data)
         big_one.add_widget(free_running)
         big_one.add_widget(scroll_root_free_run)
 
@@ -130,7 +125,7 @@ class ROACH(Empty):
         self.add_widget(big_one)
 
     def add_register_free_running(self, instance):
-        self.load_free_running('','')
+        self.load_register_free_running('','')
 
     def load_register_free_running(self, value_, name_):
         bram = self.create_registers(value_, name_, self.free_run_container)
@@ -207,9 +202,6 @@ class ROACH(Empty):
         dic_return['bof_path'] = self.bof_path
         dic_return['name'] = self.name_config_input._get_text()
 
-        dic_return['plot'] = not self.plot_toogle.state == 'normal'
-        dic_return['store'] = not self.store_data.state == 'normal'
-
         self.config_manager.store_dictionary(dic_return)
 
         return dic_return
@@ -218,10 +210,11 @@ class ROACH(Empty):
 
         path = path[0]
         if len(self.name_config_input._get_text()) <1:
-            Popup(content=Label(text='Ingrese Nombre'), size_hint=(None,None),size=(200,100)).open()
+            Popup(content=Label(text='Enter Name'), size_hint=(None,None),size=(200,100)).open()
             return
 
         self.bof_path = self.config_manager.copy_bof_to_folder(path, self.name_config_input._get_text())
+        self.prog_dev = True
 
     def load_data(self, path):
         self.clean_all()
@@ -234,31 +227,40 @@ class ROACH(Empty):
             self.load_registers(a_reg[1], a_reg[0], self.reg_container)
 
         brams = dic['bram']
-        '''
-        dictionary['data_type'] = self.data_type
-        dictionary['size'] = self.size_array._get_text()
-        dictionary['acc_len_reg'] = self.acc_len_reg._get_text()
-        dictionary['bram_names'] = self.get_names()
-        '''
 
         for a_bram in brams:
             if a_bram['is_bram']:
-                self.load_free_running(a_bram['data_type'],a_bram['size'],a_bram['bram_names'],a_bram['acc_len_reg'], a_bram['array_id'])
+                try:
+                    self.load_free_running(a_bram['data_type'],a_bram['size'],a_bram['bram_names'],a_bram['acc_len_reg'], \
+                                       a_bram['array_id'], a_bram['store'], a_bram['plot'])
+                except:
+                    self.load_free_running(a_bram['data_type'],a_bram['size'],a_bram['bram_names'],a_bram['acc_len_reg'], \
+                                       a_bram['array_id'])
+
             else:
                 self.load_register_free_running(a_bram['reg_name'], a_bram['reg_value'])
 
         self.ip._set_text(dic['ip'])
         self.port._set_text(dic['port'])
 
-        self.bof_path = dic['bof_path']
+        try:
+            self.prog_dev = dic['prog']
+        except:
+            pass
+        self.bof_path = os.path.dirname(os.path.realpath(__file__)) + '/roach_configurations/' + dic['name'] + '/' + dic['name'] + '.bof'
         self.name_config_input._set_text(dic['name'])
 
-        self.plot_toogle.state = 'normal' if not dic['plot'] else 'down'
-        self.plot_toogle.state = 'normal' if not dic['store'] else 'down'
-
-    def load_free_running(self, a_data_type, array_size_, real_imag_list_, acc_len_reg_name_, array_label_):
+    def load_free_running(self, a_data_type, array_size_, real_imag_list_, acc_len_reg_name_, array_label_, store_ = False, plot_ = False):
         size_ = 30
-        data = BoxLayout(orientation='vertical',size_hint=(1, None), size=(1,7*size_))
+        data = BoxLayout(orientation='vertical',size_hint=(1, None), size=(1,8*size_))
+
+        #plot_label = Label(text='Plot data:', size_hint=(0.4,1))
+        plot_toogle = ToggleButton(text='Plot Data', size_hint=(0.5,1))
+        store_data = ToggleButton(text='Store Data', size_hint=(0.5,1))
+        handle_data = BoxLayout(orientation='horizontal', size_hint=(1,None), size=(1,30))
+        handle_data.add_widget(plot_toogle)
+        handle_data.add_widget(store_data)
+
 
         data_type_label = Label(text='Tipo de Dato',size_hint=(0.4,None), height=size_)
         data_type_spinner = Spinner(
@@ -315,6 +317,7 @@ class ROACH(Empty):
         data_acc_len_reg.add_widget(acc_len_reg_name_label)
         data_acc_len_reg.add_widget(acc_len_reg_name_input)
 
+        data.add_widget(handle_data)
         data.add_widget(data_type)
         data.add_widget(data_id)
         data.add_widget(data_size)
@@ -322,7 +325,8 @@ class ROACH(Empty):
         data.add_widget(data_name)
         data.add_widget(data_acc_len_reg)
 
-        bram = BRAMArray( size_input, acc_len_reg_name_input,real_imag, id_input, data_type_spinner)
+        bram = BRAMArray( size_input, acc_len_reg_name_input,real_imag, id_input, data_type_spinner, store_data
+                          , plot_toogle)
 
         add_new_array_to_merge.bind(on_press=lambda instance: bram.add_real_imag_widget())
 
@@ -333,6 +337,9 @@ class ROACH(Empty):
         size_input._set_text(array_size_)
         acc_len_reg_name_input._set_text(acc_len_reg_name_)
         id_input._set_text(array_label_)
+
+        store_data.state = 'down' if store_ else 'normal'
+        plot_toogle.state = 'down' if plot_ else 'normal'
 
         for real_imag_pair in real_imag_list_:
             bram.load_real_imag_widget(real_imag_pair[0], real_imag_pair[1])
@@ -373,13 +380,16 @@ class Register(object):
         return dictionary
 
 class BRAMArray(object):
-    def __init__(self, size_array, acc_len_reg, grid_layout, array_id, data_type_):
+    def __init__(self, size_array, acc_len_reg, grid_layout, array_id, data_type_, data_store_, data_plot_):
         self.size_array = size_array
         self.real_imag_bram = {}
         self.acc_len_reg = acc_len_reg
         self.grid_layout = grid_layout
         self.cont = 0
         self.array_id = array_id
+
+        self.plot = data_plot_
+        self.store = data_store_
 
         self.data_type = data_type_
 
@@ -466,6 +476,8 @@ class BRAMArray(object):
         dictionary['bram_names'] = self.get_names()
         dictionary['array_id'] = self.array_id._get_text()
         dictionary['is_bram'] = True
+        dictionary['plot'] = not self.plot.state == 'normal'
+        dictionary['store'] = not self.store.state == 'normal'
 
         return dictionary
 

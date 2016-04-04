@@ -28,6 +28,9 @@ class Roach2(object):
         self.store_drams = []
 
         for cont in range(len(self.brams_info)):
+            self.brams_info[cont]['prev_acc'] = 0
+
+        for cont in range(len(self.brams_info)):
             aplot = None
             if self.brams_info[cont]['plot']:
                 aplot = Gnuplot(debug=1)
@@ -44,10 +47,11 @@ class Roach2(object):
 
             astore = None
 
-            if self.self.brams_info[cont]['store']:
+            if self.brams_info[cont]['store']:
                 ts = time.time()
                 time_stamp = st = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S')
-                file_name = self.bof_path[:-len('.bof')] + time_stamp + '.csv'
+                print self.brams_info[cont].keys()
+                file_name = self.bof_path[:-len('.bof')] + '-' + self.brams_info[cont]['array_id'] + '-' + time_stamp + '.csv'
                 file = open(file_name, 'w')
 
                 csv_writer = csv.writer(file, delimiter = ',')
@@ -60,6 +64,8 @@ class Roach2(object):
         self.logger = logging.getLogger(self.ip)
         self.logger.addHandler(self.handler)
         self.logger.setLevel(10)
+
+
 
     def connect_to_roach(self):
         print self.port
@@ -77,11 +83,10 @@ class Roach2(object):
         send_command = 'scp %s root@%s:/boffiles/%s' % (self.bof_path, self.ip, self.bitstream)
         chmod_command = 'ssh root@%s chmod 777 /boffiles/%s'% ( self.ip, self.bitstream)
 
-        print send_command
-        print chmod_command
-
         os.system(send_command)
+        print send_command
         os.system(chmod_command)
+        print chmod_command
 
     def config_register(self):
         for reg_info in self.register_list:
@@ -100,7 +105,11 @@ class Roach2(object):
             data_type = bram['data_type']
             array_size = bram['size']
 
-            acc_n = self.fpga.read_uint(acc_len_ref)
+            while True:
+                acc_n = self.fpga.read_uint(acc_len_ref)
+                if acc_n > 1+bram['prev_acc']:
+                    bram['prev_acc'] = acc_n
+                    break
 
             print acc_n
 
@@ -152,14 +161,15 @@ class Roach2(object):
 
             if bram['plot']:
                 aplot = self.plot_brams[bram_cont]
-                aplot.plot(numpy.absolute(final_array))
+                aplot.plot(10*numpy.log10(numpy.absolute(final_array)))
                 aplot.title('plot of data array %s, acc count %s'%(self.brams_info[bram_cont]['array_id'],str(acc_n)))
                 time.sleep(0.3)
 
             if bram['store']:
-                files =  self.store_drams[bram_cont]
-                files[0].wirterow(final_array)
+                files = self.store_drams[bram_cont]
+                files[0].writerow(final_array)
 
+            bram_cont += 1
 
 
         return return_data
@@ -171,6 +181,17 @@ class Roach2(object):
 
     def stop(self):
         self.fpga.stop()
+
+        bram_cont = 0
+        print 'hola'
+        for bram in self.brams_info:
+            if bram['plot']:
+                self.plot_brams[bram_cont].close()
+
+            if bram['store']:
+                files =  self.store_drams[bram_cont]
+                files[1].close()
+
 
     def fail(self):
         return self.handler.printMessages()

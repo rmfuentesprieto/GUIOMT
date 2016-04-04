@@ -36,7 +36,7 @@ class DataThread(Process):
         return self.roach.accuaire_data()
 
     def close_process(self):
-        pass
+        self.roach.stop()
 
 class RoachException(Exception):
 
