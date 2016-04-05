@@ -19,7 +19,7 @@ class ExtractPanel(AbstractPanel):
         return altenatives
 
     def get_name(self):
-        return "Obtener Datos"
+        return "Extract Data"
 
     def get_configurations(self):
         return_dic = {}
@@ -27,3 +27,7 @@ class ExtractPanel(AbstractPanel):
             return_dic['roach'] = roach_config.get_source_config()
 
         return return_dic
+
+    def pass_source(self, sources):
+        for data in self.pannels_instants:
+            data.pass_source(sources)

@@ -8,3 +8,6 @@ class AbstractSource(Empty):
 
     def get_source_config(self):
         pass
+
+    def save_config_dictionary(self):
+        pass

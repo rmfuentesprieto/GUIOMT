@@ -34,6 +34,8 @@ class ROACH(Empty):
         self.prog_dev = False
         self.bof_path = ''
 
+        self.sources = []
+
         # reg layout
         roach_connection_info = BoxLayout(orientation='horizontal',  size_hint=(1,None), size=(1,30))
         roach_register = BoxLayout(orientation='horizontal', size_hint=(1,None), size=(1,40))
@@ -120,9 +122,6 @@ class ROACH(Empty):
         name.add_widget(buton_bof_file)
 
         ## store or plot
-
-
-
 
         big_one.add_widget(name)
         big_one.add_widget(roach_connection_info)
@@ -217,7 +216,15 @@ class ROACH(Empty):
 
         dic_return['progdev'] = True if self.program_button.state == 'down' else False
 
+        source_dic_config = {}
+        for a_source in self.sources:
+            source_dic_config.update( a_source.save_config_dictionary())
+        dic_return['sources'] = source_dic_config
+
+        # this line saves the dictionary to file with pikle
         self.config_manager.store_dictionary(dic_return)
+
+
 
         return dic_return
 
@@ -262,6 +269,12 @@ class ROACH(Empty):
 
         self.bof_path = os.path.dirname(os.path.realpath(__file__)) + '/roach_configurations/' + dic['name'] + '/' + dic['name'] + '.bof'
         self.name_config_input._set_text(dic['name'])
+
+        try:
+            for a_source in self.sources:
+                a_source.set_configuration(dic['sources'])
+        except:
+            pass
 
     def load_free_running(self, a_data_type, array_size_, real_imag_list_, acc_len_reg_name_, array_label_, store_ = False, plot_ = False):
         size_ = 30
@@ -380,6 +393,8 @@ class ROACH(Empty):
     def button_save_all(self, instance):
         self.get_source_config()
 
+    def pass_source(self, sources_):
+        self.sources = sources_
 
 class Register(object):
 
@@ -402,7 +417,6 @@ class Register(object):
             dictionary['reg_value'] = self.value.text
         else:
             dictionary['reg_value'] = ''
-
 
         return dictionary
 

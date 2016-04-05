@@ -34,3 +34,6 @@ class SourcePanel(AbstractPanel):
                     return_dic['tone'].append(source.get_source_config())
 
         return return_dic
+
+    def pass_sources(self):
+        return self.pannels_instants

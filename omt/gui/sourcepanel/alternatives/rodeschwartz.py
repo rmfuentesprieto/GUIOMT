@@ -19,3 +19,6 @@ class RodeSchwartz(CommonSource):
 
     def get_my_port(self):
         return '5025'
+
+    def get_my_name(self):
+        return 'RodeSchwartz'

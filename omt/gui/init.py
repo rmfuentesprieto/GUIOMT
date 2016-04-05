@@ -30,6 +30,8 @@ class RootWidget(BoxLayout):
         self.data = ExtractPanel()
         self.source = SourcePanel()
 
+        self.data.pass_source(self.source.pass_sources())
+
         self.panels.add_widget(self.proces,0)
         self.panels.add_widget(self.data,1)
         self.panels.add_widget(self.source,2)

@@ -100,6 +100,9 @@ class CommonSource(AbstractSource):
         self.manual_change_init = False
         self.manual_change_final = False
 
+    def get_my_name(self):
+        pass
+
     def get_my_ip(self):
         pass
 
@@ -233,4 +236,42 @@ class CommonSource(AbstractSource):
 
         return data_dic
 
+    def save_config_dictionary(self):
+        data_dic = {}
 
+        data_dic['use_source'] = self.is_source_active
+        data_dic['sweep'] = self.do_a_sweep
+        data_dic['ip'] = self.get_my_ip()
+        data_dic['port'] = self.get_my_port()
+        data_dic['power'] = self.amplitud_frec_value._get_text()
+
+        data_dic['frec_init'] = self.init_frec_value._get_text()
+        data_dic['frec_init_unit'] = self.init_frec_unit.get_unit()
+        data_dic['frec_end'] = self.final_frec_value._get_text()
+        data_dic['frec_end_unit'] = self.final_frec_unit.get_unit()
+        data_dic['frec_number_point'] = self.puntos_frec_value._get_text()
+        data_dic['frec_numer_points_unit'] = self.puntos_frec_unit.get_unit()
+
+        return {self.get_my_name():data_dic}
+
+    def set_configuration(self, config_dictionary):
+
+        if self.get_my_name() in config_dictionary:
+            config_dictionary_ = config_dictionary[self.get_my_name()]
+
+            self.is_source_active = config_dictionary_['use_source']
+            self.on_off_switch.active = self.is_source_active
+
+            self.do_a_sweep = config_dictionary_['sweep']
+            self.sweep_switch.active = self.do_a_sweep
+
+            self.amplitud_frec_value.text = config_dictionary_['power']
+
+            self.init_frec_value.text = config_dictionary_['frec_init']
+            self.init_frec_unit.text = config_dictionary_['frec_init_unit']
+
+            self.final_frec_value.text = config_dictionary_['frec_end']
+            self.final_frec_unit.text = config_dictionary_['frec_end_unit']
+
+            self.puntos_frec_value.text = config_dictionary_['frec_number_point']
+            self.puntos_frec_unit.text = config_dictionary_['frec_numer_points_unit']

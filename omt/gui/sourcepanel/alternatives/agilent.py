@@ -19,3 +19,6 @@ class Agilent(CommonSource):
 
     def get_my_port(self):
         return '5023'
+
+    def get_my_name(self):
+        return 'Agilent'

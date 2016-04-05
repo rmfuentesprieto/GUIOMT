@@ -23,8 +23,10 @@ class UnitSpinner(Spinner):
 
     def get_unit_norm(self):
         a_key = self.text
-        print 'aa', a_key
         return self.units_dict[a_key]
+
+    def get_unit(self):
+        return self.text
 
     def set_unit(self, val):
         all_key = self.units_dict.keys()
