@@ -49,6 +49,18 @@ class ROACH(Empty):
         roach_connection_info.add_widget(port_label)
         roach_connection_info.add_widget(self.port)
 
+        clear_button = Button(text='clear', size_hint=(0.33,1))
+        save_button = Button(text='save',  size_hint=(0.33,1))
+        clear_button.bind(on_press=self.clear_button)
+        save_button.bind(on_press=self.button_save_all)
+
+        self.program_button = ToggleButton(text='program',  size_hint=(0.33,1))
+
+        buttons_layout = BoxLayout(orientation='horizontal', size_hint=(1,None), size=(1,30))
+        buttons_layout.add_widget(clear_button)
+        buttons_layout.add_widget(save_button)
+        buttons_layout.add_widget(self.program_button)
+
         new_reg_label = Label(text='Initial Values', size_hint=(0.6,None), height=40)
         new_reg = Button(text='new reg', size_hint=(0.4,None), height=40)
         new_reg.bind(on_press=self.add_registers)
@@ -114,6 +126,7 @@ class ROACH(Empty):
 
         big_one.add_widget(name)
         big_one.add_widget(roach_connection_info)
+        big_one.add_widget(buttons_layout)
         big_one.add_widget(roach_register)
         big_one.add_widget(scroll_root)
         big_one.add_widget(free_running)
@@ -148,9 +161,9 @@ class ROACH(Empty):
         size_ = 30
         data = BoxLayout(orientation='horizontal',size_hint=(1, None), size=(1,size_))
 
-        label_name = Label(text='nombre', size_hint=(0.225,None), height=size_)
+        label_name = Label(text='Name', size_hint=(0.225,None), height=size_)
         value_name = TextInput( size_hint=(0.225,None), height=size_)
-        label_val = Label(text='valor', size_hint=(0.225,None), height=size_)
+        label_val = Label(text='Value', size_hint=(0.225,None), height=size_)
         value_val = TextInput( size_hint=(0.225,None), height=size_)
         delate = Button(text='-', size_hint=(0.1,None), height=size_)
         delate.bind(on_press=lambda instant: where_load_.remove_widget(data))
@@ -202,6 +215,8 @@ class ROACH(Empty):
         dic_return['bof_path'] = self.bof_path
         dic_return['name'] = self.name_config_input._get_text()
 
+        dic_return['progdev'] = True if self.program_button.state == 'down' else False
+
         self.config_manager.store_dictionary(dic_return)
 
         return dic_return
@@ -209,12 +224,12 @@ class ROACH(Empty):
     def set_bof_path(self, path):
 
         path = path[0]
-        if len(self.name_config_input._get_text()) <1:
+        if len(self.name_config_input.text) <1:
             Popup(content=Label(text='Enter Name'), size_hint=(None,None),size=(200,100)).open()
             return
 
         self.bof_path = self.config_manager.copy_bof_to_folder(path, self.name_config_input._get_text())
-        self.prog_dev = True
+        self.program_button.state = "down"
 
     def load_data(self, path):
         self.clean_all()
@@ -243,10 +258,8 @@ class ROACH(Empty):
         self.ip._set_text(dic['ip'])
         self.port._set_text(dic['port'])
 
-        try:
-            self.prog_dev = dic['prog']
-        except:
-            pass
+        self.program_button.state = 'down' if dic['progdev'] else 'normal'
+
         self.bof_path = os.path.dirname(os.path.realpath(__file__)) + '/roach_configurations/' + dic['name'] + '/' + dic['name'] + '.bof'
         self.name_config_input._set_text(dic['name'])
 
@@ -353,6 +366,20 @@ class ROACH(Empty):
 
         self.bram_cont = 0
         self.reg_cont = 0
+
+        self.name_config_input.text = ''
+        self.bof_path = ''
+        self.ip.text = ''
+        self.port.text = ''
+
+        self.program_button.state = 'normal'
+
+    def clear_button(self, inatance):
+        self.clean_all()
+
+    def button_save_all(self, instance):
+        self.get_source_config()
+
 
 class Register(object):
 
