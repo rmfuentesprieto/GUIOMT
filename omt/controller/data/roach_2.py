@@ -1,201 +1,97 @@
-import csv
 import os
-import struct
-import corr
-import logging
-import time
+import re
+import telnetlib
+from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.button import Button
+from kivy.uix.popup import Popup
 
-import datetime
-import numpy
-from Gnuplot import Gnuplot
+import thread
+from kivy.uix.spinner import Spinner
 
-from omt.util.data_type import data_type_dictionart
-
-
-class Roach2(object):
-
-    def __init__(self, data_dic):
-        print data_dic
-        self.port = int(data_dic['port'])
-        self.ip = data_dic['ip']
-        self.register_list = data_dic['reg']
-        self.bof_path = data_dic['bof_path']
-        self.bitstream = data_dic['name'] + '.bof'
-        self.brams_info = data_dic['bram']
-        self.program = data_dic['progdev']
-
-        self.plot_brams = []
-        self.store_drams = []
-
-        for cont in range(len(self.brams_info)):
-            self.brams_info[cont]['prev_acc'] = 0
-
-        for cont in range(len(self.brams_info)):
-            aplot = None
-            if self.brams_info[cont]['plot']:
-                aplot = Gnuplot(debug=1)
-                aplot.clear()
-                aplot('set style data linespoints')
-                aplot.ylabel('Power AU (dB)')
-                aplot('set xrange [-50:2098]')
-                aplot('set yrange [0:100]')
-                aplot('set ytics 5')
-                aplot('set xtics 256')
-                aplot('set grid y')
-                aplot('set grid x')
-            self.plot_brams.append(aplot)
-
-            astore = None
-
-            if self.brams_info[cont]['store']:
-                ts = time.time()
-                time_stamp = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S')
-                print self.brams_info[cont].keys()
-                file_name = self.bof_path[:-len('.bof')] + '-' + self.brams_info[cont]['array_id'] + '-' + time_stamp + '.csv'
-                file = open(file_name, 'w')
-
-                csv_writer = csv.writer(file, delimiter = ',')
-                astore = (csv_writer,file)
-            self. store_drams.append(astore)
-
-        self.fpga = None
-
-        self.handler = corr.log_handlers.DebugLogHandler()
-        self.logger = logging.getLogger(self.ip)
-        self.logger.addHandler(self.handler)
-        self.logger.setLevel(10)
+from omt.controller.data.fpga import Roach_FPGA
 
 
-
-    def connect_to_roach(self):
-        print self.port
-        self.fpga = corr.katcp_wrapper.FpgaClient(self.ip, self.port, timeout=10, logger=self.logger)
-        time.sleep(1)
-
-    def is_conected(self):
-        print 'roach'
-        to_return = self.fpga.is_connected()
-        print 'roach2', to_return
-
-        return to_return
-
+class Roach_II_Controller(Roach_FPGA):
     def send_bof(self):
-        send_command = 'scp %s root@%s:/boffiles/%s' % (self.bof_path, self.ip, self.bitstream)
-        chmod_command = 'ssh root@%s chmod 777 /boffiles/%s'% ( self.ip, self.bitstream)
+        # self.connection.write(a_command + '?\r\n')
+        # response = self.connection.read_until(b"\n")
 
-        os.system(send_command)
-        print send_command
-        os.system(chmod_command)
-        print chmod_command
+        connection = telnetlib.Telnet(self.ip, self.port)
+        connection.read_until('0', timeout=1)
+        connection.write('?listbof\r\n')
 
-    def config_register(self):
-        for reg_info in self.register_list:
-            self.fpga.write_int(reg_info[0],int(reg_info[1]))
+        return_lit = connection.expect(['.*!listbof ok .*', ])
 
-    def accuaire_data(self):
+        regex = '#listbof ?P<bof_name>'
 
-        if not self.is_conected():
-            return {}
+        aList = return_lit[2]
+        lol = aList.split('\n')
 
-        return_data = {}
-        bram_cont = 0
+        pattern = r'#listbof (?P<bof_name>.*.bof)'
+        regex_c = re.compile(pattern)
 
-        for bram in self.brams_info:
-            if bram['is_bram']:
-                acc_len_ref = bram['acc_len_reg']
-                data_type = bram['data_type']
-                array_size = bram['size']
+        bof_files = []
+        for data in lol:
+            outP = regex_c.search(data)
+            if outP:
+                bof_files.append(outP.group('bof_name'))
 
-                while True:
-                    acc_n = self.fpga.read_uint(acc_len_ref)
-                    if acc_n > 1+bram['prev_acc']:
-                        bram['prev_acc'] = acc_n
-                        break
+        for cont in range(len(bof_files)):
+            print cont + 1, bof_files[cont]
 
-                print acc_n
+        # is given the alternative to delete one bof
+        # if the fpga is full
 
-                have_real = True
-                have_imag = True
+        if len(bof_files) == 3:
+            content = BofSelector(bof_files[0], bof_files)
+            a_popup = Popup(title='Choose Bof', auto_dismiss=False, content=content, size_hint=(None, None), size=(400,400))
+            content.set_popup(a_popup)
+            a_popup.open()
 
-                real_data = []
-                imag_data = []
+            while content.continues:
+                pass
 
-                nbram = len(bram['bram_names'])
+            chossen = content.choosen_name
+            print chossen, '--'
+            connection.write('?delbof %s\r\n' % (chossen))
+            print connection.read_until('!delbof ok', timeout=3)
 
-                for names in bram['bram_names']:
-                    real_name = names[0]
-                    imag_name = names[1]
+            print 'finish'
+        thread.start_new(self.send_it, (None,)) #connection
 
-                    print '>'+str(array_size) + data_type, real_name,str(int(array_size)*data_type_dictionart[data_type]), 0
+        command = 'nc %s 3000 < %s' %(self.ip, self.bof_path)
+        os.system(command)
 
-                    if len(real_name) > 0:
-                        real_array = struct.unpack('>'+str(array_size) + data_type, self.fpga.read(real_name,str(int(array_size)*data_type_dictionart[data_type]), 0))
-                        real_data.append(real_array)
-                    else:
-                        have_real = have_real and False
-
-                    if len(imag_name) > 0:
-                        imag_array = struct.unpack('>'+str(array_size) +
-                                                   data_type, self.fpga.read(imag_name,str(int(array_size)*data_type_dictionart[data_type]), 0))
-                        imag_data.append(imag_array)
-                    else:
-                        have_imag = have_imag and False
-
-                final_array = numpy.zeros((int(array_size)*nbram),dtype=complex)
-
-                for cont0 in range(int(array_size)):
-
-                    for cont1 in range(nbram):
-                        if have_real:
-                            real_part = real_data[cont1][cont0]
-                        else:
-                            real_part = 0
-
-                        if have_imag:
-                            imag_part = imag_data[cont1][cont0]
-                        else:
-                            imag_part = 0
-
-                        final_array[cont0*nbram + cont1] = real_part + 1j*imag_part
-
-                return_data[bram['array_id']] = (final_array, acc_n)
-
-                if bram['plot']:
-                    aplot = self.plot_brams[bram_cont]
-                    aplot.plot(10*numpy.log10(numpy.absolute(final_array)))
-                    aplot.title('plot of data array %s, acc count %s'%(self.brams_info[bram_cont]['array_id'],str(acc_n)))
-                    time.sleep(0.3)
-
-                if bram['store']:
-                    files = self.store_drams[bram_cont]
-                    files[0].writerow(final_array)
-            else:
-                if bram['load_data']:
-                    self.fpga.write_int(bram['reg_name'], int(bram['reg_value']))
-                else:
-                    return_data[bram['reg_name']] = self.fpga.read_uint(bram['reg_name'])
-
-            bram_cont += 1
-
-        return return_data
-
-    def program_fpga(self):
-        if self.program:
-            self.fpga.progdev(self.bitstream)
-
-    def stop(self):
-        self.fpga.stop()
-
-        bram_cont = 0
-        print 'hola'
-        for bram in self.brams_info:
-            if bram['plot']:
-                self.plot_brams[bram_cont].close()
-
-            if bram['store']:
-                files = self.store_drams[bram_cont]
-                files[1].close()
+    def send_it(self, connection):
+        connection.write('?uploadbof 3000 %s\r\n'%(self.bitstream))
+        print connection.read_until('.*ok.*')
 
 
-    def fail(self):
-        return self.handler.printMessages()
+class BofSelector(BoxLayout):
+
+    def __init__(self, text_, value_):
+        super(BofSelector, self).__init__(orientation='vertical', size_hint=(1,1))
+
+        top_padding = BoxLayout(size_hint=(1,1))
+        self.bof_spinner = Spinner(text=text_, values=value_, size_hint=(1,None), size=(1,30))
+        bottom_padding = BoxLayout(size_hint=(1,1))
+        ok_button = Button(text='Ok',  size_hint=(1,0.2))
+        ok_button.bind(on_press=self.selection_made)
+
+        self.add_widget(top_padding)
+        self.add_widget(self.bof_spinner)
+        self.add_widget(bottom_padding)
+        self.add_widget(ok_button)
+
+        self.choosen_name = ''
+        self.popup = None
+
+        self.continues = True
+
+    def set_popup(self, popup_):
+        self.popup = popup_
+
+    def selection_made(self, instance):
+        self.choosen_name = self.bof_spinner.text
+        self.popup.dismiss()
+        self.continues = False

@@ -9,7 +9,7 @@ class BofFileChooserIconView(BoxLayout):
     def __init__(self,return_selection_path, path=None, filter=[]):
         super(BofFileChooserIconView, self).__init__(orientation='vertical', size_hint=(1,1))
         self.return_to = return_selection_path
-        self.popup = []
+        self.popup = None
 
         self.fc = FileChooserIconView(title="Choose Bof",size_hint=(1,0.8),rootpath=path, filter=filter)
 
@@ -19,6 +19,8 @@ class BofFileChooserIconView(BoxLayout):
 
         self.add_widget(self.fc)
         self.add_widget(ok_button)
+
+        print 'sfdsfsf'
 
     def pree_m(self, instance):
         if len(self.fc.selection) > 0:

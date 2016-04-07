@@ -13,7 +13,8 @@ class ExtractPanel(AbstractPanel):
         and the values is where the object is define.
         """
         altenatives = {
-            'ROACH':'omt.gui.extract_data_panel.alternatives.roach',
+            'ROACHI':'omt.gui.extract_data_panel.alternatives.roach_v1',
+            'ROACHII':'omt.gui.extract_data_panel.alternatives.roach_v2',
         }
 
         return altenatives
@@ -24,9 +25,13 @@ class ExtractPanel(AbstractPanel):
     def get_configurations(self):
         return_dic = {}
         for roach_config in self.pannels_instants:
-            return_dic['roach'] = roach_config.get_source_config()
+            print roach_config.name
+            if roach_config.name == self.spinner.text:
+                print roach_config.name, 'yes'
+                return_dic['roach'] = roach_config.get_source_config()
 
         return return_dic
+
 
     def pass_source(self, sources):
         for data in self.pannels_instants:

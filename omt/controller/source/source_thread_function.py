@@ -1,5 +1,4 @@
 import telnetlib
-import time
 import socket
 
 from omt.controller.abstract_parallel_proces import Process
@@ -29,8 +28,8 @@ class SourceThread(AbstractSource):
         self.frec_step = (self.frec_end - self.frec_init)/(self.frec_number_of_points - 1.0)
 
         try:
-            #self.connection = telnetlib.Telnet(self.ip, self.port,timeout=3) # for test purpuses, time in secconds
-            self.connection = telnetlib.Telnet(self.ip, self.port)
+            self.connection = telnetlib.Telnet(self.ip, self.port,timeout=7) # for test purpuses, time in secconds
+            #self.connection = telnetlib.Telnet(self.ip, self.port)
         except socket.error, exc:
             raise FailToConnectTelnet(self.ip, self.port)
         self.connection.write('power ' + str(config_dic['power']) + ' dbm\r\n')

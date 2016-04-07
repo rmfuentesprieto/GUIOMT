@@ -4,7 +4,8 @@ from kivy.uix.label import Label
 from kivy.uix.popup import Popup
 
 from omt.controller.abstract_parallel_proces import Process
-from omt.controller.data.roach_2 import Roach2
+from omt.controller.data.fpga import Roach_FPGA
+from omt.controller.data.roach_2 import Roach_II_Controller
 
 '''
 this class is thoiught to handle the data aquasition
@@ -15,7 +16,7 @@ comming from the roach board
 class DataThread(Process):
 
     def __init__(self, data_dic):
-        self.roach = Roach2(data_dic)
+        self.roach = Roach_II_Controller(data_dic)
 
     def start_connections(self):
         try:

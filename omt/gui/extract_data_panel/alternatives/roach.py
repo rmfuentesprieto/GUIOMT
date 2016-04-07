@@ -102,18 +102,19 @@ class ROACH(Empty):
         self.name_config_input = TextInput(size_hint=(0.5,None), height=size_)
         buton_bof_file = Button(text='Add bof',size_hint=(0.25,None), height=size_)
 
+        print os.path.dirname(os.path.realpath(__file__)) + '/roach_configurations'
+
         fc_conf = BofFileChooserIconView(self.load_data, path=os.path.dirname(os.path.realpath(__file__)) + '/roach_configurations' , filter=['*.pkl'])
-        file_roch_popup = Popup(title='Choose Configuration', auto_dismiss=False, content=fc_conf,\
-                                       size_hint=(None, None), size=(400,400)  )
-        fc_conf.set_popup(file_roch_popup)
-        name_config.bind(on_press=file_roch_popup.open)
+        self.file_roch_popup = Popup(title='Choose Configuration', auto_dismiss=False, content=fc_conf,\
+                                       size_hint=(None, None), size=(400,400))
+        fc_conf.set_popup(self.file_roch_popup)
+        name_config.bind(on_press=self.file_roch_popup.open)
 
 
         fc = BofFileChooserIconView(self.set_bof_path)
         self.file_choose_popup = Popup(title='Choose Bof', auto_dismiss=False, content=fc,\
                                        size_hint=(None, None), size=(400,400))
         fc.set_popup(self.file_choose_popup)
-
         buton_bof_file.bind(on_press=self.file_choose_popup.open)
 
         name = BoxLayout(orientation='horizontal', size_hint=(1,None), size=(1,30))
@@ -224,9 +225,12 @@ class ROACH(Empty):
         # this line saves the dictionary to file with pikle
         self.config_manager.store_dictionary(dic_return)
 
-
+        dic_return['instance'] = self.get_controller_fpga_insctance()
 
         return dic_return
+
+    def get_controller_fpga_insctance(self):
+        pass
 
     def set_bof_path(self, path):
 

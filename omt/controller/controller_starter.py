@@ -3,7 +3,6 @@ from kivy.uix.label import Label
 from kivy.uix.popup import Popup
 
 from omt.controller.data.data_thread_function import DataThread, RoachException
-from omt.controller.data.roach_2 import Roach2
 from omt.controller.source.source_thread_function import SourceThread, DummySourceThread
 from omt.controller.source.source_tone_or_dc import ToneDCSource
 
