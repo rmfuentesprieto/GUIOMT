@@ -39,7 +39,7 @@ class RootWidget(BoxLayout):
         self.add_widget(self.menu)
         self.add_widget(self.panels)
 
-        self.coordinator = []
+        self.coordinator = None
 
     def configure_and_turn_on_sources(self, instance):
         source_dictionary = self.source.get_configurations()

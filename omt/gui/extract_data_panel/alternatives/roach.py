@@ -10,7 +10,6 @@ from kivy.uix.togglebutton import ToggleButton
 
 from omt.gui.empty import Empty
 from omt.gui.extract_data_panel.alternatives.BofFileChooser import BofFileChooserIconView
-import corr
 import os
 
 from omt.gui.extract_data_panel.alternatives.configuration_manager import LoadSaveConfig
@@ -264,7 +263,7 @@ class ROACH(Empty):
                                        a_bram['array_id'])
 
             else:
-                self.load_register_free_running(a_bram['reg_name'], a_bram['reg_value'])
+                self.load_register_free_running(a_bram['reg_value'], a_bram['reg_name'])
 
         self.ip._set_text(dic['ip'])
         self.port._set_text(dic['port'])
@@ -421,6 +420,10 @@ class Register(object):
             dictionary['reg_value'] = self.value.text
         else:
             dictionary['reg_value'] = ''
+
+
+        dictionary['plot'] = False
+        dictionary['store'] = False
 
         return dictionary
 

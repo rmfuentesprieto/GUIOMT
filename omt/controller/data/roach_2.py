@@ -5,8 +5,11 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
 from kivy.uix.popup import Popup
 
+import corr
 import thread
 from kivy.uix.spinner import Spinner
+
+import time
 
 from omt.controller.data.fpga import Roach_FPGA
 
@@ -42,8 +45,8 @@ class Roach_II_Controller(Roach_FPGA):
         # is given the alternative to delete one bof
         # if the fpga is full
 
-        if len(bof_files) == 3:
-            content = BofSelector(bof_files[0], bof_files)
+        if (len(bof_files) == 17 and not(self.bitstream in bof_files) ):
+            content = BofSelector("", bof_files)
             a_popup = Popup(title='Choose Bof', auto_dismiss=False, content=content, size_hint=(None, None), size=(400,400))
             content.set_popup(a_popup)
             a_popup.open()
@@ -53,18 +56,23 @@ class Roach_II_Controller(Roach_FPGA):
 
             chossen = content.choosen_name
             print chossen, '--'
-            connection.write('?delbof %s\r\n' % (chossen))
-            print connection.read_until('!delbof ok', timeout=3)
+            if len(chossen) > 0:
+                connection.write('?delbof %s\r\n' % (chossen))
+                print connection.read_until('!delbof ok', timeout=3)
 
             print 'finish'
-        thread.start_new(self.send_it, (None,)) #connection
+        thread.start_new(self.send_it, (connection,)) #connection
+
+        time.sleep(0.1)
 
         command = 'nc %s 3000 < %s' %(self.ip, self.bof_path)
         os.system(command)
 
+        connection.close()
+
     def send_it(self, connection):
+        print 'hrllo'
         connection.write('?uploadbof 3000 %s\r\n'%(self.bitstream))
-        print connection.read_until('.*ok.*')
 
 
 class BofSelector(BoxLayout):
