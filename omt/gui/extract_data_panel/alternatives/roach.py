@@ -140,7 +140,8 @@ class ROACH(Empty):
         self.load_register_free_running('','')
 
     def load_register_free_running(self, value_, name_):
-        bram = self.create_registers(value_, name_, self.free_run_container)
+        bram = self.create_registers(value_, name_, self.free_run_container, self.remove_from_widget_list_free_run, \
+                                     str(self.bram_cont))
 
         self.bram_array[str(self.bram_cont)] = bram
         self.bram_cont += 1
@@ -150,12 +151,12 @@ class ROACH(Empty):
         self.load_registers("","", self.reg_container)
 
     def load_registers(self, values_, name_, where_load_):
-        reg_val = self.create_registers(values_, name_, where_load_)
+        reg_val = self.create_registers(values_, name_, where_load_, self.remove_from_widget_list_config, str(self.reg_cont))
 
         self.reg_array[str(self.reg_cont)] = reg_val
         self.reg_cont += 1
 
-    def create_registers(self, values_, name_, where_load_):
+    def create_registers(self, values_, name_, where_load_, remove_function_, cont_key_):
 
         size_ = 30
         data = BoxLayout(orientation='horizontal',size_hint=(1, None), size=(1,size_))
@@ -165,7 +166,10 @@ class ROACH(Empty):
         label_val = Label(text='Value', size_hint=(0.225,None), height=size_)
         value_val = TextInput( size_hint=(0.225,None), height=size_)
         delate = Button(text='-', size_hint=(0.1,None), height=size_)
-        delate.bind(on_press=lambda instant: where_load_.remove_widget(data))
+
+        delate.bind(on_press=lambda instant:\
+                    remove_function_(data, cont_key_))# where_load_.remove_widget(data))
+
 
         data.add_widget(label_name)
         data.add_widget(value_name)
@@ -303,7 +307,9 @@ class ROACH(Empty):
         )
         delate_label = Label(text='Quitar',size_hint=(0.2,None), height=size_)
         delate_me = Button(text='-',size_hint=(0.1,None), height=size_)
-        delate_me.bind(on_press=lambda instant: self.free_run_container.remove_widget(data))
+        str_cont = str(self.bram_cont)
+        delate_me.bind(on_press=lambda instance:\
+            self.remove_from_widget_list_free_run(data, str_cont))
 
         id_label = Label(text='array name',size_hint=(0.45,None), height=size_)
         id_input = TextInput(size_hint=(0.45,None), height=size_)
@@ -372,6 +378,14 @@ class ROACH(Empty):
 
         for real_imag_pair in real_imag_list_:
             bram.load_real_imag_widget(real_imag_pair[0], real_imag_pair[1])
+
+    def remove_from_widget_list_free_run(self, widget_, list_cont_val_):
+        self.free_run_container.remove_widget(widget_)
+        del self.bram_array[list_cont_val_]
+
+    def remove_from_widget_list_config(self, widget_, list_cont_val_):
+        self.reg_container.remove_widget(widget_)
+        del self.reg_array[list_cont_val_]
 
     def clean_all(self):
         self.free_run_container.clear_widgets()
