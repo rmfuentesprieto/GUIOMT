@@ -79,7 +79,8 @@ class Roach_FPGA(object):
         return to_return
 
     def send_bof(self):
-        pass
+        if not self.program:
+            return
 
     def config_register(self):
         if self.program():
@@ -88,7 +89,7 @@ class Roach_FPGA(object):
 
     def accuaire_data(self):
 
-        if not self.is_conected() or not self.program:
+        if not self.is_conected():
             return {}
 
         return_data = {}
@@ -156,7 +157,17 @@ class Roach_FPGA(object):
 
                 if bram['plot']:
                     aplot = self.plot_brams[bram_cont]
-                    aplot.plot(10*numpy.log10(numpy.absolute(final_array)))
+                    aplot.clear()
+
+                    if have_real and have_imag:
+                        aplot('set multiplot layout 2,1 rowsfirst')
+
+                        aplot.plot(10*numpy.log10(numpy.absolute(final_array)))
+                        aplot.plot(numpy.angle(final_array))
+
+                        aplot('unset multiplot')
+                    else:
+                        aplot.plot(10*numpy.log10(numpy.absolute(final_array)))
                     aplot.title('plot of data array %s, acc count %s'%(self.brams_info[bram_cont]['array_id'],str(acc_n)))
                     time.sleep(0.3)
 

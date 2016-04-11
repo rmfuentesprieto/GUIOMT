@@ -16,13 +16,14 @@ comming from the roach board
 class DataThread(Process):
 
     def __init__(self, data_dic):
-        self.roach = Roach_II_Controller(data_dic)
+        self.roach = data_dic['instance'](data_dic)
 
     def start_connections(self):
         try:
             self.roach.connect_to_roach()
             if not self.roach.is_conected():
                 raise Exception('Connection Fail')
+
 
             self.roach.send_bof()
             time.sleep(1)
@@ -31,7 +32,7 @@ class DataThread(Process):
             self.roach.config_register()
             time.sleep(0.1)
         except Exception as e:
-            raise RoachException(e.message)
+            raise RoachException(e)
 
     def accuaire_data(self):
         return self.roach.accuaire_data()
