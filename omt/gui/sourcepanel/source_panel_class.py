@@ -31,7 +31,10 @@ class SourcePanel(AbstractPanel):
                         raise Exception('Only one sweep')
                     return_dic['sweep'] = source.get_source_config()
                 else:
-                    return_dic['tone'].append(source.get_source_config())
+                    try:
+                        return_dic['tone'].append(source.get_source_config())
+                    except KeyError as e:
+                        return_dic['tone'] = [source.get_source_config(),]
 
         return return_dic
 

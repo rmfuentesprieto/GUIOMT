@@ -83,7 +83,7 @@ class Roach_FPGA(object):
             return
 
     def config_register(self):
-        if self.program():
+        if self.program:
             for reg_info in self.register_list:
                 self.fpga.write_int(reg_info[0],int(reg_info[1]))
 
@@ -100,8 +100,9 @@ class Roach_FPGA(object):
                 acc_len_ref = bram['acc_len_reg']
                 data_type = bram['data_type']
                 array_size = bram['size']
+                acc_n = -1
 
-                while True:
+                while True and (len(acc_len_ref) > 0):
                     acc_n = self.fpga.read_uint(acc_len_ref)
                     if acc_n > 1+bram['prev_acc']:
                         bram['prev_acc'] = acc_n
@@ -161,12 +162,15 @@ class Roach_FPGA(object):
 
                     if have_real and have_imag:
                         aplot('set multiplot layout 2,1 rowsfirst')
+                        aplot('set yrange [0:150]')
 
                         aplot.plot(10*numpy.log10(numpy.absolute(final_array)))
-                        aplot.plot(numpy.angle(final_array))
+                        aplot('set yrange [-1:361]')
+                        aplot.plot(numpy.angle(final_array)*180/3.141592)
 
                         aplot('unset multiplot')
                     else:
+                        aplot('set yrange [0:150]')
                         aplot.plot(10*numpy.log10(numpy.absolute(final_array)))
                     aplot.title('plot of data array %s, acc count %s'%(self.brams_info[bram_cont]['array_id'],str(acc_n)))
                     time.sleep(0.3)

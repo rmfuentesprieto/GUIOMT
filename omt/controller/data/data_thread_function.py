@@ -32,7 +32,7 @@ class DataThread(Process):
             self.roach.config_register()
             time.sleep(0.1)
         except Exception as e:
-            raise RoachException(e)
+            raise RoachException(e.message)
 
     def accuaire_data(self):
         return self.roach.accuaire_data()

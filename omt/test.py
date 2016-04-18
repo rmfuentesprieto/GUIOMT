@@ -1,16 +1,10 @@
-from kivy.adapters.listadapter import ListAdapter
-from kivy.uix.listview import ListItemButton, ListView
+from lxml import etree as ET
 
-data = [{'text': str(i), 'is_selected': False} for i in range(100)]
 
-args_converter = lambda row_index, rec: {'text': rec['text'],
-                                         'size_hint_y': None,
-                                         'height': 25}
+doc = ET.Element("function_locations")
 
-list_adapter = ListAdapter(data=data,
-                           args_converter=args_converter,
-                           cls=ListItemButton,
-                           selection_mode='single',
-                           allow_empty_selection=False)
+ET.SubElement(doc, "fun", module="blah", name='hi')
+ET.SubElement(doc, "fun", module="asdfasd", name='by')
 
-list_view = ListView(adapter=list_adapter)
+tree = ET.ElementTree(doc)
+tree.write("filename.xml")

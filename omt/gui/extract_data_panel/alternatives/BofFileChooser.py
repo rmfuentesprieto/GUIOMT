@@ -1,7 +1,7 @@
 from kivy.app import App
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
-from kivy.uix.filechooser import FileChooserIconView
+from kivy.uix.filechooser import FileChooserIconView, FileChooserListView
 
 
 class BofFileChooserIconView(BoxLayout):
@@ -11,7 +11,7 @@ class BofFileChooserIconView(BoxLayout):
         self.return_to = return_selection_path
         self.popup = None
 
-        self.fc = FileChooserIconView(title="Choose Bof",size_hint=(1,0.8),rootpath=path, filter=filter)
+        self.fc =  FileChooserListView(title="Choose Bof",size_hint=(1,0.8),rootpath=path, filter=filter)
 
         ok_button = Button(text='Ok',  size_hint=(1,0.2))
         ok_button.bind(on_press=self.pree_m)
