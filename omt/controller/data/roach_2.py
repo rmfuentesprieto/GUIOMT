@@ -18,14 +18,12 @@ class Roach_II_Controller(Roach_FPGA):
     def send_bof(self):
         # self.connection.write(a_command + '?\r\n')
         # response = self.connection.read_until(b"\n")
-
+        super(Roach_II_Controller, self).send_bof()
         connection = telnetlib.Telnet(self.ip, self.port)
         connection.read_until('0', timeout=1)
         connection.write('?listbof\r\n')
 
         return_lit = connection.expect(['.*!listbof ok .*', ])
-
-        regex = '#listbof ?P<bof_name>'
 
         aList = return_lit[2]
         lol = aList.split('\n')
@@ -61,18 +59,21 @@ class Roach_II_Controller(Roach_FPGA):
                 print connection.read_until('!delbof ok', timeout=3)
 
             print 'finish'
-        thread.start_new(self.send_it, (connection,)) #connection
-
-        time.sleep(0.1)
-
+        #thread.start_new(self.send_it, (connection,)) #connection
+        command = '?uploadbof 3000 %s\r\n'%(self.bitstream)
+        connection.write(command)
+        time.sleep(1)
+        print 'sending bof'
         command = 'nc %s 3000 < %s' %(self.ip, self.bof_path)
         os.system(command)
 
         connection.close()
 
     def send_it(self, connection):
-        print 'hrllo'
-        connection.write('?uploadbof 3000 %s\r\n'%(self.bitstream))
+        print 'hello'
+        command = '?uploadbof 3000 %s\r\n'%(self.bitstream)
+        connection.write(command)
+        print 'hello'
 
 
 class BofSelector(BoxLayout):

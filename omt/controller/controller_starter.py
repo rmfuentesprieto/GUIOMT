@@ -54,6 +54,7 @@ class Coordinator(threading.Thread):
         except RoachException as roach_e:
             Popup(title='Error Roach', content=Label(text=roach_e.message),\
                           size_hint=(None, None), size=(120, 100)).open()
+
         except Exception as e:
             Popup(title='Error', content=Label(text=e.message),\
                           size_hint=(None, None), size=(120, 100)).open()

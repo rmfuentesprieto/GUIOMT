@@ -6,6 +6,7 @@ from omt.controller.data.fpga import Roach_FPGA
 class Roach_I_Controller(Roach_FPGA):
 
     def send_bof(self):
+        super(Roach_I_Controller, self).send_bof()
         send_command = 'scp %s root@%s:/boffiles/%s' % (self.bof_path, self.ip, self.bitstream)
         chmod_command = 'ssh root@%s chmod 777 /boffiles/%s'% ( self.ip, self.bitstream)
 
