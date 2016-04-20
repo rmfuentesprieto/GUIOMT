@@ -1,0 +1,18 @@
+<?xml version="1.0" ?>
+<dynamic_modules>
+  <!--Modules info-->
+  <module name="tt1">
+    <function name="kk">
+      <arg name="lol"/>
+    </function>
+    <function name="kk1">
+      <arg name="lol"/>
+      <arg name="lol1"/>
+    </function>
+  </module>
+  <module name="tt">
+    <function name="kk">
+      <arg name="lol"/>
+    </function>
+  </module>
+</dynamic_modules>

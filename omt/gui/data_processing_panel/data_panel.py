@@ -12,7 +12,7 @@ class DataPanel(AbstractPanel):
         The structure is a dictionary, the key is the class name
         and the values is where the object is define.
         """
-        altenatives = {
+        altenatives = {"LoadDynamic" : 'omt.gui.data_processing_panel.alternatives.load_dynamic_modules',
 
         }
 
