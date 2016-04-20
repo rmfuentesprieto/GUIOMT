@@ -1,4 +1,1 @@
-<function_locations>
-    <fun name="hi" module="blah"/>
-    <fun name="by" module="asdfasd"/>
-</function_locations>
+<function_locations><fun name="hi" module="blah"/><fun name="by" module="asdfasd"/></function_locations>

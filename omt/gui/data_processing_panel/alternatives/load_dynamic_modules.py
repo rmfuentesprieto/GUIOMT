@@ -12,6 +12,7 @@ from xml.dom import minidom
 from xml.etree.ElementTree import Element, Comment, SubElement, tostring as xmltostring, fromstring as xmlfromstring
 
 from omt.controller.data.roach_2 import BofSelector
+from omt.gui.data_processing_panel.alternatives.functions_gui.functiongui import FunctionGui
 from omt.gui.empty import Empty
 from omt.gui.extract_data_panel.alternatives.BofFileChooser import BofFileChooserIconView
 
@@ -37,7 +38,7 @@ class LoadDynamic(Empty):
         top_layot.add_widget(self.add_function)
 
         ####
-        self.func_container = GridLayout(cols=1, spacing=0, size_hint_y=None)#row_default_height=30)
+        self.func_container = GridLayout(cols=1, spacing=0)#row_default_height=30)
         self.func_container.bind(minimum_height=self.func_container.setter('height'))
 
         scroll_root = ScrollView()
@@ -78,6 +79,7 @@ class LoadDynamic(Empty):
 
     def create_function_thread(self, function_list):
         content = FunctionSelector( function_list)
+
         a_popup = Popup(title='Choose Bof', auto_dismiss=False, content=content, size_hint=(None, None), size=(400,400))
         content.set_popup(a_popup)
         a_popup.open()
@@ -86,8 +88,11 @@ class LoadDynamic(Empty):
             pass
 
         keys = content.choosen_name.split('.')
+        if content.is_default():
+            return
 
-        self.func_container.add_widget(Button(text=content.choosen_name + ' ' + str(self.function_dictionary[keys[0]][keys[1]]),size_hint=(1,None), size=(1,30)))
+        self.func_container.add_widget(FunctionGui(keys[0],keys[1],self.function_dictionary[keys[0]][keys[1]], ['hola','chao'] ))
+        #self.func_container.add_widget(Button(text=content.choosen_name + ' ' + str(self.function_dictionary[keys[0]][keys[1]]),size_hint=(1,None), size=(1,30)))
 
     def get_function_list(self):
         function_list_return = []
@@ -101,8 +106,7 @@ class LoadDynamic(Empty):
         return function_list_return
 
     def copy_function(self, instance):
-        print 'import function'
-        content = BofFileChooserIconView(return_selection_path=self.copy_function_copy_file ,path='/home/roma/python_test',filter=['*.pkl'])
+        content = BofFileChooserIconView(return_selection_path=self.copy_function_copy_file )
         a_popup = Popup(title='Choose Bof', auto_dismiss=False, content=content, size_hint=(None, None), size=(400,400))
         content.set_popup(a_popup)
         a_popup.open()
@@ -184,7 +188,8 @@ class FunctionSelector(BoxLayout):
         super(FunctionSelector, self).__init__(orientation='vertical', size_hint=(1,1))
         print 'hi'
         top_padding = BoxLayout(size_hint=(1,1))
-        self.bof_spinner = Spinner(text="choose one", values=value_, size_hint=(1,None), size=(1,30))
+        self.default = "choose one"
+        self.bof_spinner = Spinner(text=self.default, values=value_, size_hint=(1,None), size=(1,30))
         bottom_padding = BoxLayout(size_hint=(1,1))
         ok_button = Button(text='Ok',  size_hint=(1,0.2))
         ok_button.bind(on_press=self.selection_made)
@@ -206,4 +211,7 @@ class FunctionSelector(BoxLayout):
         self.choosen_name = self.bof_spinner.text
         self.popup.dismiss()
         self.continues = False
+
+    def is_default(self):
+        return self.choosen_name == self.default
 
