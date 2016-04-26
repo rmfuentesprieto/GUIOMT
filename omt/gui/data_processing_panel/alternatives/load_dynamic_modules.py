@@ -54,6 +54,9 @@ class LoadDynamic(Empty):
 
         self.add_widget(big_one)
 
+        self.modules_function_loaded = {}
+        self.free_run_variable_dictionary = {}
+
     def load_xml(self):
         FILE = open(self.path_modules_and_xml + "/setup.xml", 'r')
         modules = xmlfromstring(FILE.read())
@@ -91,8 +94,27 @@ class LoadDynamic(Empty):
         if content.is_default():
             return
 
-        self.func_container.add_widget(FunctionGui(keys[0],keys[1],self.function_dictionary[keys[0]][keys[1]], ['hola','chao'] ))
+        new_widget = FunctionGui( keys[0],keys[1],self.function_dictionary[keys[0]][keys[1]], self.delete_one_function)
+        new_widget.update_free_run_dictionary(self.free_run_variable_dictionary)
+
+        self.func_container.add_widget(new_widget)
+
+        if not new_widget.module_name in self.modules_function_loaded:
+            self.modules_function_loaded[new_widget.module_name] = {}
+
+        self.modules_function_loaded[new_widget.module_name][new_widget.function_name + new_widget.special_name] = new_widget
         #self.func_container.add_widget(Button(text=content.choosen_name + ' ' + str(self.function_dictionary[keys[0]][keys[1]]),size_hint=(1,None), size=(1,30)))
+
+    def delete_one_function(self, module_name, function_name):
+        print self.modules_function_loaded
+
+        module_dic = self.modules_function_loaded[module_name]
+        del_function = module_dic[function_name]
+        del module_dic[function_name]
+
+        self.func_container.remove_widget(del_function)
+
+        print self.modules_function_loaded
 
     def get_function_list(self):
         function_list_return = []
@@ -181,6 +203,13 @@ class LoadDynamic(Empty):
         FILE.write(string_xml)
         FILE.close()
 
+    def update_free_run_dictionary(self, data_dic):
+        self.free_run_variable_dictionary = data_dic
+        for m_key in self.modules_function_loaded:
+            module_dic = self.modules_function_loaded[m_key]
+            for f_key in module_dic:
+                function = module_dic[f_key]
+                function.update_free_run_dictionary(data_dic)
 
 class FunctionSelector(BoxLayout):
 

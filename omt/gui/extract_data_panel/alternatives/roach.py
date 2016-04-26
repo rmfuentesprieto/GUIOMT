@@ -135,6 +135,7 @@ class ROACH(Empty):
         big_one.add_widget(padding_layout)
 
         self.add_widget(big_one)
+        self.do_extraction = None
 
     def add_register_free_running(self, instance):
         self.load_register_free_running('','')
@@ -144,8 +145,8 @@ class ROACH(Empty):
                                      str(self.bram_cont))
 
         self.bram_array[str(self.bram_cont)] = bram
+        bram.set_extraction_function(self.do_extraction)
         self.bram_cont += 1
-
 
     def add_registers(self, instance):
         self.load_registers("","", self.reg_container)
@@ -189,6 +190,9 @@ class ROACH(Empty):
 
     def is_active(self):
         return True
+
+    def activate_extract(self, f):
+        self.do_extraction = f
 
     def get_source_config(self):
         dic_return = {}
@@ -283,6 +287,8 @@ class ROACH(Empty):
         except:
             pass
 
+        self.do_extraction()
+
     def load_free_running(self, a_data_type, array_size_, real_imag_list_, acc_len_reg_name_, array_label_, store_ = False, plot_ = False):
         size_ = 30
         data = BoxLayout(orientation='vertical',size_hint=(1, None), size=(1,8*size_))
@@ -362,6 +368,7 @@ class ROACH(Empty):
 
         bram = BRAMArray( size_input, acc_len_reg_name_input,real_imag, id_input, data_type_spinner, store_data
                           , plot_toogle)
+        bram.set_extraction_function(self.do_extraction)
 
         add_new_array_to_merge.bind(on_press=lambda instance: bram.add_real_imag_widget())
 
@@ -413,12 +420,20 @@ class ROACH(Empty):
     def pass_source(self, sources_):
         self.sources = sources_
 
+
 class Register(object):
 
     def __init__(self, name, value):
 
         self.name = name
         self.value = value
+
+        self.active_function = None
+        self.is_active_function = False
+
+    def set_extraction_function(self,f):
+        self.active_function = f
+        self.is_active_function = True
 
     def get_name(self):
         return self.name._get_text()
@@ -441,6 +456,7 @@ class Register(object):
 
         return dictionary
 
+
 class BRAMArray(object):
     def __init__(self, size_array, acc_len_reg, grid_layout, array_id, data_type_, data_store_, data_plot_):
         self.size_array = size_array
@@ -454,6 +470,17 @@ class BRAMArray(object):
         self.store = data_store_
 
         self.data_type = data_type_
+        self.do_extraction = None
+
+        self.array_id.bind(focus=self.lose_focus)
+
+    def lose_focus(self, instance, value):
+        if value:
+            return
+        self.do_extraction()
+
+    def set_extraction_function(self,f):
+        self.do_extraction = f
 
     def add_real_imag(self, real_bram, imag_bram, key):
         self.real_imag_bram[key] = (real_bram,imag_bram)

@@ -1,36 +1,42 @@
-
+import hashlib
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
 from kivy.uix.label import Label
 from kivy.uix.spinner import Spinner
 from kivy.uix.textinput import TextInput
 
+import datetime
+
 
 class FunctionGui(BoxLayout):
 
-    def __init__(self, module_name, function_name, args_name,export_names):
+    def __init__(self, module_name, function_name, args_name, function_delete):
         super(FunctionGui, self).__init__(orientation='vertical',size_hint=(1,None), size = (1, 30*(1+len(args_name))))
         self.hight_component = 30
         self.module_name = module_name
         self.function_name = function_name
+        m = hashlib.md5()
+        m.update(str(datetime.datetime.now()))
+        self.special_name = m.digest()
 
         name_label = Label(text=module_name + '-' + function_name, size_hint=(1,None), size=(1,self.hight_component))
         self.delte_button = Button(text='-', size_hint=(None,None), size=(self.hight_component,self.hight_component))
+        self.delte_button.bind(on_press=lambda instance: function_delete(self.module_name, self.function_name + self.special_name))
 
-        title_layot = BoxLayout(orientation='horizontal', size_hint=(1,None), size=(1,self.hight_component))
-        title_layot.add_widget(name_label)
-        title_layot.add_widget(self.delte_button)
+        title_layout = BoxLayout(orientation='horizontal', size_hint=(1,None), size=(1,self.hight_component))
+        title_layout.add_widget(name_label)
+        title_layout.add_widget(self.delte_button)
 
         self.args_layouts = []
 
         for arg in args_name:
-            self.args_layouts.append(ArgsGUI(arg, export_names))
+            self.args_layouts.append(ArgsGUI(arg))
 
-
-
-        self.add_widget(title_layot)
+        self.add_widget(title_layout)
         for arg_l in self.args_layouts:
             self.add_widget(arg_l)
+
+        self.free_run_dic = []
 
     def get_config(self):
         return_dic = {}
@@ -43,15 +49,24 @@ class FunctionGui(BoxLayout):
 
         return  return_dic
 
+    def update_free_run_dictionary(self, data_dic):
+        a = 9
+        print 'lol',data_dic
+        self.free_run_dic = []
+        for bram_dic in data_dic:
+            self.free_run_dic.append(bram_dic['array_id'])
+        for arg in self.args_layouts:
+            arg.update_data_id(self.free_run_dic)
+
 
 class ArgsGUI(BoxLayout):
 
-    def __init__(self, arg, export_names):
+    def __init__(self, arg):
         self.hight_component = 30
         super(ArgsGUI, self).__init__(orientation='horizontal', size_hint=(1,None), size=(1,self.hight_component))
 
         self.arg_name = arg
-        arg_name = Label(text=arg,size_hint=(0.4,None), size=(1,self.hight_component))
+        arg_name = Label(text=arg,size_hint=(0.3,None), size=(1,self.hight_component))
 
         self.spinner_options = ('from roach', 'free input')
         self.arg_type = Spinner(
@@ -65,12 +80,11 @@ class ArgsGUI(BoxLayout):
             )
         self.arg_type.bind(text=self.change_input)
 
-
         self.arg_roach_spinner = Spinner(
                 # default value shown
-                text=export_names[0],
+                text='',
                 # available values
-                values=export_names,
+                values=[],
                 # just for positioning in our example
                 size_hint=(0.4, None),
                 size = (1,self.hight_component)
@@ -110,4 +124,7 @@ class ArgsGUI(BoxLayout):
             return_dic['value'] = self.free_input.text
 
         return return_dic
+
+    def update_data_id(self, list):
+        self.arg_roach_spinner.values = list
 

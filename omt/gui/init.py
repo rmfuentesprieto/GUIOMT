@@ -1,5 +1,4 @@
 from kivy.app import App
-from kivy.core.window import Window
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
 
@@ -41,6 +40,8 @@ class RootWidget(BoxLayout):
 
         self.coordinator = None
 
+        self.data.activate_extract(self.get_bram_dictionary)
+
     def configure_and_turn_on_sources(self, instance):
         source_dictionary = self.source.get_configurations()
         data_dictionary = self.data.get_configurations()
@@ -62,6 +63,10 @@ class RootWidget(BoxLayout):
 
     def stop_the_sources(self):
         self.coordinator.stop_the_process()
+
+    def get_bram_dictionary(self):
+        free_run = self.data.get_configurations()['roach']['bram']
+        self.proces.update_free_run_dictionary(free_run)
 
 class GUIStart(App):
     def build(self):
