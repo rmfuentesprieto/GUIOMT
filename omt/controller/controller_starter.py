@@ -3,6 +3,7 @@ from kivy.uix.label import Label
 from kivy.uix.popup import Popup
 
 from omt.controller.data.data_thread_function import DataThread, RoachException
+from omt.controller.procesing.procesing_thread_function import ProccesThread
 from omt.controller.source.source_thread_function import SourceThread, DummySourceThread
 from omt.controller.source.source_tone_or_dc import ToneDCSource
 
@@ -31,6 +32,7 @@ class Coordinator(threading.Thread):
                 self.tone_source.append(ToneDCSource(source_config))
 
         self.thread_data = DataThread(data_dictionary['roach'])
+        self.thread_procesing = ProccesThread(data_dictionary['functions'])
 
         self.end_sweep = False
 
@@ -46,6 +48,7 @@ class Coordinator(threading.Thread):
             while not self.end_sweep:
                 self.thread_source.set_generator(current_channel)
                 extract_dictionary = self.thread_data.accuaire_data()
+                self.thread_procesing.run_execute_functions(extract_dictionary)
 
                 if self.frec_number_point == (current_channel):
                     break

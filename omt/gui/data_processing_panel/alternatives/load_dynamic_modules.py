@@ -167,7 +167,8 @@ class LoadDynamic(Empty):
 
         if not module_name in self.function_dictionary:
             print 'add info to dic'
-            self.function_dictionary[module_name] = module_function_list
+            self.
+            [module_name] = module_function_list
         else:
             Popup(title='Module Error', content=Label(text="Repeated module name,\nplease change yours")\
                   , size_hint=(None, None), size=(200,200)).open()
@@ -211,6 +212,13 @@ class LoadDynamic(Empty):
                 function = module_dic[f_key]
                 function.update_free_run_dictionary(data_dic)
 
+    def get_source_config(self):
+        return_dic = {}
+        for element in self.modules_function_loaded:
+            widget = self.modules_function_loaded[element]
+            return_dic[widget.special_name] = widget.get_source_config()
+        return {}
+
 class FunctionSelector(BoxLayout):
 
     def __init__(self, value_):
@@ -243,4 +251,3 @@ class FunctionSelector(BoxLayout):
 
     def is_default(self):
         return self.choosen_name == self.default
-
