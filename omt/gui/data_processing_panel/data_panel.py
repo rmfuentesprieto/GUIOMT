@@ -20,3 +20,17 @@ class DataPanel(AbstractPanel):
 
     def get_name(self):
         return "Procesamiento \nde datos"
+
+    def update_free_run_dictionary(self, data_dic):
+        for panel in self.pannels_instants:
+            panel.update_free_run_dictionary(data_dic)
+
+
+    def get_configurations(self):
+        return_dic = {}
+        for function_config in self.pannels_instants:
+            print function_config.name
+            print function_config.name, 'yes'
+            return_dic['source'] = function_config.get_source_config()
+        return return_dic
+

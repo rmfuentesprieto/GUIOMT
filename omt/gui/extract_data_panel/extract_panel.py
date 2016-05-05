@@ -36,3 +36,7 @@ class ExtractPanel(AbstractPanel):
     def pass_source(self, sources):
         for data in self.pannels_instants:
             data.pass_source(sources)
+
+    def activate_extract(self,f):
+        for data in self.pannels_instants:
+            data.activate_extract(f)
