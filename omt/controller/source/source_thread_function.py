@@ -68,4 +68,4 @@ class DummySourceThread(AbstractSource):
 class FailToConnectTelnet(Exception):
 
     def __init__(self, ip, port):
-        self.value = 'fail to conect to %s:%s'% (ip, port)
+        self.message = 'fail to conect to %s:%s'% (ip, port)

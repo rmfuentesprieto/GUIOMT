@@ -14,9 +14,16 @@ from omt.util.data_type import data_type_dictionart
 class Roach_FPGA(object):
 
     def __init__(self, data_dic):
+
         print data_dic
-        self.port = int(data_dic['port'])
-        self.ip = data_dic['ip']
+        try:
+            self.port = int(data_dic['port'])
+        except:
+            raise MissingInformation('port')
+        try:
+            self.ip = data_dic['ip']
+        except:
+            raise MissingInformation('ip')
         self.register_list = data_dic['reg']
         self.bof_path = data_dic['bof_path']
         self.bitstream = str(data_dic['name'] + '.bof')
@@ -63,8 +70,6 @@ class Roach_FPGA(object):
         self.logger = logging.getLogger(self.ip)
         self.logger.addHandler(self.handler)
         self.logger.setLevel(10)
-
-
 
     def connect_to_roach(self):
         print self.port
@@ -211,3 +216,9 @@ class Roach_FPGA(object):
 
     def get_fpga_instance(self):
         pass
+
+
+class MissingInformation(Exception):
+
+    def __init__(self, text):
+        self.message = 'missing ROACH: %s'% (text)

@@ -1,6 +1,34 @@
 <?xml version="1.0" ?>
 <dynamic_modules>
   <!--Modules info-->
+  <module name="ss">
+    <function name="bla">
+      <arg name="hola"/>
+      <arg name="chao"/>
+    </function>
+    <function name="bsla">
+      <arg name="hola"/>
+      <arg name="chao"/>
+    </function>
+    <function name="bsssla">
+      <arg name="hola"/>
+      <arg name="chao"/>
+    </function>
+  </module>
+  <module name="lols">
+    <function name="bsla">
+      <arg name="hola"/>
+      <arg name="chao"/>
+    </function>
+    <function name="bla">
+      <arg name="hola"/>
+      <arg name="chao"/>
+    </function>
+    <function name="bsssla">
+      <arg name="hola"/>
+      <arg name="chao"/>
+    </function>
+  </module>
   <module name="tt1">
     <function name="kk">
       <arg name="lol"/>

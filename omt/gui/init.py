@@ -3,6 +3,7 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
 
 from omt.controller.controller_starter import Coordinator
+from omt.controller.data.fpga import MissingInformation
 from omt.controller.source.source_thread_function import FailToConnectTelnet
 from omt.gui.data_processing_panel.data_panel import DataPanel
 from omt.gui.extract_data_panel.extract_panel import ExtractPanel
@@ -54,6 +55,10 @@ class RootWidget(BoxLayout):
             print 'No se puede connectar'
             return
 
+        except MissingInformation as exp:
+            print exp.message
+            return
+
         # coordinator runs in a new thread
         # and launch some new ones
         self.coordinator.start()
@@ -62,6 +67,8 @@ class RootWidget(BoxLayout):
         self.stop_the_sources()
 
     def stop_the_sources(self):
+        if self.coordinator == None:
+            return
         self.coordinator.stop_the_process()
 
     def get_bram_dictionary(self):
