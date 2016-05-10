@@ -11,3 +11,6 @@ class Empty(Screen):
 
     def get_source_config(self):
         return {}
+
+    def save_config_dictionary(self):
+        return {}

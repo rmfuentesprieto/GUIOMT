@@ -15,6 +15,7 @@ class SourcePanel(AbstractPanel):
         altenatives = {
             'Agilent':'omt.gui.sourcepanel.alternatives.agilent',
             'RodeSchwartz':'omt.gui.sourcepanel.alternatives.rodeschwartz',
+            'BeamScanner':'omt.gui.sourcepanel.alternatives.beam_scanner',
         }
 
         return altenatives
