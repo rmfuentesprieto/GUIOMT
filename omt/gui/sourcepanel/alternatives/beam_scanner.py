@@ -1,8 +1,13 @@
+import socket
+import threading
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
 from kivy.uix.label import Label
+from kivy.uix.popup import Popup
 from kivy.uix.textinput import TextInput
 
+from omt.controller.source.beam_scanner.move_xy import MoveXY
+from omt.controller.source.beam_scanner.rotate import Rotate
 from omt.gui.empty import Empty
 
 
@@ -13,15 +18,21 @@ class BeamScanner(Empty):
 
         ## this is the controll to move the beam scanner
         self.set_center = Button(text='Set Center', size_hint=(1,None), size=(1,30))
+        self.set_center.bind(on_press=self.set_zero_xy)
         self.move_up = Button(text='/\\', size_hint=(0.33,None), size=(1,30))
+        self.move_up.bind(on_press=self.move_up_beam)
         move_up_padding_l = Label( size_hint=(0.33,None), size=(1,30))
         move_up_padding_r = Label( size_hint=(0.33,None), size=(1,30))
 
         self.move_left = Button(text='<', size_hint=(0.33,None), size=(1,30))
+        self.move_left.bind(on_press=self.move_left_beam)
         self.move_rigth = Button(text='>', size_hint=(0.33,None), size=(1,30))
-        self.step_size = TextInput(size_hint=(0.33,None), size=(1,30))
+        self.move_rigth.bind(on_press=self.move_rigth_beam)
+        self.step_size = TextInput(size_hint=(0.33,None), size=(1,30), multiline=False)
+        self.step_size.text = '0.0'
 
         self.move_down = Button(text='\\/', size_hint=(0.33,None), size=(1,30))
+        self.move_down.bind(on_press=self.move_down_beam)
         move_down_padding_l = Label( size_hint=(0.33,None), size=(1,30))
         move_down_padding_r = Label( size_hint=(0.33,None), size=(1,30))
 
@@ -50,8 +61,11 @@ class BeamScanner(Empty):
         ## this is the controll to rotate the beam scanner
 
         self.set_origin = Button(text='Set Zero', size_hint=(0.33,None), size=(1,30))
+        self.set_origin.bind(on_press=self.set_zero_ang)
         self.do_rotation = Button(text='Rotate to:', size_hint=(0.33,None), size=(1,30))
-        self.destination_angle = TextInput(size_hint=(0.33,None), size=(1,30))
+        self.do_rotation.bind(on_press=self.rotate)
+        self.destination_angle = TextInput(size_hint=(0.33,None), size=(1,30),multiline=False)
+        self.destination_angle.text = '0.0'
 
         rotation_layou = BoxLayout(orientation='horizontal', size_hint=(1,None), size=(1, 30))
         rotation_layou.add_widget(self.set_origin)
@@ -61,7 +75,8 @@ class BeamScanner(Empty):
         ##  check the plane movility
 
         size_of_plane_label = Label(text='Plane size [mm]', size=(1,30))
-        self.size_of_plane_val = TextInput( size=(1,30))
+        self.size_of_plane_val = TextInput( size=(1,30),multiline=False)
+        self.size_of_plane_val.text = '0.0'
 
         plane_size = BoxLayout(orientaion='horizontal',size_hint=(1,None),size=(1,30))
         plane_size.add_widget(size_of_plane_label)
@@ -72,7 +87,8 @@ class BeamScanner(Empty):
         # frecuency
 
         frec_label = Label(text='Set Lambda [mm]: ', size_hint=(1,None), size=(1,30))
-        self.frec_value = TextInput( size_hint=(1,None), size=(1,30))
+        self.frec_value = TextInput( size_hint=(1,None), size=(1,30),multiline=False)
+        self.frec_value.text = '0.0'
 
         frec_layout = BoxLayout(orientation='horizontal', size_hint=(1,None), size=(1, 30))
         frec_layout.add_widget(frec_label)
@@ -100,4 +116,123 @@ class BeamScanner(Empty):
         self.big_one.add_widget(paddind)
 
         self.add_widget(self.big_one)
+
+        ## attributes that lets you connect to beam scanner
+
+        self.ip_beam = '192.168.1.62'
+        self.ip_port = 9988
+        self.move_xy = MoveXY(self.ip_beam, self.ip_port)
+        self.move_ang = Rotate(self.ip_beam, self.ip_port)
+
+        ## disconnect thread configuration
+
+        self.monitor = threading.Event()
+        self.disconnect = True
+        self.launch_thread = False
+
+    ## connecto to configure and move around
+    def start_connection(self):
+        self.disconnect = False
+        if not self.launch_thread:
+            try:
+                self.move_xy.start_connection()
+                self.move_ang.start_connection()
+                threading.Thread(target=self.close_connection_timer).start()
+                self.launch_thread = True
+                return True
+            except socket.error as e:
+                raise
+                Popup(title='Error BeamScanner', content=Label(text=e.message),\
+                          size_hint=(None, None), size=(200, 200)).open()
+                return False
+        return True
+
+    def stop_connection(self):
+        self.move_xy.close_connection()
+        self.move_ang.close_connection()
+
+    ## movement of the beam scanner
+
+
+    def move_left_beam(self, instance):
+        if self.start_connection():
+            try:
+                if not self.move_xy.move_relative(float(self.step_size.text),0):
+                    self.stop_connection()
+                    self.disconnect = True
+            except Exception as e:
+                self.stop_connection()
+
+    def move_rigth_beam(self, instance):
+        if self.start_connection():
+            try:
+                if not self.move_xy.move_relative(-float(self.step_size.text),0):
+                    self.stop_connection()
+                    self.disconnect = True
+            except Exception as e:
+                self.stop_connection()
+
+    def move_up_beam(self, instance):
+        if self.start_connection():
+            try:
+                if not self.move_xy.move_relative(0,-float(self.step_size.text)):
+                    self.stop_connection()
+                    self.disconnect = True
+            except Exception as e:
+                self.stop_connection()
+
+    def move_down_beam(self, instance):
+        if self.start_connection():
+            try:
+                if not self.move_xy.move_relative(0,float(self.step_size.text)):
+                    self.stop_connection()
+                    self.disconnect = True
+            except Exception as e:
+                self.stop_connection()
+
+    def rotate(self, instance):
+        if self.start_connection():
+            try:
+                print 'rotating'
+                if not self.move_ang.move_absolute(float(self.destination_angle.text)):
+                    self.stop_connection()
+                    self.disconnect = True
+            except Exception as e:
+                self.stop_connection()
+
+    def set_zero_xy(self, instance):
+        if self.start_connection():
+            try:
+                if not self.move_xy.set_origin():
+                    self.stop_connection()
+                    self.disconnect = True
+            except Exception as e:
+                self.stop_connection()
+
+    def set_zero_ang(self, instance):
+        if self.start_connection():
+            try:
+                if not self.move_ang.set_origin():
+                    self.stop_connection()
+                    self.disconnect = True
+            except Exception as e:
+                self.stop_connection()
+
+    # thead de apagado
+    def close_connection_timer(self):
+        print 'close function initiated'
+        while 1:
+            if self.disconnect:
+                print 'closing function'
+                self.stop_connection()
+                break
+
+            self.disconnect = True
+
+            self.monitor.wait(15)
+
+        self.launch_thread = False
+
+
+
 
