@@ -12,6 +12,11 @@ class AbstractSource(Process):
     def set_generator(self, current_channel):
         pass
 
+    def close_process(self):
+        lol = Exception()
+        lol.message= 'Fail to close'
+        raise lol
+
 
 class SourceThread(AbstractSource):
 

@@ -9,10 +9,12 @@ from kivy.uix.textinput import TextInput
 
 from omt.controller.source.beam_scanner.move_xy import MoveXY
 from omt.controller.source.beam_scanner.rotate import Rotate
+from omt.controller.source.beam_scanner_controller import BeamScannerController
 from omt.gui.empty import Empty
+from omt.gui.sourcepanel.alternatives.abstractsource import AbstractSource
 
 
-class BeamScanner(Empty):
+class BeamScanner(AbstractSource):
     def __init__(self, **kwargs):
         super(BeamScanner, self).__init__(kwargs=kwargs)
 
@@ -169,9 +171,13 @@ class BeamScanner(Empty):
         self.launch_thread = False
 
     def sweepe_or_not(self, instance, value):
+        print value
         self.active_state = value
 
     def is_active(self):
+        return self.active_state
+
+    def do_sweep(self):
         return self.active_state
 
     # connecto to configure and move around
@@ -288,7 +294,7 @@ class BeamScanner(Empty):
 
             if lambda_*factor > 0:
                 size = float(self.size_of_plane_val.text)
-                points = int(0.5 + size/(lambda_*factor))
+                points = int(0.5 + size/(lambda_*factor)) + 1
                 self.step_val.text = str(points*points)
         except:
             pass
@@ -311,8 +317,46 @@ class BeamScanner(Empty):
     def get_source_config(self):
         return_dic = {}
 
-        return_dic['size'] = self.size_of_plane_val.text
-        return_dic['total_points'] = self.step_val.text
+        try:
+            return_dic['size'] = float(self.size_of_plane_val.text)
+            return_dic['total_points'] = int(self.step_val.text)
+            return_dic['angle_to_measure'] = float(self.destination_angle.text)
+            return_dic['frec_number_point'] = int(self.step_val.text)
+            return_dic['instance'] = BeamScannerController
+            return_dic['angle_speed'] = float(self.speed_rotation_value.text)
+        except:
+            raise Exception('Please Enter Numbers only')
+
 
         return return_dic
+
+    def save_config_dictionary(self):
+        dic_return = {}
+
+        dic_return['on_off'] = self.active_state
+        print 'tp save',self.active_state
+        dic_return['step_val'] = self.step_val.text
+        dic_return['destination_angle'] = self.destination_angle.text
+        dic_return['angle_speed'] = self.speed_rotation_value.text
+        dic_return['plane_size'] = self.size_of_plane_val.text
+        dic_return['lambda'] = self.frec_value.text
+        dic_return['step_factor'] = self.step_size.text
+
+        print dic_return
+
+        return  dic_return
+
+
+
+    def set_configuration(self, config_dictionary):
+        self.active_state = config_dictionary['on_off']
+        print 'onoff', self.active_state
+        self.sweep_switch.active = self.active_state
+        self.step_val.text = config_dictionary['step_val']
+        self.destination_angle.text = config_dictionary['destination_angle']
+        self.speed_rotation_value.text = config_dictionary['angle_speed']
+        self.size_of_plane_val.text = config_dictionary['plane_size']
+        self.frec_value.text = config_dictionary['lambda']
+        self.step_size.text = config_dictionary['step_factor']
+
 

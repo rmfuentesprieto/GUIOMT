@@ -19,7 +19,7 @@ class DataPanel(AbstractPanel):
         return altenatives
 
     def get_name(self):
-        return "Procesamiento \nde datos"
+        return "Process Data"
 
     def update_free_run_dictionary(self, data_dic):
         for panel in self.pannels_instants:

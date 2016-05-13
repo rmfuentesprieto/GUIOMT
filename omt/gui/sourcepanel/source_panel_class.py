@@ -21,7 +21,7 @@ class SourcePanel(AbstractPanel):
         return altenatives
 
     def get_name(self):
-        return "Fuentes"
+        return "Source"
 
     def get_configurations(self):
         return_dic = {}

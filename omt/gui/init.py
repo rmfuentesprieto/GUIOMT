@@ -46,11 +46,12 @@ class RootWidget(BoxLayout):
     def configure_and_turn_on_sources(self, instance):
         source_dictionary = self.source.get_configurations()
         data_dictionary = self.data.get_configurations()
+        function_dictionary = self.proces.get_configurations()
         # processing_dictionary = {}
         print data_dictionary
 
         try:
-            self.coordinator = Coordinator(source_dictionary, data_dictionary)
+            self.coordinator = Coordinator(source_dictionary, data_dictionary,function_dictionary)
         except FailToConnectTelnet:
             print 'No se puede connectar'
             return

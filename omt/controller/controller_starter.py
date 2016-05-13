@@ -10,7 +10,7 @@ from omt.controller.source.source_tone_or_dc import ToneDCSource
 
 class Coordinator(threading.Thread):
 
-    def __init__(self, source_dictionary, data_dictionary):
+    def __init__(self, source_dictionary, data_dictionary, fucntion_dictionary):
 
         super(Coordinator, self).__init__()
 
@@ -21,7 +21,7 @@ class Coordinator(threading.Thread):
         if 'sweep' in source_dictionary:
             sweep_source_dic = source_dictionary['sweep']
             self.frec_number_point = sweep_source_dic['frec_number_point']
-            self.thread_source = SourceThread(sweep_source_dic)
+            self.thread_source = sweep_source_dic['instance'](sweep_source_dic)
         else:
             self.frec_number_point = -1
             self.thread_source = DummySourceThread()
@@ -32,7 +32,7 @@ class Coordinator(threading.Thread):
                 self.tone_source.append(ToneDCSource(source_config))
 
         self.thread_data = DataThread(data_dictionary['roach'])
-        self.thread_procesing = ProccesThread(data_dictionary['functions'])
+        self.thread_procesing = ProccesThread(fucntion_dictionary)
 
         self.end_sweep = False
 

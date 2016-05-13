@@ -106,8 +106,8 @@ class Roach_FPGA(object):
                 data_type = bram['data_type']
                 array_size = bram['size']
                 acc_n = -1
-
-                while True and (len(acc_len_ref) > 0):
+                # todo change this
+                while False and (len(acc_len_ref) > 0):
                     acc_n = self.fpga.read_uint(acc_len_ref)
                     if acc_n > 1+bram['prev_acc']:
                         bram['prev_acc'] = acc_n

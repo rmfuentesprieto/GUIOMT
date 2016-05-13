@@ -18,7 +18,8 @@ class Roach_II_Controller(Roach_FPGA):
     def send_bof(self):
         # self.connection.write(a_command + '?\r\n')
         # response = self.connection.read_until(b"\n")
-        super(Roach_II_Controller, self).send_bof()
+        if not self.program:
+            return
         connection = telnetlib.Telnet(self.ip, self.port)
         connection.read_until('0', timeout=1)
         connection.write('?listbof\r\n')
