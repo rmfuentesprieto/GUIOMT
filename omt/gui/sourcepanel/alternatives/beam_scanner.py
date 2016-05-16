@@ -90,7 +90,6 @@ class BeamScanner(AbstractSource):
         speed_rotation = Label(text='Angle Speed', size_hint=(1, None), size=(1, 30))
         self.speed_rotation_value = TextInput(size_hint=(1, None), size=(1, 30))
         self.speed_rotation_value.text = '10.0'
-        self.speed_rotation_value.bind(focus=self.lose_focus)
 
         rotation_speed = BoxLayout(orientaion='horizontal', size_hint=(1, None), size=(1, 30))
         rotation_speed.add_widget(speed_rotation)
@@ -246,7 +245,6 @@ class BeamScanner(AbstractSource):
     def rotate(self, instance):
         if self.start_connection():
             try:
-                print 'rotating'
                 if not self.move_ang.move_absolute(float(self.destination_angle.text)):
                     self.stop_connection()
                     self.disconnect = True
@@ -266,22 +264,6 @@ class BeamScanner(AbstractSource):
         if self.start_connection():
             try:
                 if not self.move_ang.set_origin():
-                    self.stop_connection()
-                    self.disconnect = True
-            except Exception:
-                self.stop_connection()
-
-    def lose_focus(self, instance, value):
-        if self.start_connection():
-            try:
-                speed = self.speed_rotation_value.text
-                print speed
-                print value
-                try:
-                    speed = float(speed)
-                except:
-                    return
-                if not self.move_ang.set_hspd(speed):
                     self.stop_connection()
                     self.disconnect = True
             except Exception:

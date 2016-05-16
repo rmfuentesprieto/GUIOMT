@@ -582,4 +582,45 @@ class BRAMArray(object):
 
         return  to_return
 
+class RoachWarningBox(BoxLayout):
 
+    def __init__(self, text_):
+        super(RoachWarningBox, self).__init__(orientation='vertical', size_hint=(1,1))
+
+        top_padding = BoxLayout(size_hint=(1,1))
+        self.square_label = Label(text = text_)
+        bottom_padding = BoxLayout(size_hint=(1,1))
+        buttons = BoxLayout(orientation='horizontal', size_hint=(1, 1))
+
+        ok_button = Button(text='Yes',  size_hint=(1,0.2))
+        ok_button.bind(on_press=self.selection_yes)
+        cancel_button = Button(text='No', size_hint=(1, 0.2))
+        cancel_button.bind(on_press=self.selection_no)
+
+        buttons.add_widget(ok_button)
+        buttons.add_widget(cancel_button)
+
+        self.add_widget(top_padding)
+        self.add_widget(self.square_label)
+        self.add_widget(bottom_padding)
+        self.add_widget(buttons)
+
+        self.choosen_name = ''
+        self.popup = None
+
+        self.continues = True
+        self.choise = True
+
+    def set_popup(self, popup_):
+        self.popup = popup_
+
+    def selection_made(self):
+        self.popup.dismiss()
+        self.continues = False
+
+    def selection_yes(self, instance):
+        self.selection_made()
+
+    def selection_no(self, instance):
+        self.choise = False
+        self.selection_made()

@@ -3,6 +3,7 @@ from kivy.uix.label import Label
 from kivy.uix.popup import Popup
 
 from omt.controller.data.data_thread_function import DataThread, RoachException
+from omt.controller.data.fpga import MissingInformation
 from omt.controller.procesing.procesing_thread_function import ProccesThread
 from omt.controller.source.source_thread_function import SourceThread, DummySourceThread
 from omt.controller.source.source_tone_or_dc import ToneDCSource
@@ -17,7 +18,18 @@ class Coordinator(threading.Thread):
         self.end_sweep = False
         # extract the settings for the source thats going to sweep
 
+        self.source_dictionary = source_dictionary
+        self.data_dictionary = data_dictionary
+        self.fucntion_dictionary = fucntion_dictionary
+
+    def run(self):
+
         sweep_source_dic = {}
+
+        source_dictionary = self.source_dictionary
+        data_dictionary = self.data_dictionary
+        fucntion_dictionary = self.fucntion_dictionary
+
         if 'sweep' in source_dictionary:
             sweep_source_dic = source_dictionary['sweep']
             self.frec_number_point = sweep_source_dic['frec_number_point']
@@ -30,13 +42,16 @@ class Coordinator(threading.Thread):
         if 'tone' in source_dictionary:
             for source_config in source_dictionary['tone']:
                 self.tone_source.append(ToneDCSource(source_config))
+        try:
+            self.thread_data = DataThread(data_dictionary['roach'])
+        except MissingInformation:
 
-        self.thread_data = DataThread(data_dictionary['roach'])
+            print 'finish for all this'
+            return
         self.thread_procesing = ProccesThread(fucntion_dictionary)
 
         self.end_sweep = False
 
-    def run(self):
         for source in self.tone_source:
             source.turn_on()
 

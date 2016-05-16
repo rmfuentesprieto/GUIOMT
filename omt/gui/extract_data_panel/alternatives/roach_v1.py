@@ -1,5 +1,8 @@
+from kivy.uix.popup import Popup
+
+from omt.controller.data.fpga import MissingInformation
 from omt.controller.data.roach_1 import Roach_I_Controller
-from omt.gui.extract_data_panel.alternatives.roach import ROACH
+from omt.gui.extract_data_panel.alternatives.roach import ROACH, RoachWarningBox
 
 
 class ROACHI(ROACH):

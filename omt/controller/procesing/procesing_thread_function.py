@@ -7,4 +7,4 @@ class ProccesThread(Process):
         self.data_dic = data_dic
 
     def run_execute_functions(self, roach_arguments):
-        pass
+        print self.data_dic

@@ -56,10 +56,6 @@ class RootWidget(BoxLayout):
             print 'No se puede connectar'
             return
 
-        except MissingInformation as exp:
-            print exp.message
-            return
-
         # coordinator runs in a new thread
         # and launch some new ones
         self.coordinator.start()
