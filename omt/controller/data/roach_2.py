@@ -44,7 +44,9 @@ class Roach_II_Controller(Roach_FPGA):
         # is given the alternative to delete one bof
         # if the fpga is full
 
-        if (len(bof_files) == 17 and not(self.bitstream in bof_files) ):
+        print 'lollll,', not(self.bitstream in bof_files)
+
+        if not(self.bitstream in bof_files):
             content = BofSelector("", bof_files)
             a_popup = Popup(title='Choose Bof', auto_dismiss=False, content=content, size_hint=(None, None), size=(400,400))
             content.set_popup(a_popup)

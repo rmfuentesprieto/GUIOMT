@@ -31,6 +31,6 @@ class DataPanel(AbstractPanel):
         for function_config in self.pannels_instants:
             print function_config.name
             print function_config.name, 'yes'
-            return_dic['source'] = function_config.get_source_config()
+            return_dic[function_config.name] = function_config.get_source_config()
         return return_dic
 

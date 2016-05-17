@@ -214,9 +214,11 @@ class LoadDynamic(Empty):
     def get_source_config(self):
         return_dic = {}
         for element in self.modules_function_loaded:
-            widget = self.modules_function_loaded[element]
-            return_dic[widget.special_name] = widget.get_source_config()
-        return {}
+            module = self.modules_function_loaded[element]
+            for key in module:
+                widget = module[key]
+                return_dic[widget.special_name] = widget.get_source_config()
+        return return_dic
 
 class FunctionSelector(BoxLayout):
 

@@ -38,7 +38,7 @@ class FunctionGui(BoxLayout):
 
         self.free_run_dic = []
 
-    def get_config(self):
+    def get_source_config(self):
         return_dic = {}
 
         return_dic['module_name'] = self.module_name

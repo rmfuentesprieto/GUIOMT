@@ -45,7 +45,7 @@ class Roach_FPGA(object):
                 aplot.ylabel('Power AU (dB)')
                 aplot('set xrange [-50:2098]')
                 aplot('set yrange [0:100]')
-                aplot('set ytics 5')
+                aplot('set ytics 10')
                 aplot('set xtics 256')
                 aplot('set grid y')
                 aplot('set grid x')
@@ -168,9 +168,10 @@ class Roach_FPGA(object):
                     if have_real and have_imag:
                         aplot('set multiplot layout 2,1 rowsfirst')
                         aplot('set yrange [0:150]')
-
+                        aplot('set ytics 10')
                         aplot.plot(10*numpy.log10(numpy.absolute(final_array)))
-                        aplot('set yrange [-1:361]')
+                        aplot('set ytics 20')
+                        aplot('set yrange [-181:181]')
                         aplot.plot(numpy.angle(final_array)*180/3.141592)
 
                         aplot('unset multiplot')
