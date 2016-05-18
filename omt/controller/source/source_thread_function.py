@@ -36,7 +36,7 @@ class SourceThread(AbstractSource):
             self.connection = telnetlib.Telnet(self.ip, self.port,timeout=7) # for test purpuses, time in secconds
             #self.connection = telnetlib.Telnet(self.ip, self.port)
         except socket.error, exc:
-            raise FailToConnectTelnet(self.ip, self.port)
+            raise FailToConnectTelnet(self.ip, self.port, config_dic['name'])
         self.connection.write('power ' + str(config_dic['power']) + ' dbm\r\n')
 
         self.is_on = False
@@ -49,6 +49,7 @@ class SourceThread(AbstractSource):
     def set_generator(self, current_channel):
         if not self.is_on:
             self.connection.write('outp on\r\n')
+            self.is_on = True
         self.connection.write('freq ' + str(current_channel * self.frec_step + self.frec_init) + '\r\n')
         print 'addquiere ' + str(current_channel)
         # wait for the tone to adjust well
@@ -72,5 +73,5 @@ class DummySourceThread(AbstractSource):
 
 class FailToConnectTelnet(Exception):
 
-    def __init__(self, ip, port):
-        self.message = 'fail to conect to %s:%s'% (ip, port)
+    def __init__(self, ip, port, name='none'):
+        self.message = 'fail to conect to %s:%s.\nFrom source: %s'% (ip, port, name)

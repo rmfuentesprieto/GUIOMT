@@ -3,6 +3,7 @@ import re
 import telnetlib
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
+from kivy.uix.label import Label
 from kivy.uix.popup import Popup
 
 import corr
@@ -20,6 +21,11 @@ class Roach_II_Controller(Roach_FPGA):
         # response = self.connection.read_until(b"\n")
         if not self.program:
             return
+
+        send_bof_label = Label(text='Sending bof,\nplease be patient.')
+        popup = Popup(title='ROACH Busnise', content=send_bof_label, size_hint=(None,None), size=(1,30))
+        popup.open()
+
         connection = telnetlib.Telnet(self.ip, self.port)
         connection.read_until('0', timeout=1)
         connection.write('?listbof\r\n')
@@ -63,12 +69,17 @@ class Roach_II_Controller(Roach_FPGA):
 
             print 'finish'
         #thread.start_new(self.send_it, (connection,)) #connection
+
+
+
         command = '?uploadbof 3000 %s\r\n'%(self.bitstream)
         connection.write(command)
         time.sleep(1)
         print 'sending bof'
         command = 'nc %s 3000 < %s' %(self.ip, self.bof_path)
         os.system(command)
+
+        popup.dismiss()
 
         connection.close()
 

@@ -1,5 +1,5 @@
 from omt.controller.abstract_parallel_proces import Process
-
+import sys, traceback
 
 class ProccesThread(Process):
     dynamic_load_location = 'omt.controller.procesing.dynamic_modules'
@@ -35,7 +35,7 @@ class ProccesThread(Process):
             try:
                 dynamic_function(**function_args)
             except Exception as e:
-                # todo look for meta info on the error to display it acordingly
-                # todo update a method module
+                exc_type, exc_value, exc_traceback = sys.exc_info()
+                print traceback.extract_tb(exc_traceback)
                 raise Exception(e.message + '\n in function %s from module %s' %(function_name,function_module))
 

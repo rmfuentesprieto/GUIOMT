@@ -306,6 +306,7 @@ class BeamScanner(AbstractSource):
             return_dic['frec_number_point'] = int(self.step_val.text)
             return_dic['instance'] = BeamScannerController
             return_dic['angle_speed'] = float(self.speed_rotation_value.text)
+            return_dic['name'] = self.get_my_name()
         except:
             raise Exception('Please Enter Numbers only')
 

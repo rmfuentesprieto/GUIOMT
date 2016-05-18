@@ -1,11 +1,12 @@
 import threading
 from kivy.uix.label import Label
 from kivy.uix.popup import Popup
+from kivy.uix.progressbar import ProgressBar
 
 from omt.controller.data.data_thread_function import DataThread, RoachException
 from omt.controller.data.fpga import MissingInformation
 from omt.controller.procesing.procesing_thread_function import ProccesThread
-from omt.controller.source.source_thread_function import SourceThread, DummySourceThread
+from omt.controller.source.source_thread_function import SourceThread, DummySourceThread, FailToConnectTelnet
 from omt.controller.source.source_tone_or_dc import ToneDCSource
 
 
@@ -33,7 +34,12 @@ class Coordinator(threading.Thread):
         if 'sweep' in source_dictionary:
             sweep_source_dic = source_dictionary['sweep']
             self.frec_number_point = sweep_source_dic['frec_number_point']
-            self.thread_source = sweep_source_dic['instance'](sweep_source_dic)
+            try:
+                self.thread_source = sweep_source_dic['instance'](sweep_source_dic)
+            except FailToConnectTelnet as e:
+                error_label = Label(text = e.message)
+                Popup(title='Source error', content=error_label, size_hint=(None, None), size=(300,300)).open()
+                return
         else:
             self.frec_number_point = -1
             self.thread_source = DummySourceThread()
@@ -55,6 +61,11 @@ class Coordinator(threading.Thread):
         for source in self.tone_source:
             source.turn_on()
 
+        progress_bar = ProgressBar(max=self.frec_number_point, value = 0)
+        progress_bar_popup = Popup(content=progress_bar, size_hint = (None, None), size = (300,300), title='Sweep state of progress')
+
+        progress_bar_popup.open()
+
         try:
             current_channel = 0
 
@@ -69,13 +80,18 @@ class Coordinator(threading.Thread):
                     break
                 current_channel += 1
 
+                progress_bar.value = current_channel
+
         except RoachException as roach_e:
+
             Popup(title='Error Roach', content=Label(text=roach_e.message),\
                           size_hint=(None, None), size=(120, 100)).open()
 
         except Exception as e:
             Popup(title='Error', content=Label(text=e.message),\
                           size_hint=(None, None), size=(120, 100)).open()
+
+        progress_bar_popup.dismiss()
 
         print "stop it all lol"
 

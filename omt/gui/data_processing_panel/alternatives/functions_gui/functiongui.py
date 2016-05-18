@@ -54,7 +54,12 @@ class FunctionGui(BoxLayout):
         print 'lol',data_dic
         self.free_run_dic = []
         for bram_dic in data_dic:
-            self.free_run_dic.append(bram_dic['array_id'])
+            if bram_dic['is_bram']:
+                self.free_run_dic.append(bram_dic['array_id'])
+            else:
+                if not bram_dic['load_data']:
+                    self.free_run_dic.append(bram_dic['reg_name'])
+
         for arg in self.args_layouts:
             arg.update_data_id(self.free_run_dic)
 

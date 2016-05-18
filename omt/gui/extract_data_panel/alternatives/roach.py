@@ -54,7 +54,6 @@ class ROACH(Empty):
         save_button = Button(text='save',  size_hint=(0.33,1))
         clear_button.bind(on_press=self.clear_button)
         save_button.bind(on_press=self.button_save_all)
-
         self.program_button = ToggleButton(text='program',  size_hint=(0.33,1))
 
         buttons_layout = BoxLayout(orientation='horizontal', size_hint=(1,None), size=(1,30))
@@ -103,11 +102,8 @@ class ROACH(Empty):
 
         print os.path.dirname(os.path.realpath(__file__)) + '/roach_configurations'
 
-        fc_conf = BofFileChooserIconView(self.load_data, path=os.path.dirname(os.path.realpath(__file__)) + '/roach_configurations' , filter=['*.pkl'])
-        self.file_roch_popup = Popup(title='Choose Configuration', auto_dismiss=False, content=fc_conf,\
-                                       size_hint=(None, None), size=(400,400))
-        fc_conf.set_popup(self.file_roch_popup)
-        name_config.bind(on_press=self.file_roch_popup.open)
+
+        name_config.bind(on_press=self.open_look_directory)
 
 
         fc = BofFileChooserIconView(self.set_bof_path)
@@ -136,6 +132,13 @@ class ROACH(Empty):
 
         self.add_widget(big_one)
         self.do_extraction = None
+
+    def open_look_directory(self, instance):
+        fc_conf = BofFileChooserIconView(self.load_data, path=os.path.dirname(os.path.realpath(__file__)) + '/roach_configurations' , filter=['*.pkl'])
+        self.file_roch_popup = Popup(title='Choose Configuration', auto_dismiss=False, content=fc_conf,\
+                                       size_hint=(None, None), size=(400,400))
+        fc_conf.set_popup(self.file_roch_popup)
+        self.file_roch_popup.open()
 
     def add_register_free_running(self, instance):
         self.load_register_free_running('','')

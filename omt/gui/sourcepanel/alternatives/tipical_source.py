@@ -236,6 +236,8 @@ class CommonSource(AbstractSource):
         else:
             data_dic['frec'] = float(self.init_frec_value._get_text())*self.init_frec_unit.get_unit_norm()
 
+        data_dic['name'] = self.get_my_name()
+
         return data_dic
 
     def save_config_dictionary(self):

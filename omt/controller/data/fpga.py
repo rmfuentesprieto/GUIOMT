@@ -164,26 +164,33 @@ class Roach_FPGA(object):
                 if bram['plot']:
                     aplot = self.plot_brams[bram_cont]
                     aplot.clear()
+                    data = 10*numpy.log10(1.0+numpy.absolute(final_array))
+                    x_range = int(numpy.amax(data) * 1.1)
+
 
                     if have_real and have_imag:
                         aplot('set multiplot layout 2,1 rowsfirst')
-                        aplot('set yrange [0:150]')
+                        aplot('set yrange [0:%s]' % (str(x_range)))
                         aplot('set ytics 10')
-                        aplot.plot(10*numpy.log10(numpy.absolute(final_array)))
+                        aplot.plot(data)
                         aplot('set ytics 20')
                         aplot('set yrange [-181:181]')
                         aplot.plot(numpy.angle(final_array)*180/3.141592)
 
                         aplot('unset multiplot')
                     else:
-                        aplot('set yrange [0:150]')
-                        aplot.plot(10*numpy.log10(numpy.absolute(final_array)))
+                        aplot('set yrange [0:%s]' % (str(x_range)))
+                        aplot.plot(data)
                     aplot.title('plot of data array %s, acc count %s'%(self.brams_info[bram_cont]['array_id'],str(acc_n)))
                     time.sleep(0.3)
 
                 if bram['store']:
                     files = self.store_drams[bram_cont]
-                    files[0].writerow(final_array)
+                    str_final = []
+                    for data in final_array:
+                        str_final.append('{:f}'.format(data))
+
+                    files[0].writerow(str_final)
             else:
                 if bram['load_data']:
                     self.fpga.write_int(bram['reg_name'], int(bram['reg_value']))
@@ -204,12 +211,14 @@ class Roach_FPGA(object):
         bram_cont = 0
         print 'hola'
         for bram in self.brams_info:
-            if bram['plot']:
-                self.plot_brams[bram_cont].close()
+            if bram['is_bram']:
+                if bram['plot']:
+                    self.plot_brams[bram_cont].close()
 
-            if bram['store']:
-                files = self.store_drams[bram_cont]
-                files[1].close()
+                if bram['store']:
+                    files = self.store_drams[bram_cont]
+                    files[1].close()
+            bram_cont += 1
 
 
     def fail(self):
