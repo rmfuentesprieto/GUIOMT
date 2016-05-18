@@ -221,8 +221,8 @@ class Roach_FPGA(object):
 
 class DummyRoach_FPGA(Roach_FPGA):
 
-    def __init__(self, data):
-        pass
+    def __init__(self, data_dic):
+        self.brams_info = data_dic['bram']
 
     def connect_to_roach(self):
         pass
@@ -237,7 +237,22 @@ class DummyRoach_FPGA(Roach_FPGA):
         pass
 
     def accuaire_data(self):
-        return {}
+
+        if not self.is_conected():
+            return {}
+
+        return_data = {}
+
+        for bram in self.brams_info:
+            if bram['is_bram']:
+                return_data[bram['array_id']] = ((-1,-1,-1), -1)
+            else:
+                if bram['load_data']:
+                    pass
+                else:
+                    return_data[bram['reg_name']] = 0
+
+        return return_data
 
 
     def program_fpga(self):

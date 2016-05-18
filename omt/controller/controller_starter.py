@@ -44,9 +44,9 @@ class Coordinator(threading.Thread):
                 self.tone_source.append(ToneDCSource(source_config))
         try:
             self.thread_data = DataThread(data_dictionary['roach'])
-        except MissingInformation:
+        except MissingInformation as e:
 
-            print 'finish for all this'
+            print 'finish for all this %s' %(e.message)
             return
         self.thread_procesing = ProccesThread(fucntion_dictionary)
 
