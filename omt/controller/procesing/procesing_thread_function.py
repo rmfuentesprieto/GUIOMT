@@ -23,7 +23,7 @@ class ProccesThread(Process):
                     arg_name = arg_dic['arg_name']
 
                     if arg_dic['from_roach']:
-                        function_args[arg_name] = roach_arguments[arg_name]
+                        function_args[arg_name] = roach_arguments[arg_dic['value']]
                     else:
                         function_args[arg_name] = arg_dic['value']
 
@@ -32,5 +32,10 @@ class ProccesThread(Process):
             dynamic_module = __import__(ProccesThread.dynamic_load_location + '.' + function_module , globals(), locals(), [function_name,],-1)
             dynamic_function = getattr(dynamic_module, function_name)
 
-            dynamic_function(**function_args)
+            try:
+                dynamic_function(**function_args)
+            except Exception as e:
+                # todo look for meta info on the error to display it acordingly
+                # todo update a method module
+                raise Exception(e.message + '\n in function %s from module %s' %(function_name,function_module))
 
