@@ -17,6 +17,7 @@
   </module>
   <module name="lols">
     <function name="bsla">
+      <arg name="save_data"/>
       <arg name="hola"/>
       <arg name="chao"/>
     </function>

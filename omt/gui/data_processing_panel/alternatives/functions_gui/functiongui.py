@@ -89,7 +89,7 @@ class ArgsGUI(BoxLayout):
                 # default value shown
                 text='',
                 # available values
-                values=[],
+                values=['save_data'],
                 # just for positioning in our example
                 size_hint=(0.4, None),
                 size = (1,self.hight_component)
@@ -131,5 +131,6 @@ class ArgsGUI(BoxLayout):
         return return_dic
 
     def update_data_id(self, list):
+        list.append('save_data')
         self.arg_roach_spinner.values = list
 
