@@ -199,6 +199,8 @@ class Roach_FPGA(object):
 
             bram_cont += 1
 
+            return_data['fpga'] = self.fpga
+
         return return_data
 
     def program_fpga(self):

@@ -38,6 +38,7 @@ class RootWidget(BoxLayout):
         self.source = SourcePanel()
 
         self.data.pass_source(self.source.pass_sources())
+        self.data.pass_functions(self.proces.pass_functions())
 
         self.panels.add_widget(self.proces,0)
         self.panels.add_widget(self.data,1)

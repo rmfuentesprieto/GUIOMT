@@ -34,6 +34,7 @@ class ROACH(Empty):
         self.bof_path = ''
 
         self.sources = []
+        self.function = []
 
         # reg layout
         roach_connection_info = BoxLayout(orientation='horizontal',  size_hint=(1,None), size=(1,30))
@@ -232,6 +233,11 @@ class ROACH(Empty):
             source_dic_config.update( a_source.save_config_dictionary())
         dic_return['sources'] = source_dic_config
 
+        function_dic_config = {}
+        for a_function in self.function:
+            function_dic_config.update(a_function.sava_config_dictionary())
+        dic_return['functions'] = function_dic_config
+
         dic_return['wich'] = self.which_roach()
 
         # this line saves the dictionary to file with pikle
@@ -246,7 +252,6 @@ class ROACH(Empty):
 
     def set_bof_path(self, path):
 
-        path = path[0]
         if len(self.name_config_input.text) <1:
             Popup(content=Label(text='Enter Name'), size_hint=(None,None),size=(200,100)).open()
             return
@@ -294,6 +299,8 @@ class ROACH(Empty):
         try:
             for a_source in self.sources:
                 a_source.set_configuration(dic['sources'])
+            for a_function in self.function:
+                a_function.set_configuration(dic['functions'])
         except:
             pass
 
@@ -429,6 +436,9 @@ class ROACH(Empty):
 
     def pass_source(self, sources_):
         self.sources = sources_
+
+    def pass_functions(self, functions_):
+        self.function = functions_
 
     def which_roach(self):
         pass

@@ -220,6 +220,12 @@ class LoadDynamic(Empty):
                 return_dic[widget.special_name] = widget.get_source_config()
         return return_dic
 
+    def sava_config_dictionary(self):
+        return {}
+
+    def set_configuration(self, dic):
+        pass
+
 class FunctionSelector(BoxLayout):
 
     def __init__(self, value_):

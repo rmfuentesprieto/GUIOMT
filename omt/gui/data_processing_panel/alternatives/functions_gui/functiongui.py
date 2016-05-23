@@ -50,8 +50,6 @@ class FunctionGui(BoxLayout):
         return  return_dic
 
     def update_free_run_dictionary(self, data_dic):
-        a = 9
-        print 'lol',data_dic
         self.free_run_dic = []
         for bram_dic in data_dic:
             if bram_dic['is_bram']:
@@ -89,7 +87,7 @@ class ArgsGUI(BoxLayout):
                 # default value shown
                 text='',
                 # available values
-                values=['save_data', 'current_channel'],
+                values=['save_data', 'current_channel','fpga'],
                 # just for positioning in our example
                 size_hint=(0.4, None),
                 size = (1,self.hight_component)
@@ -131,5 +129,5 @@ class ArgsGUI(BoxLayout):
         return return_dic
 
     def update_data_id(self, list):
-        self.arg_roach_spinner.values = ['save_data','current_channel'] + list
+        self.arg_roach_spinner.values = ['save_data','current_channel','fpga'] + list
 

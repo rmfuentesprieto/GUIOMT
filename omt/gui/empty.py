@@ -14,3 +14,6 @@ class Empty(Screen):
 
     def save_config_dictionary(self):
         return {}
+
+    def set_configuration(self, dic):
+        pass

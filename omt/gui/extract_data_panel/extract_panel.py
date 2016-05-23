@@ -37,6 +37,10 @@ class ExtractPanel(AbstractPanel):
         for data in self.pannels_instants:
             data.pass_source(sources)
 
+    def pass_functions(self, functions):
+        for data in self.pannels_instants:
+            data.pass_functions(functions)
+
     def load_data(self, path):
         for data in self.pannels_instants:
             data.load_data(path)
