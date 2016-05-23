@@ -16,6 +16,7 @@ class SourcePanel(AbstractPanel):
             'Agilent':'omt.gui.sourcepanel.alternatives.agilent',
             'RodeSchwartz':'omt.gui.sourcepanel.alternatives.rodeschwartz',
             'BeamScanner':'omt.gui.sourcepanel.alternatives.beam_scanner',
+            'PCG':'omt.gui.sourcepanel.alternatives.pcg',
         }
 
         return altenatives

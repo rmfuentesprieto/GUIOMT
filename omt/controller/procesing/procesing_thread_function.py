@@ -30,12 +30,25 @@ class ProccesThread(Process):
             for possible_arg in args:
                 arg_dic = function_info[possible_arg]
                 if 'arg_name' in arg_dic:
+
                     arg_name = arg_dic['arg_name']
 
                     if arg_dic['from_roach']:
                         function_args[arg_name] = roach_arguments[arg_dic['value']]
                     else:
-                        function_args[arg_name] = arg_dic['value']
+                        value = arg_dic['value']
+                        try:
+                            if str(int(value)) == value:
+                                value = int(value)
+                        except:
+                            value = roach_arguments[arg_dic['value']]
+
+                        try:
+                            if str(float(value)) == value:
+                                value = float(value)
+                        except:
+                            value = roach_arguments[arg_dic['value']]
+                        function_args[arg_name] = value
 
             print function_module, function_name, function_args
 

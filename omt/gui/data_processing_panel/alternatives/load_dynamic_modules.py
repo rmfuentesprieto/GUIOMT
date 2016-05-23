@@ -162,7 +162,7 @@ class LoadDynamic(Empty):
 
             funct_reference = getattr(dynamic_module, a_function)
             #function_dic['args_name'] = funct_reference.__code__.co_varnames
-            module_function_list[a_function] = funct_reference.__code__.co_varnames[funct_reference.__code__.co_argcount]
+            module_function_list[a_function] = funct_reference.__code__.co_varnames[:funct_reference.__code__.co_argcount]
             #module_function_list[a_function + "_instance"] = funct_reference
 
         if not module_name in self.function_dictionary:

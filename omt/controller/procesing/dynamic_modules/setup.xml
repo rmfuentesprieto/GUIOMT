@@ -1,47 +1,29 @@
 <?xml version="1.0" ?>
 <dynamic_modules>
   <!--Modules info-->
-  <module name="ss">
-    <function name="bla">
-      <arg name="hola"/>
-      <arg name="chao"/>
+  <module name="roach_basic">
+    <function name="extract_data_sweep">
+      <arg name="save_dic"/>
+      <arg name="current_channel"/>
+      <arg name="initial_spec"/>
+      <arg name="step"/>
+      <arg name="spectrum"/>
     </function>
-    <function name="bsla">
-      <arg name="hola"/>
-      <arg name="chao"/>
+    <function name="fase_difference_amplitudes">
+      <arg name="save_dic"/>
+      <arg name="current_channel"/>
+      <arg name="initial_spec"/>
+      <arg name="step"/>
+      <arg name="spectrum"/>
+      <arg name="spectrum_ref"/>
     </function>
-    <function name="bsssla">
-      <arg name="hola"/>
-      <arg name="chao"/>
-    </function>
-  </module>
-  <module name="lols">
-    <function name="bsla">
-      <arg name="save_data"/>
-      <arg name="hola"/>
-      <arg name="chao"/>
-    </function>
-    <function name="bla">
-      <arg name="hola"/>
-      <arg name="chao"/>
-    </function>
-    <function name="bsssla">
-      <arg name="hola"/>
-      <arg name="chao"/>
-    </function>
-  </module>
-  <module name="tt1">
-    <function name="kk">
-      <arg name="lol"/>
-    </function>
-    <function name="kk1">
-      <arg name="lol"/>
-      <arg name="lol1"/>
-    </function>
-  </module>
-  <module name="tt">
-    <function name="kk">
-      <arg name="lol"/>
+    <function name="fase_difference_amplitudes_ratio">
+      <arg name="save_dic"/>
+      <arg name="current_channel"/>
+      <arg name="initial_spec"/>
+      <arg name="step"/>
+      <arg name="spectrum"/>
+      <arg name="spectrum_ref"/>
     </function>
   </module>
 </dynamic_modules>

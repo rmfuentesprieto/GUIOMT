@@ -1,6 +1,8 @@
 import telnetlib
 import socket
 
+import time
+
 from omt.controller.abstract_parallel_proces import Process
 
 
@@ -53,7 +55,7 @@ class SourceThread(AbstractSource):
         self.connection.write('freq ' + str(current_channel * self.frec_step + self.frec_init) + '\r\n')
         print 'addquiere ' + str(current_channel)
         # wait for the tone to adjust well
-        #time.sleep(0.1)
+        time.sleep(2)
 
     def close_process(self):
         if self.is_on:

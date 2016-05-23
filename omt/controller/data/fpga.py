@@ -254,7 +254,7 @@ class DummyRoach_FPGA(Roach_FPGA):
 
         for bram in self.brams_info:
             if bram['is_bram']:
-                return_data[bram['array_id']] = ((-1,-1,-1), -1)
+                return_data[bram['array_id']] = ((-1 + 1j,-1 + 2j,-1 + 3j, 1 + 4j, 1 + 5j), -1)
             else:
                 if bram['load_data']:
                     pass

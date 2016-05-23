@@ -24,6 +24,7 @@ class Coordinator(threading.Thread):
         self.fucntion_dictionary = fucntion_dictionary
 
     def run(self):
+        # todo add the current channel as a variable
 
         sweep_source_dic = {}
 
@@ -74,6 +75,7 @@ class Coordinator(threading.Thread):
             while not self.end_sweep:
                 self.thread_source.set_generator(current_channel)
                 extract_dictionary = self.thread_data.accuaire_data()
+                extract_dictionary['current_channel'] = current_channel
                 self.thread_procesing.run_execute_functions(extract_dictionary)
 
                 if self.frec_number_point == (current_channel):
