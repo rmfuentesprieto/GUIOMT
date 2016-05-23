@@ -1,6 +1,7 @@
 from kivy.app import App
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
+from kivy.uix.popup import Popup
 
 from omt.controller.controller_starter import Coordinator
 from omt.controller.data.fpga import MissingInformation
@@ -8,6 +9,7 @@ from omt.controller.source.source_thread_function import FailToConnectTelnet
 from omt.gui.data_processing_panel.data_panel import DataPanel
 from omt.gui.extract_data_panel.extract_panel import ExtractPanel
 from omt.gui.sourcepanel.source_panel_class import SourcePanel
+from omt.gui.super_controller.super_controller_gui import SuperControllerGUI
 
 
 class RootWidget(BoxLayout):
@@ -16,13 +18,16 @@ class RootWidget(BoxLayout):
         self.menu = BoxLayout(orientation='horizontal',size_hint=(1,None), size=(1,40))
         self.panels = BoxLayout(orientation='horizontal')
 
-        button_start = Button(text='Start', font_size=14)
+        button_start = Button(text='Start', size_hint=(0.4,1) ,font_size=14)
         button_start.bind(on_press=self.configure_and_turn_on_sources)
 
-        button_stop = Button(text='Stop', font_size=14)
+        button_stop = Button(text='Stop', size_hint=(0.4,1), font_size=14)
         button_stop.bind(on_press=self.turn_off)
 
+        button_super_controller = Button(text='Launch Multiple Rutines',size_hint=(0.8,1))
+        button_super_controller.bind(on_press=self.super_controller)
 
+        self.menu.add_widget(button_super_controller)
         self.menu.add_widget(button_start)
         self.menu.add_widget(button_stop)
 
@@ -71,6 +76,14 @@ class RootWidget(BoxLayout):
     def get_bram_dictionary(self):
         free_run = self.data.get_configurations()['roach']['bram']
         self.proces.update_free_run_dictionary(free_run)
+
+    def super_controller(self, instance):
+        pannel = SuperControllerGUI()
+        popup = Popup(title='Choose Rutines', content=pannel,
+              auto_dismiss=False, size_hint=(None, None),size=(400, 400))
+        pannel.add_popup(popup)
+
+        popup.open()
 
 class GUIStart(App):
     def build(self):
