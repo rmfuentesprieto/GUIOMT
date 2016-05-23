@@ -6,7 +6,7 @@ from kivy.uix.progressbar import ProgressBar
 from omt.controller.data.data_thread_function import DataThread, RoachException
 from omt.controller.data.fpga import MissingInformation
 from omt.controller.procesing.procesing_thread_function import ProccesThread
-from omt.controller.source.source_thread_function import SourceThread, DummySourceThread, FailToConnectTelnet
+from omt.controller.source.source_thread_function import DummySourceThread, FailToConnectTelnet
 from omt.controller.source.source_tone_or_dc import ToneDCSource
 
 
@@ -24,8 +24,6 @@ class Coordinator(threading.Thread):
         self.fucntion_dictionary = fucntion_dictionary
 
     def run(self):
-        # todo add the current channel as a variable
-
         sweep_source_dic = {}
 
         source_dictionary = self.source_dictionary
@@ -78,7 +76,7 @@ class Coordinator(threading.Thread):
                 extract_dictionary['current_channel'] = current_channel
                 self.thread_procesing.run_execute_functions(extract_dictionary)
 
-                if self.frec_number_point == (current_channel):
+                if self.frec_number_point - 1 == (current_channel):
                     break
                 current_channel += 1
 
@@ -112,7 +110,6 @@ class Coordinator(threading.Thread):
         self.end_sweep = True
 
 
-
 class EndSignal(object):
 
     def __init__(self):
@@ -123,6 +120,7 @@ class EndSignal(object):
 
     def ask_if_stop(self):
         return self.kill_all
+
 
 class CurrentChanel(object):
 

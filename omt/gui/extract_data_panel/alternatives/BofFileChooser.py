@@ -22,7 +22,7 @@ class BofFileChooserIconView(BoxLayout):
 
     def pree_m(self, instance):
         if len(self.fc.selection) > 0:
-            self.return_to(self.fc.selection)
+            self.return_to(self.fc.selection[0])
         self.popup.dismiss()
 
     def run(self, instance):

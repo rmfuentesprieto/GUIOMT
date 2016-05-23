@@ -6,3 +6,6 @@ class ROACHII(ROACH):
 
     def get_controller_fpga_insctance(self):
         return Roach_II_Controller
+
+    def which_roach(self):
+        return 'ROACHII'

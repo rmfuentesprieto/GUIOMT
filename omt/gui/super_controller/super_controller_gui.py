@@ -10,13 +10,15 @@ from omt.gui.extract_data_panel.alternatives.BofFileChooser import BofFileChoose
 
 class SuperControllerGUI(BoxLayout):
 
-    def __init__(self):
+    def __init__(self, root_class):
         super(SuperControllerGUI, self).__init__(orientation='vertical')
 
         self.add_button = Button(text='Add New Rutine', size_hint=(1,None), size=(1,40))
         self.add_button.bind(on_press=self.add_routine)
 
         self.ok_button = Button(text='OK', size_hint=(1, None), size=(1, 40))
+        self.ok_button.bind(on_press=self.ok_opoup)
+
         self.cancel_button = Button(text='Cancel', size_hint=(1, None), size=(1, 40))
         self.cancel_button.bind(on_press=self.close_opoup)
 
@@ -37,6 +39,8 @@ class SuperControllerGUI(BoxLayout):
         self.config_path = {}
         self.config_cont = 0
 
+        self.control_gui = root_class
+
     def add_popup(self, opopup):
         self.popup = opopup
 
@@ -56,7 +60,6 @@ class SuperControllerGUI(BoxLayout):
 
     def load_data(self, path):
 
-        path = path[0]
         self.config_path[str(self.config_cont)] = path
 
         name= path.split('/')[-2]
@@ -70,3 +73,7 @@ class SuperControllerGUI(BoxLayout):
     def del_path(self, key, button):
         del self.config_path[key]
         self.path_container.remove_widget(button)
+
+    def ok_opoup(self, instance):
+        self.control_gui.configure_super_controller(self.config_path)
+        self.popup.dismiss()

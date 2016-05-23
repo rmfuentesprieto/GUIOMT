@@ -232,6 +232,8 @@ class ROACH(Empty):
             source_dic_config.update( a_source.save_config_dictionary())
         dic_return['sources'] = source_dic_config
 
+        dic_return['wich'] = self.which_roach()
+
         # this line saves the dictionary to file with pikle
         self.config_manager.store_dictionary(dic_return)
 
@@ -254,8 +256,13 @@ class ROACH(Empty):
 
     def load_data(self, path):
         self.clean_all()
-        path = path[0]
         dic = self.config_manager.load_dictionary(path)
+
+        try:
+            if dic['wich'] != self.which_roach():
+                return
+        except:
+            pass
 
         regs = dic['reg']
 
@@ -422,6 +429,9 @@ class ROACH(Empty):
 
     def pass_source(self, sources_):
         self.sources = sources_
+
+    def which_roach(self):
+        pass
 
 
 class Register(object):
