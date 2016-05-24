@@ -30,6 +30,9 @@ class ROACH(Empty):
         self.bram_array = {}
         self.bram_cont = 0
 
+        #self.snapshot_array = {}
+        #self.snapshot_cont = 0
+
         self.prog_dev = False
         self.bof_path = ''
 
@@ -72,26 +75,31 @@ class ROACH(Empty):
         self.reg_container = GridLayout(cols=1, spacing=0, size_hint_y=None)#row_default_height=30)
         self.reg_container.bind(minimum_height=self.reg_container.setter('height'))
 
-        scroll_root = ScrollView(size_hint=(1,None),  size=(1, 125))
+        scroll_root = ScrollView(size_hint=(1,1),  size=(1, 125))
         scroll_root.add_widget(self.reg_container)
         ####
 
+        free_running_label_layout = BoxLayout(orientation='horizontal', size_hint=(1,None), size=(1,30))
+        add_free_running_label = Label(text="Free Running", size_hint=(0.45,1))
+        free_running_label_layout.add_widget(add_free_running_label)
+
         free_running = BoxLayout(orientation='horizontal', size_hint=(1,None), size=(1,30))
-        add_free_running_labe = Label(text="Free Running", size_hint=(0.45,1))
         add_free_running_bram = Button(text = 'New BRAM', size_hint=(0.30,1))
         add_free_running_reg = Button(text = 'New Reg', size_hint=(0.25,1))
+        add_free_running_snapshot = Button(text = 'SnapShot', size_hint=(0.25,1))
         add_free_running_bram.bind(on_press=self.add_free_running)
         add_free_running_reg.bind(on_press=self.add_register_free_running)
+        add_free_running_snapshot.bind(on_press=self.add_snapshot_free_running)
 
-        free_running.add_widget(add_free_running_labe)
         free_running.add_widget(add_free_running_bram)
         free_running.add_widget(add_free_running_reg)
+        free_running.add_widget(add_free_running_snapshot)
 
         #### free run container
         self.free_run_container = GridLayout(cols=1, spacing = 3,size_hint=(1,None), size=(1,30))
         self.free_run_container.bind(minimum_height=self.free_run_container.setter('height'))
 
-        scroll_root_free_run = ScrollView(size_hint=(1,None), size=(1,195), scroll_type=['bars'])
+        scroll_root_free_run = ScrollView(size_hint=(1,1), size=(1,195), scroll_type=['bars'])
         scroll_root_free_run.add_widget(self.free_run_container)
         scroll_root_free_run.bar_width = 10
         ####
@@ -125,11 +133,12 @@ class ROACH(Empty):
         big_one.add_widget(buttons_layout)
         big_one.add_widget(roach_register)
         big_one.add_widget(scroll_root)
+        big_one.add_widget(free_running_label_layout)
         big_one.add_widget(free_running)
         big_one.add_widget(scroll_root_free_run)
 
-        padding_layout = BoxLayout(size_hint=(1,1))
-        big_one.add_widget(padding_layout)
+        padding_layout = BoxLayout()
+        #big_one.add_widget(padding_layout)
 
         self.add_widget(big_one)
         self.do_extraction = None
@@ -286,7 +295,10 @@ class ROACH(Empty):
                                        a_bram['array_id'])
 
             else:
-                self.load_register_free_running(a_bram['reg_value'], a_bram['reg_name'])
+                if 'snap' in a_bram:
+                    self.load_snapshot_free_running(a_bram['name'])
+                else:
+                    self.load_register_free_running(a_bram['reg_value'], a_bram['reg_name'])
 
         self.ip._set_text(dic['ip'])
         self.port._set_text(dic['port'])
@@ -443,6 +455,33 @@ class ROACH(Empty):
     def which_roach(self):
         pass
 
+    def add_snapshot_free_running(self, instance):
+        self.load_snapshot_free_running('')
+
+    def load_snapshot_free_running(self,snapshot_name_):
+        size_ = 30
+        data = BoxLayout(orientation='horizontal',size_hint=(1, None), size=(1,size_))
+
+        snap_name_label = Label(text='Snap Name',size_hint=(0.4,None), height=size_)
+        snap_name_value = TextInput(size_hint=(0.4,None), height=size_)
+        snap_name_value.text = snapshot_name_
+
+        delate_me = Button(text='-',size_hint=(0.1,None), height=size_)
+        str_cont = str(self.bram_cont)
+        delate_me.bind(on_press=lambda instance:\
+            self.remove_from_widget_list_free_run(data, str_cont))
+
+        snap = SnapShot(snap_name_value)
+        snap.set_extraction_function(self.do_extraction)
+
+        data.add_widget(snap_name_label)
+        data.add_widget(snap_name_value)
+        data.add_widget(delate_me)
+
+        self.free_run_container.add_widget(data)
+
+        self.bram_array[str(self.bram_cont)] = snap
+        self.bram_cont += 1
 
 class Register(object):
 
@@ -473,7 +512,6 @@ class Register(object):
         else:
             dictionary['reg_value'] = ''
 
-
         dictionary['plot'] = False
         dictionary['store'] = False
 
@@ -481,6 +519,7 @@ class Register(object):
 
 
 class BRAMArray(object):
+
     def __init__(self, size_array, acc_len_reg, grid_layout, array_id, data_type_, data_store_, data_plot_):
         self.size_array = size_array
         self.real_imag_bram = {}
@@ -647,3 +686,20 @@ class RoachWarningBox(BoxLayout):
     def selection_no(self, instance):
         self.choise = False
         self.selection_made()
+
+class SnapShot(object):
+
+    def __init__(self, name):
+        self.name = name
+        self.do_extraction = None
+
+    def info_dictionary(self):
+        return {'name':self.name.text, 'snap':'shot', 'is_bram':False}
+
+    def lose_focus(self, instance, value):
+        if value:
+            return
+        self.do_extraction()
+
+    def set_extraction_function(self,f):
+        self.do_extraction = f
