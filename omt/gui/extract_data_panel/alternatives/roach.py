@@ -311,10 +311,14 @@ class ROACH(Empty):
         try:
             for a_source in self.sources:
                 a_source.set_configuration(dic['sources'])
-            for a_function in self.function:
-                a_function.set_configuration(dic['functions'])
-        except:
+
+
+        except Exception as e:
             pass
+
+        for a_function in self.function:
+                a_function.set_configuration(dic['functions'])
+
 
         self.do_extraction()
 
@@ -504,7 +508,7 @@ class Register(object):
         return self.value._get_text()
 
     def info_dictionary(self):
-        dictionary = {'is_bram': False, 'reg_name': self.name.text,
+        dictionary = {'is_bram': False, 'reg_name': self.name.text, 'array_id': self.name.text,
                       'load_data': True if len(self.value.text) > 0 else False}
 
         if dictionary['load_data']:
@@ -692,9 +696,10 @@ class SnapShot(object):
     def __init__(self, name):
         self.name = name
         self.do_extraction = None
+        self.name.bind(focus=self.lose_focus)
 
     def info_dictionary(self):
-        return {'name':self.name.text, 'snap':'shot', 'is_bram':False}
+        return {'name':self.name.text, 'snap':'shot', 'is_bram':False,'array_id':self.name.text}
 
     def lose_focus(self, instance, value):
         if value:

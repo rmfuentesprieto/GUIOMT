@@ -43,6 +43,7 @@ class FunctionGui(BoxLayout):
 
         return_dic['module_name'] = self.module_name
         return_dic['function_name'] = self.function_name
+        return_dic['function_name_special'] = self.special_name
 
         for arg in self.args_layouts:
             return_dic[arg.arg_name] = arg.get_config()
@@ -52,14 +53,23 @@ class FunctionGui(BoxLayout):
     def update_free_run_dictionary(self, data_dic):
         self.free_run_dic = []
         for bram_dic in data_dic:
-            if bram_dic['is_bram']:
-                self.free_run_dic.append(bram_dic['array_id'])
-            else:
-                if not bram_dic['load_data']:
-                    self.free_run_dic.append(bram_dic['reg_name'])
+            self.free_run_dic.append(bram_dic['array_id'])
 
         for arg in self.args_layouts:
             arg.update_data_id(self.free_run_dic)
+
+    def set_configuration(self, dic):
+
+        for arg in dic:
+            arg_dic = dic[arg]
+            if 'arg_name' in arg_dic:
+                arg_name = arg_dic ['arg_name']
+
+                for arg_gui in self.args_layouts:
+                    if arg_gui.arg_name == arg_name:
+                        arg_gui.set_configuration(arg_dic['from_roach'],arg_dic['value'])
+                        break
+
 
 
 class ArgsGUI(BoxLayout):
@@ -102,18 +112,15 @@ class ArgsGUI(BoxLayout):
     def change_input(self,instance, text):
 
         if self.spinner_options[0] == text and self.roach_input or self.spinner_options[1] == text and not self.roach_input:
-            print 'nope'
             return
         if self.spinner_options[1] == text and self.roach_input:# delete roach input and put free
             self.remove_widget(self.arg_roach_spinner)
             self.add_widget(self.free_input)
             self.roach_input = False
-            print 'lol'
         if self.spinner_options[0] == text and not self.roach_input:
             self.remove_widget(self.free_input)
             self.add_widget(self.arg_roach_spinner)
             self.roach_input = True
-            print 'jaja'
 
     def get_config(self):
         return_dic = {}
@@ -130,4 +137,17 @@ class ArgsGUI(BoxLayout):
 
     def update_data_id(self, list):
         self.arg_roach_spinner.values = ['save_data','current_channel','fpga'] + list
+
+    def set_configuration(self, from_roach, value):
+
+        if from_roach:
+            self.arg_roach_spinner.text = value
+            self.roach_input = True
+        else:
+            self.free_input.text = value
+            self.remove_widget(self.arg_roach_spinner)
+            self.add_widget(self.free_input)
+            self.roach_input = False
+            self.arg_type.text = 'free input'
+
 

@@ -44,13 +44,9 @@ class Roach_II_Controller(Roach_FPGA):
             if outP:
                 bof_files.append(outP.group('bof_name'))
 
-        for cont in range(len(bof_files)):
-            print cont + 1, bof_files[cont]
-
         # is given the alternative to delete one bof
         # if the fpga is full
 
-        print 'lollll,', not(self.bitstream in bof_files)
 
         if not(self.bitstream in bof_files):
             content = BofSelector("", bof_files)
@@ -62,12 +58,11 @@ class Roach_II_Controller(Roach_FPGA):
                 pass
 
             chossen = content.choosen_name
-            print chossen, '--'
+
             if len(chossen) > 0:
                 connection.write('?delbof %s\r\n' % (chossen))
-                print connection.read_until('!delbof ok', timeout=3)
+                #print connection.read_until('!delbof ok', timeout=3)
 
-            print 'finish'
         #thread.start_new(self.send_it, (connection,)) #connection
 
 
@@ -75,7 +70,6 @@ class Roach_II_Controller(Roach_FPGA):
         command = '?uploadbof 3000 %s\r\n'%(self.bitstream)
         connection.write(command)
         time.sleep(1)
-        print 'sending bof'
         command = 'nc %s 3000 < %s' %(self.ip, self.bof_path)
         os.system(command)
 
@@ -84,10 +78,8 @@ class Roach_II_Controller(Roach_FPGA):
         connection.close()
 
     def send_it(self, connection):
-        print 'hello'
         command = '?uploadbof 3000 %s\r\n'%(self.bitstream)
         connection.write(command)
-        print 'hello'
 
 
 class BofSelector(BoxLayout):

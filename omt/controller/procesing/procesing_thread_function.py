@@ -11,10 +11,15 @@ class ProccesThread(Process):
 
     def run_execute_functions(self, roach_arguments):
 
-        roach_arguments['save_data'] = self.passing_variables
+
 
         for key in self.data_dic:
+
             function_info =  self.data_dic[key]
+            if not function_info['function_name_special'] in self.passing_variables:
+                self.passing_variables[function_info['function_name_special']] = {}
+
+            roach_arguments['save_data'] = self.passing_variables[function_info['function_name_special']]
 
             function_module = function_info['module_name']
             function_name = function_info['function_name']
@@ -41,17 +46,14 @@ class ProccesThread(Process):
                             if str(int(value)) == value:
                                 value = int(value)
                         except:
-                            value = roach_arguments[arg_dic['value']]
+                            value = arg_dic['value']
 
                         try:
                             if str(float(value)) == value:
                                 value = float(value)
                         except:
-                            value = roach_arguments[arg_dic['value']]
+                            value = arg_dic['value']
                         function_args[arg_name] = value
-
-            print function_module, function_name, function_args
-
             try:
                 dynamic_function(**function_args)
             except Exception as e:

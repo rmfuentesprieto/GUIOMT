@@ -19,8 +19,6 @@ class Roach_I_Controller(Roach_FPGA):
         chmod_command = 'ssh root@%s chmod 777 /boffiles/%s'% ( self.ip, self.bitstream)
 
         os.system(send_command)
-        print send_command
         os.system(chmod_command)
-        print chmod_command
 
         popup.dismiss()

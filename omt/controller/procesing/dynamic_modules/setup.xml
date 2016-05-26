@@ -1,6 +1,29 @@
 <?xml version="1.0" ?>
 <dynamic_modules>
   <!--Modules info-->
+  <module name=""/>
+  <module name="roach_II">
+    <function name="calibrate_gliches_1_input">
+      <arg name="fpga"/>
+      <arg name="snap"/>
+      <arg name="adc"/>
+    </function>
+    <function name="calibrate_gliches_2_input">
+      <arg name="fpga"/>
+      <arg name="snap_a"/>
+      <arg name="snapc"/>
+      <arg name="adc"/>
+    </function>
+    <function name="calibrate_adc">
+      <arg name="fpga"/>
+      <arg name="save_data"/>
+      <arg name="current_channel"/>
+      <arg name="fifo_delay_0"/>
+      <arg name="spec_0"/>
+      <arg name="fifo_delay1"/>
+      <arg name="spec_1"/>
+    </function>
+  </module>
   <module name="roach_basic">
     <function name="extract_data_sweep">
       <arg name="save_dic"/>

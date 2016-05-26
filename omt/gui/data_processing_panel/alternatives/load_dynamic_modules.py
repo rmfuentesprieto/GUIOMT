@@ -134,7 +134,6 @@ class LoadDynamic(Empty):
         a_popup.open()
 
     def copy_function_copy_file(self, path):
-        path = path[0]
         module_name = path.split("/")[-1]
         module_name = str(module_name.replace('.py',''))
         print 'name',module_name, type(module_name)
@@ -143,10 +142,13 @@ class LoadDynamic(Empty):
 
         print command
         os.system(command)
-
-        dynamic_module = __import__('omt.controller.procesing.dynamic_modules' , globals(), locals(), [module_name,],-1)
-        dynamic_module = getattr(dynamic_module, module_name)
-        posible_fucntion_list = dir(dynamic_module)
+        try:
+            dynamic_module = __import__('omt.controller.procesing.dynamic_modules' , globals(), locals(), [module_name,],-1)
+            dynamic_module = getattr(dynamic_module, module_name)
+            posible_fucntion_list = dir(dynamic_module)
+        except Exception as e:
+            Popup(title='Import Error',content=Label(text=e.msg + '\nline ' + str(e.lineno)), size_hint=(None,None), size=(500,300)).open()
+            return
 
         actual_functions = []
         #extract the created function
@@ -221,10 +223,37 @@ class LoadDynamic(Empty):
         return return_dic
 
     def sava_config_dictionary(self):
-        return {}
+        return_dic = {}
+
+        for element in self.modules_function_loaded:
+            module = self.modules_function_loaded[element]
+            for key in module:
+                widget = module[key]
+                dic = widget.get_source_config()
+                return_dic[dic['function_name_special']] = dic
+
+        return  return_dic
 
     def set_configuration(self, dic):
-        pass
+
+        self.modules_function_loaded = {}
+        self.func_container.clear_widgets()
+        for func in dic:
+
+            func_dic = dic[func]
+            func_module = func_dic['module_name']
+            func_name = func_dic['function_name']
+            new_widget = FunctionGui( func_module,func_name,self.function_dictionary[func_module][func_name], self.delete_one_function)
+            new_widget.update_free_run_dictionary(self.free_run_variable_dictionary)
+
+            self.func_container.add_widget(new_widget)
+
+            if not new_widget.module_name in self.modules_function_loaded:
+                self.modules_function_loaded[new_widget.module_name] = {}
+
+            self.modules_function_loaded[new_widget.module_name][new_widget.function_name + new_widget.special_name] = new_widget
+
+            new_widget.set_configuration(func_dic)
 
 class FunctionSelector(BoxLayout):
 

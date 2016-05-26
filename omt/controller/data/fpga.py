@@ -77,10 +77,7 @@ class Roach_FPGA(object):
         time.sleep(1)
 
     def is_conected(self):
-        print 'roach'
         to_return = self.fpga.is_connected()
-        print 'roach2', to_return
-
         return to_return
 
     def send_bof(self):
@@ -127,7 +124,7 @@ class Roach_FPGA(object):
                     real_name = names[0]
                     imag_name = names[1]
 
-                    print '>'+str(array_size) + data_type, real_name,str(int(array_size)*data_type_dictionart[data_type]), 0
+                    #print '>'+str(array_size) + data_type, real_name,str(int(array_size)*data_type_dictionart[data_type]), 0
 
                     if len(real_name) > 0:
                         real_array = struct.unpack('>'+str(array_size) + data_type, self.fpga.read(real_name,str(int(array_size)*data_type_dictionart[data_type]), 0))
@@ -182,7 +179,7 @@ class Roach_FPGA(object):
                         aplot('set yrange [0:%s]' % (str(x_range)))
                         aplot.plot(data)
                     aplot.title('plot of data array %s, acc count %s'%(self.brams_info[bram_cont]['array_id'],str(acc_n)))
-                    time.sleep(0.3)
+                    #time.sleep(0.3)
 
                 if bram['store']:
                     files = self.store_drams[bram_cont]
@@ -192,10 +189,13 @@ class Roach_FPGA(object):
 
                     files[0].writerow(str_final)
             else:
-                if bram['load_data']:
-                    self.fpga.write_int(bram['reg_name'], int(bram['reg_value']))
+                if 'snap' in bram:
+                    return_data[bram['name']] = numpy.fromstring(self.fpga.snapshot_get(bram['name'], man_trig=True, man_valid=True)['data'], dtype='>i1')
                 else:
-                    return_data[bram['reg_name']] = self.fpga.read_uint(bram['reg_name'])
+                    if bram['load_data']:
+                        self.fpga.write_int(bram['reg_name'], int(bram['reg_value']))
+                    else:
+                        return_data[bram['reg_name']] = self.fpga.read_uint(bram['reg_name'])
 
             bram_cont += 1
 
@@ -211,7 +211,7 @@ class Roach_FPGA(object):
         self.fpga.stop()
 
         bram_cont = 0
-        print 'hola'
+
         for bram in self.brams_info:
             if bram['is_bram']:
                 if bram['plot']:
