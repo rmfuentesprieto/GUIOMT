@@ -4,8 +4,7 @@ import time
 
 import adc5g
 import Gnuplot
-class LaClaseDelFranco:
-    pass
+
 def calibrate_gliches_2_input(fpga,snap_a,snapc, adc):
     adc5g.sync_adc(fpga)
     opt1, glitches1 = adc5g.calibrate_mmcm_phase(fpga, adc, [snap_a, snapc, ])
