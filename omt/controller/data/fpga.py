@@ -229,6 +229,9 @@ class Roach_FPGA(object):
     def get_fpga_instance(self):
         pass
 
+    def extract_data_from_one_bram(self, bram_dic):
+        pass
+
 
 class DummyRoach_FPGA(Roach_FPGA):
 
