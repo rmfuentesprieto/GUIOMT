@@ -112,8 +112,11 @@ class Roach_FPGA(object):
         for acc_reg in cont_dictionary:
             func = None
 
+            function_dictionary[acc_reg] = []
+
             for bram in cont_dictionary[acc_reg]:
-                bram_func = lambda : None
+                bram_func_real = lambda : None
+                bram_func_image = lambda : None
                 array_size = bram['size']
                 data_type = bram['data_type']
 
@@ -121,26 +124,31 @@ class Roach_FPGA(object):
                     real_name = names[0]
                     imag_name = names[1]
 
-                    if len(real_name) > 0:
-                        aux_function = bram_func
+                    aux_function = bram_func_real
 
-                        bram_func = lambda : (
-                            struct.unpack('>'+str(array_size) + data_type, self.fpga.read(real_name,
-                            str(int(array_size)*data_type_dictionart[data_type]), 0)),aux_function())
+                    bram_func_real = lambda : None if len(real_name) <1 else \
+                        lambda : (struct.unpack('>'+str(array_size) + data_type, self.fpga.read(real_name, str(int(array_size)*data_type_dictionart[data_type]), 0)), aux_function())
 
-                    else:
-                        have_real = have_real and False
+                    aux_function = bram_func_image
+                    bram_func_image = lambda : None if len(real_name) <1 else \
+                        lambda : (struct.unpack('>'+str(array_size) + data_type,
+                                    self.fpga.read(imag_name, str(int(array_size)*data_type_dictionart[data_type]), 0)),
+                                aux_function())
+                function_dictionary[acc_reg].append((bram,bram_func_real,bram_func_real))
 
-                    if len(imag_name) > 0:
-                        imag_array = struct.unpack('>'+str(array_size) +
-                                                   data_type, self.fpga.read(imag_name,str(int(array_size)*data_type_dictionart[data_type]), 0))
+        extracted_data = []
+        for reg in function_dictionary:
+            for func in function_dictionary[reg]:
+                lol = func[1]()
+                lal = func[2]()
+                extracted_data.append((func[0],lol, lal))
 
-                    else:
-                        have_imag = have_imag and False
+        return_data = {}
+
+        for data in extracted_data:
+            return_data[data] = [1]
 
 
-        for bram in self.brams_info:
-            self.extract_data_from_one_bram(return_data, bram,bram_cont)
         return_data['fpga'] = self.fpga
 
         return return_data

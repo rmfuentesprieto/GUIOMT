@@ -1,8 +1,7 @@
-from omt.controller.source.beam_scanner.move_xy import MoveXY
+a = lambda : None
 
-move_xy = MoveXY('192.168.1.62',9988)
-move_xy.start_connection()
-print move_xy.ask_position()
-print move_xy.set_origin()
-print move_xy.ask_position()
-move_xy.close_connection()
+for cont in range(10):
+    b = a
+    a = lambda :(cont, b())
+
+print a()
