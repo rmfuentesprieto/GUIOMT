@@ -37,7 +37,7 @@ class Roach_FPGA(object):
             self.brams_info[cont]['prev_acc'] = 0
 
         for cont in range(len(self.brams_info)):
-            aplot = None
+            aplot = lambda x : x
             if self.brams_info[cont]['plot']:
                 aplot = Gnuplot(debug=1)
                 aplot.clear()
@@ -49,9 +49,16 @@ class Roach_FPGA(object):
                 aplot('set xtics 256')
                 aplot('set grid y')
                 aplot('set grid x')
-            self.plot_brams.append(aplot)
 
-            astore = None
+            self.brams_info[cont]['plot_'] = aplot
+
+            class a:
+                def close (self):
+                    pass
+                def write (self,x):
+                    pass
+
+            astore = a()
 
             if self.brams_info[cont]['store']:
                 ts = time.time()
@@ -62,7 +69,7 @@ class Roach_FPGA(object):
 
                 csv_writer = csv.writer(file, delimiter = ',')
                 astore = (csv_writer,file)
-            self. store_drams.append(astore)
+            self.brams_info[cont]['store_'] = astore
 
         self.fpga = None
 
@@ -89,13 +96,23 @@ class Roach_FPGA(object):
             for reg_info in self.register_list:
                 self.fpga.write_int(reg_info[0],int(reg_info[1]))
 
+    def create_scope(self, f_new, f_old):
+        if f_new == None:
+            return f_old
+        return lambda : (f_old() + f_new())
+
+    def get_data_roach(self, array_size, data_type, name):
+        if len(name) > 0:
+            return lambda : struct.unpack('>'+ array_size + data_type,
+                                          self.fpga.read(name, str(int(array_size)*data_type_dictionart[data_type]), 0))
+        else:
+            return [0] * int(array_size)
+
+
     def accuaire_data(self):
 
         if not self.is_conected():
             return {}
-
-        return_data = {}
-        bram_cont = 0
 
         cont_dictionary = {'':[]}
 
@@ -110,48 +127,105 @@ class Roach_FPGA(object):
 
         function_dictionary = {}
         for acc_reg in cont_dictionary:
-            func = None
 
             function_dictionary[acc_reg] = []
 
             for bram in cont_dictionary[acc_reg]:
-                bram_func_real = lambda : None
-                bram_func_image = lambda : None
-                array_size = bram['size']
+                bram_func_real = lambda : ()
+                bram_func_imag = lambda : ()
+                array_size = str(bram['size'])
                 data_type = bram['data_type']
 
                 for names in bram['bram_names']:
                     real_name = names[0]
                     imag_name = names[1]
 
-                    aux_function = bram_func_real
+                    f_real = self.get_data_roach(array_size, data_type, real_name)
+                    f_imag = self.get_data_roach(array_size, data_type, imag_name)
 
-                    bram_func_real = lambda : None if len(real_name) <1 else \
-                        lambda : (struct.unpack('>'+str(array_size) + data_type, self.fpga.read(real_name, str(int(array_size)*data_type_dictionart[data_type]), 0)), aux_function())
+                    bram_func_real = self.create_scope(f_real, bram_func_real)
+                    bram_func_imag = self.create_scope(f_imag, bram_func_imag)
 
-                    aux_function = bram_func_image
-                    bram_func_image = lambda : None if len(real_name) <1 else \
-                        lambda : (struct.unpack('>'+str(array_size) + data_type,
-                                    self.fpga.read(imag_name, str(int(array_size)*data_type_dictionart[data_type]), 0)),
-                                aux_function())
-                function_dictionary[acc_reg].append((bram,bram_func_real,bram_func_real))
+                function_dictionary[acc_reg].append((bram['array_id'], int(array_size), bram_func_real, bram_func_imag))
 
         extracted_data = []
+
+        # extract data
         for reg in function_dictionary:
+            acc_count = -1
+            if not reg == '':
+                acc_count = self.fpga.read_int(reg)
+                while 1:
+                    new_acc_count = self.fpga.read_int(reg)
+                    if acc_count < new_acc_count:
+                        acc_count = new_acc_count
+                        break
+
             for func in function_dictionary[reg]:
-                lol = func[1]()
-                lal = func[2]()
-                extracted_data.append((func[0],lol, lal))
+                extracted_data.append((func[0], func[1], func[2](), func[3](), acc_count))
+        # data extracted
 
         return_data = {}
 
         for data in extracted_data:
-            return_data[data] = [1]
+            return_data[data[0]] = (self.order_data(data[2], data[3], data[1]),data[4])
 
+        self.plot_store_data(return_data)
 
         return_data['fpga'] = self.fpga
 
         return return_data
+
+    def plot_store_data(self, data_dic):
+        for bram in self.brams_info:
+            if bram['is_bram']:
+                data_aux = data_dic[bram['array_id']][0]
+                if bram['plot']:
+                    aplot = bram['plot_']
+                    aplot.clear()
+
+                    acc_count = data_dic[bram['array_id']][1]
+                    data = 10*numpy.log10(1.0+numpy.absolute(data_aux))
+                    x_range = int(numpy.amax(data) * 1.1)
+                    phase_max = numpy.amax(abs(numpy.angle(data_aux)*180/3.141592))
+
+                    if phase_max > 5:
+
+                        aplot('set multiplot layout 2,1 rowsfirst')
+                        aplot('set yrange [0:%s]' % (str(x_range)))
+                        aplot('set xrange [0:256]')
+                        aplot('set ytics 10')
+                        aplot.plot(data)
+                        aplot('set ytics 20')
+                        aplot('set yrange [-181:181]')
+                        aplot('set xrange [0:256]')
+                        aplot.plot(abs(numpy.angle(data_aux)*180/3.141592))
+
+                        aplot('unset multiplot')
+                    else:
+                        aplot('set yrange [0:%s]' % (str(x_range)))
+                        aplot.plot(data)
+                    aplot.title('plot of data array %s, acc count %s'%(bram['array_id'],str(acc_count)))
+                    #time.sleep(0.3)
+
+                if bram['store']:
+                    files = bram['store_']
+                    str_final = []
+                    for data in data_aux:
+                        str_final.append('{:f}'.format(data))
+
+                    files[0].writerow(str_final)
+
+    def order_data(self, data_list_r, data_list_i, data_length):
+        merge_number = len(data_list_i) / data_length
+
+        order_array = []
+        for cont0 in range(data_length):
+            for cont1 in range(merge_number):
+                index = data_length*cont1 + cont0
+                order_array.append(data_list_r[index] + 1j* data_list_i[index])
+
+        return order_array
 
     def program_fpga(self):
         if self.program:
@@ -165,10 +239,10 @@ class Roach_FPGA(object):
         for bram in self.brams_info:
             if bram['is_bram']:
                 if bram['plot']:
-                    self.plot_brams[bram_cont].close()
+                    bram['plot_'].close()
 
                 if bram['store']:
-                    files = self.store_drams[bram_cont]
+                    files = bram['store'][0]
                     files[1].close()
             bram_cont += 1
 

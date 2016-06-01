@@ -87,9 +87,10 @@ class Coordinator(threading.Thread):
             Popup(title='Error Roach', content=Label(text=roach_e.message),\
                           size_hint=(None, None), size=(300, 120)).open()
 
-        except Exception as e:
+        '''except Exception as e:
             Popup(title='Error', content=Label(text=e.message),\
                           size_hint=(None, None), size=(400, 120)).open()
+            raise e'''
 
         progress_bar_popup.dismiss()
 
