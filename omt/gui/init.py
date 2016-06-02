@@ -3,6 +3,8 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
 from kivy.uix.popup import Popup
 
+import logging
+
 from omt.controller.controller_starter import Coordinator
 from omt.controller.data.fpga import MissingInformation
 from omt.controller.source.source_thread_function import FailToConnectTelnet

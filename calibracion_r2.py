@@ -16,18 +16,6 @@ import adc5g
 bitstream = 'No_bof_file_error'
 katcp_port=7147
 
-def creartxt():
-    archi=open('datos.dat','w')
-    archi.close()
-
-def creartxt():
-    archi_teo=open('datos_teo.dat','w')
-    archi_teo.close()
-
-archi=open('datos.dat','a')
-archi_teo=open('datos_teo.dat','a')    
-
-creartxt()
 
 def exit_fail():
     print 'FAILURE DETECTED. Log entries:\n',lh.printMessages()
@@ -103,8 +91,8 @@ def get_data():
 def get_data():
     #get the data...    
 
-    fpga.write_int('data_ctrl_lec_done',0)
-    fpga.write_int('data_ctrl_sel_we',1)   
+    #fpga.write_int('data_ctrl_lec_done',0)
+    #fpga.write_int('data_ctrl_sel_we',1)   
 
     re_0i=struct.unpack('>512q',fpga.read('dout0_0',512*8,0))
     im_0i=struct.unpack('>512q',fpga.read('dout0_1',512*8,0))
@@ -116,8 +104,8 @@ def get_data():
     re_2q=struct.unpack('>512q',fpga.read('dout1_2',512*8,0))
     im_2q=struct.unpack('>512q',fpga.read('dout1_3',512*8,0))
 
-    fpga.write_int('data_ctrl_lec_done',1)
-    fpga.write_int('data_ctrl_sel_we',0)
+    #fpga.write_int('data_ctrl_lec_done',1)
+    #fpga.write_int('data_ctrl_sel_we',0)
 
     spec_i=[]
     spec_q=[]
@@ -133,8 +121,8 @@ def get_data():
     for i in range(512):
         spec_i.append(log10(float(abs(re_0i[i] + 1j*im_0i[i]) + 1.0)*10))
         spec_i.append(log10(float(abs(re_2i[i] + 1j*im_2i[i]) + 1.0)*10))
-        spec_q.append(log10(float(abs(re_0q[i] + 1j*im_0q[i]) + 1.0)*10))
-        spec_q.append(log10(float(abs(re_2q[i] + 1j*im_2q[i]) + 1.0)*10))
+        spec_q.append(log10(float(abs(re_0i[i] + 1j*im_0i[i]) + 1.0)*10))
+        spec_q.append(log10(float(abs(re_2i[i] + 1j*im_2i[i]) + 1.0)*10))
         #print spec_i[2]
         #print spec_q[2]
 
@@ -176,21 +164,16 @@ if __name__ == "__main__":
     p = OptionParser()
     p.set_usage("domt_calibrate.py <ROACH_HOSTNAME_or_IP> [options]")
     p.set_description(__doc__)
-    p.add_option('-g', '--gain', dest='gain', type='int',default=0xf0000000,help='Set the digital gain (6bit quantisation scalar). Default is 0xf0000000, good for wideband noise. Set lower for CW tones.')
+    p.add_option('-g', '--gain', dest='gain', type='int',default=4294967296,help='Set the digital gain (6bit quantisation scalar). Default is 0xf0000000, good for wideband noise. Set lower for CW tones.')
     p.add_option('-s', '--skip', dest='skip', action='store_true',help='Skip reprogramming the FPGA and configuring EQ.')
-    p.add_option('-b', '--bof', dest='boffile',type='str', default='',help='Specify the bof file to load')
+    p.add_option('-b', '--bof', dest='boffile',type='str', default='cal_r2_2016_Jan_22_1745.bof',help='Specify the bof file to load')
     p.add_option('-z', '--adc0', dest='sel_delay0',type='int', default=0,help='Set ADC0 delay')
     p.add_option('-o', '--adc1', dest='sel_delay1',type='int', default=0,help='Set ADC1 delay')
     p.add_option('-f', '--fsteps', dest='fsteps',type='int', default=1,help='Set the step of frequencies to sweep')
     opts, args = p.parse_args(sys.argv[1:])
     
-    if args==[]:
-        print 'Please specify a ROACH board. Run with the -h flag to see all options.\nExiting.'
-        exit()
-    else:
-        roach_a = args[0]
-    if opts.boffile != '':
-        bitstream = opts.boffile
+
+    roach_a = '192.168.1.12'
     
 try:
     loggers = []
@@ -211,12 +194,12 @@ try:
 
     print "----------------------"
     print "Programming FPGA's with %s..." %bitstream,
-    if not opts.skip:
-        fpga.progdev(bitstream)
-        print("\nROACH 2 is programmed")
-    else:
-        print "Skipped"
-    time.sleep(1)
+    #if not opts.skip:
+    fpga.progdev('cal_r2_2016_Jan_22_1745.bof')
+    #    print("\nROACH 2 is programmed")
+    #else:
+    #    print "Skipped"
+    #time.sleep(1)
 
 
     g0 = Gnuplot.Gnuplot(debug=0)
