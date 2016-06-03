@@ -75,6 +75,7 @@ class Roach_FPGA(object):
             self.brams_info[cont]['store_'] = astore
 
         self.fpga = None
+        self.last_acc_count = {}
 
         self.handler = corr.log_handlers.DebugLogHandler()
         self.logger = logging.getLogger(self.ip)
@@ -119,7 +120,10 @@ class Roach_FPGA(object):
             if bram['is_bram']:
                 last_reg = reg_snap_bram_things[-1][0]
                 bRam = BRam(bram['array_id'], bram['bram_names'], bram['data_type'], bram['size'], bram['plot'],
-                             bram['plot_'], bram['store'], bram['store_'], bram['acc_len_reg'])
+                             bram['plot_'], bram['store'], bram['store_'], bram['acc_len_reg'],self.fpga)
+
+                if not bram['acc_len_reg'] in self.last_acc_count:
+                    self.last_acc_count[bram['acc_len_reg']] = -1
 
                 if bram['acc_len_reg'] == last_reg:
                     reg_snap_bram_things[-1][1].append(bRam)
@@ -140,13 +144,18 @@ class Roach_FPGA(object):
             acc_reg = RegisterRead(data[0])
             count = 0
             while 1:
+
+                # ensures that all the read data is from the same acumulation
                 if data[0]:
                     count = self.fpga.read_int(data[0])
                 for mem in data[1]:
-                    mem.interact_roach(self.fpga)
                     mem.set_acc_count(count)
+                    mem.interact_roach(self.fpga)
 
-                if not data[0] or count == self.fpga.read_int(data[0]):
+                # this condition ratifies that all data are from the same acumulation
+                # and a different acumulation as the last one
+                if not data[0] or (count == self.fpga.read_int(data[0]) and count > self.last_acc_count[data[0]]):
+                    self.last_acc_count[data[0]] = count
                     break
 
         # preper the return dictionary
@@ -185,105 +194,6 @@ class Roach_FPGA(object):
 
     def get_fpga_instance(self):
         pass
-
-    def extract_data_from_one_bram(self, return_data,bram,bram_cont):
-        if bram['is_bram']:
-            acc_len_ref = bram['acc_len_reg']
-            data_type = bram['data_type']
-            array_size = bram['size']
-            acc_n = -1
-
-            while (len(acc_len_ref) > 0):
-                acc_n = self.fpga.read_uint(acc_len_ref)
-                if acc_n > 1+bram['prev_acc']:
-                    bram['prev_acc'] = acc_n
-                    break
-
-            print acc_n
-
-            have_real = True
-            have_imag = True
-
-            real_data = []
-            imag_data = []
-
-            nbram = len(bram['bram_names'])
-
-            for names in bram['bram_names']:
-                real_name = names[0]
-                imag_name = names[1]
-
-                #print '>'+str(array_size) + data_type, real_name,str(int(array_size)*data_type_dictionart[data_type]), 0
-
-                if len(real_name) > 0:
-                    real_array = struct.unpack('>'+str(array_size) + data_type, self.fpga.read(real_name,str(int(array_size)*data_type_dictionart[data_type]), 0))
-                    real_data.append(real_array)
-                else:
-                    have_real = have_real and False
-
-                if len(imag_name) > 0:
-                    imag_array = struct.unpack('>'+str(array_size) +
-                                               data_type, self.fpga.read(imag_name,str(int(array_size)*data_type_dictionart[data_type]), 0))
-                    imag_data.append(imag_array)
-                else:
-                    have_imag = have_imag and False
-
-            final_array = numpy.zeros((int(array_size)*nbram),dtype=complex)
-
-            for cont0 in range(int(array_size)):
-
-                for cont1 in range(nbram):
-                    if have_real:
-                        real_part = real_data[cont1][cont0]
-                    else:
-                        real_part = 0
-
-                    if have_imag:
-                        imag_part = imag_data[cont1][cont0]
-                    else:
-                        imag_part = 0
-
-                    final_array[cont0*nbram + cont1] = real_part + 1j*imag_part
-
-            return_data[bram['array_id']] = (final_array, acc_n)
-
-            if bram['plot']:
-                aplot = self.plot_brams[bram_cont]
-                aplot.clear()
-                data = 10*numpy.log10(1.0+numpy.absolute(final_array))
-                x_range = int(numpy.amax(data) * 1.1)
-
-
-                if have_real and have_imag:
-                    aplot('set multiplot layout 2,1 rowsfirst')
-                    aplot('set yrange [0:%s]' % (str(x_range)))
-                    aplot('set ytics 10')
-                    aplot.plot(data)
-                    aplot('set ytics 20')
-                    aplot('set yrange [-181:181]')
-                    aplot.plot(numpy.angle(final_array)*180/3.141592)
-
-                    aplot('unset multiplot')
-                else:
-                    aplot('set yrange [0:%s]' % (str(x_range)))
-                    aplot.plot(data)
-                aplot.title('plot of data array %s, acc count %s'%(self.brams_info[bram_cont]['array_id'],str(acc_n)))
-                #time.sleep(0.3)
-
-            if bram['store']:
-                    files = self.store_drams[bram_cont]
-                    str_final = []
-                    for data in final_array:
-                        str_final.append('{:f}'.format(data))
-                    files[0].writerow(str_final)
-        else:
-            if 'snap' in bram:
-                return_data[bram['name']] = numpy.fromstring(self.fpga.snapshot_get(bram['name'], man_trig=True, man_valid=True)['data'], dtype='>i1')
-            else:
-                if bram['load_data']:
-                    self.fpga.write_int(bram['reg_name'], int(bram['reg_value']))
-                else:
-                    return_data[bram['reg_name']] = self.fpga.read_uint(bram['reg_name'])
 
 
 class DummyRoach_FPGA(Roach_FPGA):

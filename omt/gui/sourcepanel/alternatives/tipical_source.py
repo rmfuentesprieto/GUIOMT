@@ -160,7 +160,7 @@ class CommonSource(AbstractSource):
 
         delta = float(self.delta_frec_value.text)*self.delta_frec_unit.get_unit_norm()
 
-        npoints = int((delta + frec_final - frec_init)/delta)
+        npoints = int((delta + frec_final - frec_init)/delta) + 1
 
         power10 = 1
         while npoints >= 1000 or npoints < 1:
@@ -171,10 +171,12 @@ class CommonSource(AbstractSource):
                 power10 *=10**-3
                 npoints *= 10**3
 
+        self.manual_change_puntos = True
+
         self.puntos_frec_value.text = str(npoints)
         self.puntos_frec_unit.set_unit(power10)
 
-        self.manual_change_puntos = True
+        print 'end'
 
     def change_points_number(self, instance, value):
         self._check_input_number(instance, value)
@@ -207,13 +209,12 @@ class CommonSource(AbstractSource):
                 power10 *=10**-3
                 delta *= 10**3
 
+        self.manual_change_delta = True
+
         self.delta_frec_unit.set_unit(power10)
         self.delta_frec_value.text = str(delta)
 
-        self.manual_change_delta = True
-
-
-
+        print 'end pp'
 
     def is_active(self):
         return self.is_source_active

@@ -1,13 +1,15 @@
 import numpy
 import struct
 
+import time
+
 from omt.controller.data.memorys.memory import Memory
 from omt.util.data_type import data_type_dictionart
 
 
 class BRam(Memory):
 
-    def __init__(self, array_id,  bram_names, data_type, data_length, does_plot, plot, does_write, write, reg_name):
+    def __init__(self, array_id,  bram_names, data_type, data_length, does_plot, plot, does_write, write, reg_name, fpga):
         self.data_r = []
         self.data_i = []
         self.array_size = data_length
@@ -20,6 +22,10 @@ class BRam(Memory):
         self.does_write = does_write
         self.write = write
         self.count = -1
+        self.initial_count = -2
+        if reg_name:
+            self.initial_count = fpga.read_int(reg_name)
+
 
     def does_write(self):
         return False
@@ -27,6 +33,7 @@ class BRam(Memory):
     def interact_roach(self, fpga):
         self.data_r = []
         self.data_i = []
+
 
         for name_r, name_i in self.bram_names:
             if len(name_r) > 0:
@@ -91,7 +98,7 @@ class BRam(Memory):
                 aplot('set yrange [0:%s]' % (str(x_range)))
                 aplot.plot(data)
             aplot.title('plot of data array %s, acc count %s'%(self.array_id,str(acc_count)))
-            #time.sleep(0.3)
+            time.sleep(0.1)
 
         if self.does_plot:
             files = self.write

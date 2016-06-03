@@ -224,7 +224,10 @@ class ROACH(Empty):
         dic_return['reg'] = regs
 
         brams = []
-        for bram in self.bram_array:
+
+        keys_ = self.bram_array.keys()
+        keys_.sort()
+        for bram in keys_:
             brams.append(self.bram_array[bram].info_dictionary())
 
         dic_return['bram'] = brams
@@ -305,7 +308,8 @@ class ROACH(Empty):
 
         self.program_button.state = 'down' if dic['progdev'] else 'normal'
 
-        self.bof_path = os.path.dirname(os.path.realpath(__file__)) + '/roach_configurations/' + dic['name'] + '/' + dic['name'] + '.bof'
+        self.bof_path = os.path.dirname(os.path.realpath(__file__)) + \
+                        '/roach_configurations/' + dic['name'] + '/' + dic['name'] + '.bof'
         self.name_config_input._set_text(dic['name'])
 
         try:
@@ -319,53 +323,51 @@ class ROACH(Empty):
         for a_function in self.function:
                 a_function.set_configuration(dic['functions'])
 
-
         self.do_extraction()
 
-    def load_free_running(self, a_data_type, array_size_, real_imag_list_, acc_len_reg_name_, array_label_, store_ = False, plot_ = False):
+    def load_free_running(self, a_data_type, array_size_, real_imag_list_,
+                          acc_len_reg_name_, array_label_, store_ = False, plot_ = False):
         size_ = 30
         data = BoxLayout(orientation='vertical',size_hint=(1, None), size=(1,8*size_))
 
-        #plot_label = Label(text='Plot data:', size_hint=(0.4,1))
+        # plot_label = Label(text='Plot data:', size_hint=(0.4,1))
         plot_toogle = ToggleButton(text='Plot Data', size_hint=(0.5,1))
         store_data = ToggleButton(text='Store Data', size_hint=(0.5,1))
-        handle_data = BoxLayout(orientation='horizontal', size_hint=(1,None), size=(1,30))
+        handle_data = BoxLayout(orientation='horizontal', size_hint=(1, None), size=(1, 30))
         handle_data.add_widget(plot_toogle)
         handle_data.add_widget(store_data)
 
-
-        data_type_label = Label(text='Tipo de Dato',size_hint=(0.4,None), height=size_)
+        data_type_label = Label(text='Tipo de Dato', size_hint=(0.4,None), height=size_)
         data_type_spinner = Spinner(
             # default value shown
             text=a_data_type,
             # available values
-            values=['c','b','B','h','H','i','I','l','L','q','Q','f','d'],
+            values=['c', 'b', 'B', 'h', 'H', 'i', 'I', 'l', 'L', 'q', 'Q', 'f', 'd'],
             # just for positioning in our example
             size_hint=(0.3, None),
-            size = (1,size_)
+            size = (1, size_)
         )
-        delate_label = Label(text='Quitar',size_hint=(0.2,None), height=size_)
-        delate_me = Button(text='-',size_hint=(0.1,None), height=size_)
+        delate_label = Label(text='Quitar', size_hint=(0.2,None), height=size_)
+        delate_me = Button(text='-', size_hint=(0.1,None), height=size_)
         str_cont = str(self.bram_cont)
-        delate_me.bind(on_press=lambda instance:\
-            self.remove_from_widget_list_free_run(data, str_cont))
+        delate_me.bind(on_press=lambda instance:self.remove_from_widget_list_free_run(data, str_cont))
 
-        id_label = Label(text='array name',size_hint=(0.45,None), height=size_)
-        id_input = TextInput(size_hint=(0.45,None), height=size_)
+        id_label = Label(text='array name',size_hint=(0.45, None), height=size_)
+        id_input = TextInput(size_hint=(0.45, None), height=size_)
 
-        size_label = Label(text='tamano',size_hint=(0.45,None), height=size_)
-        size_input = TextInput(size_hint=(0.45,None), height=size_)
+        size_label = Label(text='size', size_hint=(0.45, None), height=size_)
+        size_input = TextInput(size_hint=(0.45, None), height=size_)
 
-        add_new_array_to_merge = Button(text='+',size_hint=(None,None), height=size_, wide = 3*size_)
+        add_new_array_to_merge = Button(text='+',size_hint=(None, None), height=size_, wide = 3*size_)
 
-        real_imag = GridLayout(cols=1, spacing = 3,size_hint=(1,None), size=(1,60))
+        real_imag = GridLayout(cols=1, spacing = 3,size_hint=(1, None), size=(1,60))
         real_imag.bind(minimum_height=real_imag.setter('height'))
 
         scroll_real_imag = ScrollView(size_hint=(0.8,None), size=(1,2*size_))
         scroll_real_imag.add_widget(real_imag)
 
         acc_len_reg_name_label = Label(text='acc len reg_name',size_hint=(0.5,None), height=size_)
-        acc_len_reg_name_input = TextInput(size_hint=(0.5,None), height=size_)
+        acc_len_reg_name_input = TextInput(size_hint=(0.5, None), height=size_)
 
         data_type = BoxLayout(orientation='horizontal',size_hint=(1, None), size=(1,size_))
         data_type.add_widget(data_type_label)
