@@ -46,7 +46,7 @@ class Coordinator(threading.Thread):
         self.tone_source = []
         if 'tone' in source_dictionary:
             for source_config in source_dictionary['tone']:
-                self.tone_source.append(ToneDCSource(source_config))
+                self.tone_source.append(source_config['instance'](source_config))
         try:
             self.thread_data = DataThread(data_dictionary['roach'])
         except MissingInformation as e:

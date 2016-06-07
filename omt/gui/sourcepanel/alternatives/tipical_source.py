@@ -8,6 +8,7 @@ from kivy.uix.switch import Switch
 from kivy.uix.textinput import TextInput
 
 from omt.controller.source.source_thread_function import SourceThread
+from omt.controller.source.source_tone_or_dc import ToneDCSource
 from omt.gui.sourcepanel.alternatives.abstractsource import AbstractSource
 from omt.gui.util.units_spinner import UnitSpinner
 
@@ -236,6 +237,7 @@ class CommonSource(AbstractSource):
 
         else:
             data_dic['frec'] = float(self.init_frec_value._get_text())*self.init_frec_unit.get_unit_norm()
+            data_dic['instance'] = ToneDCSource
 
         data_dic['name'] = self.get_my_name()
 

@@ -369,14 +369,17 @@ class BeamScanner(AbstractSource):
                 return_dic['angle_speed'] = float(self.speed_rotation_value.text)
                 return_dic['name'] = self.get_my_name()
                 return_dic['instance'] = BeamScannerControllerTone
-                return_dic['x'] = float(self.self.x_dest_val.text)
-                return_dic['y'] = float(self.self.y_dest_val.text)
-                return_dic['theta'] = float(self.self.theta_dest_val.text)
+                return_dic['x'] = float(self.x_dest_val.text)
+                return_dic['y'] = float(self.y_dest_val.text)
+                return_dic['theta'] = float(self.theta_dest_val.text)
         except:
             raise Exception('Please Enter Numbers only')
 
 
         return return_dic
+
+    def get_my_name(self):
+        return 'BeamScanner'
 
     def save_config_dictionary(self):
         dic_return = {}

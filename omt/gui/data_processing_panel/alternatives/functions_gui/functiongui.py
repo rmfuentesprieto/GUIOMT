@@ -97,7 +97,7 @@ class ArgsGUI(BoxLayout):
                 # default value shown
                 text='',
                 # available values
-                values=['save_data', 'current_channel','fpga'],
+                values=['global_data', 'save_data', 'current_channel', 'fpga'],
                 # just for positioning in our example
                 size_hint=(0.4, None),
                 size = (1,self.hight_component)
@@ -136,7 +136,7 @@ class ArgsGUI(BoxLayout):
         return return_dic
 
     def update_data_id(self, list):
-        self.arg_roach_spinner.values = ['save_data','current_channel','fpga'] + list
+        self.arg_roach_spinner.values = ['global_data', 'save_data','current_channel','fpga'] + list
 
     def set_configuration(self, from_roach, value):
 
