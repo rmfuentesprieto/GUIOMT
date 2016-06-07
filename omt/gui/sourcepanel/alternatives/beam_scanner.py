@@ -21,9 +21,12 @@ class BeamScanner(AbstractSource):
         # activate the beam scanner
 
         self.active_state = False
-        sweep_label = Label(text='Hacer Barrido')
+        self.sweep_state = False
+        sweep_label = Label(text='Do Sweep')
         self.sweep_switch = Switch(active=False)
         self.sweep_switch.bind(active=self.sweepe_or_not)
+
+
 
         sweep_layout = BoxLayout(orientation='horizontal', size_hint=(1,None), size=(1,40))
         sweep_layout.add_widget(sweep_label)
@@ -87,7 +90,7 @@ class BeamScanner(AbstractSource):
 
         # rotation speed
 
-        speed_rotation = Label(text='Angle Speed', size_hint=(1, None), size=(1, 30))
+        speed_rotation = Label(text='Angular Speed', size_hint=(1, None), size=(1, 30))
         self.speed_rotation_value = TextInput(size_hint=(1, None), size=(1, 30))
         self.speed_rotation_value.text = '10.0'
 
@@ -141,6 +144,50 @@ class BeamScanner(AbstractSource):
         display_step.add_widget(step_label)
         display_step.add_widget(self.step_val)
 
+        # goto configuration
+
+        goto_label = Label(text='Go to Position')
+        self.goto_switch = Switch(active=False)
+        self.goto_switch.bind(active=self.goto_or_not)
+
+        x_dest = Label(text = 'x position [mm]')
+        y_dest = Label(text = 'y position [mm]')
+        theta_dest = Label(text = 'angle [Degree]')
+
+        self.x_dest_val = TextInput(size_hint=(0.33, None), size=(1, 30), multiline=False)
+        self.x_dest_val.text = '0.0'
+        self.y_dest_val = TextInput(size_hint=(0.33, None), size=(1, 30), multiline=False)
+        self.y_dest_val.text = '0.0'
+        self.theta_dest_val = TextInput(size_hint=(0.33, None), size=(1, 30), multiline=False)
+        self.theta_dest_val.text = '0.0'
+
+
+        goto_layout = BoxLayout(orientation='horizontal', size_hint=(1, None), size=(1, 30))
+        goto_layout.add_widget(goto_label)
+        goto_layout.add_widget(self.goto_switch)
+
+        goto_layout_x = BoxLayout(orientation='horizontal', size_hint=(1, None), size=(1, 30))
+        goto_layout_x.add_widget(x_dest)
+        goto_layout_x.add_widget(self.x_dest_val)
+
+        goto_layout_y = BoxLayout(orientation='horizontal', size_hint=(1, None), size=(1, 30))
+        goto_layout_y.add_widget(y_dest)
+        goto_layout_y.add_widget(self.y_dest_val)
+
+        goto_layout_theta = BoxLayout(orientation='horizontal', size_hint=(1, None), size=(1, 30))
+        goto_layout_theta.add_widget(theta_dest)
+        goto_layout_theta.add_widget(self.theta_dest_val)
+
+        goto_switch = BoxLayout(orientation='vertical', size_hint=(1, None), size=(1, 120))
+        goto_switch.add_widget(goto_layout)
+        goto_switch.add_widget(goto_layout_x)
+        goto_switch.add_widget(goto_layout_y)
+        goto_switch.add_widget(goto_layout_theta)
+
+
+
+        # big container configuration
+
         paddind = BoxLayout(size_hint=(1, 1), size=(1, 1000))
 
         self.big_one = BoxLayout(orientation='vertical')
@@ -152,9 +199,12 @@ class BeamScanner(AbstractSource):
         self.big_one.add_widget(plane_size)
         self.big_one.add_widget(frec_layout)
         self.big_one.add_widget(display_step)
+        self.big_one.add_widget(goto_switch)
         self.big_one.add_widget(paddind)
 
         self.add_widget(self.big_one)
+
+
 
         # attributes that lets you connect to beam scanner
 
@@ -170,14 +220,22 @@ class BeamScanner(AbstractSource):
         self.launch_thread = False
 
     def sweepe_or_not(self, instance, value):
-        print value
+        if value:
+            self.sweep_state = value
+            self.goto_switch.active = False
+        self.active_state = value
+
+    def goto_or_not(self, instance, value):
+        if value:
+            self.sweep_state = False
+            self.sweep_switch.active = False
         self.active_state = value
 
     def is_active(self):
         return self.active_state
 
     def do_sweep(self):
-        return self.active_state
+        return self.sweep_state
 
     # connecto to configure and move around
     def start_connection(self):
@@ -300,13 +358,22 @@ class BeamScanner(AbstractSource):
         return_dic = {}
 
         try:
-            return_dic['size'] = float(self.size_of_plane_val.text)
-            return_dic['total_points'] = int(self.step_val.text)
-            return_dic['angle_to_measure'] = float(self.destination_angle.text)
-            return_dic['frec_number_point'] = int(self.step_val.text)
-            return_dic['instance'] = BeamScannerController
-            return_dic['angle_speed'] = float(self.speed_rotation_value.text)
-            return_dic['name'] = self.get_my_name()
+            if self.sweep_state:
+                return_dic['size'] = float(self.size_of_plane_val.text)
+                return_dic['total_points'] = int(self.step_val.text)
+                return_dic['angle_to_measure'] = float(self.destination_angle.text)
+                return_dic['frec_number_point'] = int(self.step_val.text)
+                return_dic['instance'] = BeamScannerController
+                return_dic['angle_speed'] = float(self.speed_rotation_value.text)
+                return_dic['name'] = self.get_my_name()
+            else:
+                return_dic['angle_speed'] = float(self.speed_rotation_value.text)
+                return_dic['name'] = self.get_my_name()
+                return_dic['instance'] = BeamScannerController
+                return_dic['x'] = float(self.self.x_dest_val.text)
+                return_dic['y'] = float(self.self.y_dest_val.text)
+                return_dic['theta'] = float(self.self.theta_dest_val.text)
+
         except:
             raise Exception('Please Enter Numbers only')
 
