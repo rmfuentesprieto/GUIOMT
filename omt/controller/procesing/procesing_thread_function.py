@@ -8,6 +8,7 @@ class ProccesThread(Process):
         self.data_dic = data_dic['LoadDynamic']
 
         self.passing_variables = {}
+        self.big_dic = {}
 
     def run_execute_functions(self, roach_arguments):
 
@@ -20,6 +21,7 @@ class ProccesThread(Process):
                 self.passing_variables[function_info['function_name_special']] = {}
 
             roach_arguments['save_data'] = self.passing_variables[function_info['function_name_special']]
+            roach_arguments['global_data'] = self.big_dic
 
             function_module = function_info['module_name']
             function_name = function_info['function_name']

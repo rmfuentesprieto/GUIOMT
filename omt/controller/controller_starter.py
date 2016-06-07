@@ -98,7 +98,6 @@ class Coordinator(threading.Thread):
         self.thread_data.close_process()
         self.thread_source.close_process()
 
-
         for source in self.tone_source:
             source.turn_off()
             source.stop_source()

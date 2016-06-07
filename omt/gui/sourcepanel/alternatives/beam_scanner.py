@@ -9,8 +9,7 @@ from kivy.uix.textinput import TextInput
 
 from omt.controller.source.beam_scanner.move_xy import MoveXY
 from omt.controller.source.beam_scanner.rotate import Rotate
-from omt.controller.source.beam_scanner_controller import BeamScannerController
-from omt.gui.empty import Empty
+from omt.controller.source.beam_scanner_controller import BeamScannerController, BeamScannerControllerTone
 from omt.gui.sourcepanel.alternatives.abstractsource import AbstractSource
 
 
@@ -369,11 +368,10 @@ class BeamScanner(AbstractSource):
             else:
                 return_dic['angle_speed'] = float(self.speed_rotation_value.text)
                 return_dic['name'] = self.get_my_name()
-                return_dic['instance'] = BeamScannerController
+                return_dic['instance'] = BeamScannerControllerTone
                 return_dic['x'] = float(self.self.x_dest_val.text)
                 return_dic['y'] = float(self.self.y_dest_val.text)
                 return_dic['theta'] = float(self.self.theta_dest_val.text)
-
         except:
             raise Exception('Please Enter Numbers only')
 
