@@ -35,7 +35,7 @@ class RegisterWrite(Memory):
         return True
 
     def interact_roach(self, fpga):
-        self.value = fpga.write_int(self.reg_name, self.value )
+        fpga.write_int(self.reg_name, self.value )
 
     def has_acc_len(self):
         return False

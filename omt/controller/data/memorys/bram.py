@@ -85,17 +85,20 @@ class BRam(Memory):
 
                 aplot('set multiplot layout 2,1 rowsfirst')
                 aplot('set yrange [0:%s]' % (str(x_range)))
-                aplot('set xrange [0:256]')
+                aplot('set xrange [0:512]')
                 aplot('set ytics 10')
                 aplot.plot(data)
                 aplot('set ytics 20')
                 aplot('set yrange [-181:181]')
-                aplot('set xrange [0:256]')
+                aplot('set xrange [0:512]')
                 aplot.plot(abs(numpy.angle(final)*180/3.141592))
 
                 aplot('unset multiplot')
             else:
                 aplot('set yrange [0:%s]' % (str(x_range)))
+                aplot('set xrange [0:512]')
+                aplot('set xtics 16')
+
                 aplot.plot(data)
             aplot.title('plot of data array %s, acc count %s'%(self.array_id,str(acc_count)))
             time.sleep(0.1)

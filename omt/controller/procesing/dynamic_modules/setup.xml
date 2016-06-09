@@ -2,6 +2,14 @@
 <dynamic_modules>
   <!--Modules info-->
   <module name=""/>
+  <module name="roach1_things">
+    <function name="cal_phase_ampl">
+      <arg name="save_me"/>
+      <arg name="ab_spec"/>
+      <arg name="b_square"/>
+      <arg name="current_channel"/>
+    </function>
+  </module>
   <module name="roach_II">
     <function name="calibrate_gliches_1_input">
       <arg name="fpga"/>

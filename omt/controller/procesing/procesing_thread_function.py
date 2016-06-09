@@ -56,11 +56,11 @@ class ProccesThread(Process):
                         except:
                             value = arg_dic['value']
                         function_args[arg_name] = value
-            try:
-                dynamic_function(**function_args)
-            except Exception as e:
-                exc_type, exc_value, exc_traceback = sys.exc_info()
-                info =  traceback.extract_tb(exc_traceback)
-                raise Exception(e.message + '\n in function {} from module {} in line {:d}'.format(
-                    function_name, function_module, info[-1][1]))
+            #try:
+            dynamic_function(**function_args)
+            #except Exception as e:
+                #exc_type, exc_value, exc_traceback = sys.exc_info()
+                #info =  traceback.extract_tb(exc_traceback)
+                #raise Exception(e.message + '\n in function {} from module {} in line {:d}'.format(
+                    #function_name, function_module, info[-1][1]))
 

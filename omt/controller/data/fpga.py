@@ -140,23 +140,30 @@ class Roach_FPGA(object):
                         reg_snap_bram_things[-1][1].append(RegisterRead(bram['reg_name']))
 
         # extract data
-        for data in reg_snap_bram_things:
-            acc_reg = RegisterRead(data[0])
-            count = 0
-            while 1:
-
+        while 1:
+            breake_out = True
+            for data in reg_snap_bram_things:
+                count = 0
                 # ensures that all the read data is from the same acumulation
-                if data[0]:
-                    count = self.fpga.read_int(data[0])
-                for mem in data[1]:
-                    mem.set_acc_count(count)
-                    mem.interact_roach(self.fpga)
+                while 1:
+                    if data[0]:
+                        count = self.fpga.read_int(data[0])
+                    for mem in data[1]:
+                        mem.set_acc_count(count)
+                        mem.interact_roach(self.fpga)
 
-                # this condition ratifies that all data are from the same acumulation
-                # and a different acumulation as the last one
-                if not data[0] or (count == self.fpga.read_int(data[0]) and count > self.last_acc_count[data[0]]):
-                    self.last_acc_count[data[0]] = count
-                    break
+                    # this condition ratifies that all data are from the same acumulation
+                    # and a different acumulation as the last one
+                    if not data[0] or (count == self.fpga.read_int(data[0]) ):#and
+                        if not data[0] or count > self.last_acc_count[data[0]]:
+                            breake_out = breake_out and True
+                            self.last_acc_count[data[0]] = count
+                        else:
+                            breake_out = breake_out and False
+                    #    self.last_acc_count[data[0]] = count
+                        break
+            if  breake_out:
+                break
 
         # preper the return dictionary
         return_data = {}
