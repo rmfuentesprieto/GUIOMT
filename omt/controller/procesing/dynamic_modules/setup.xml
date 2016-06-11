@@ -2,47 +2,6 @@
 <dynamic_modules>
   <!--Modules info-->
   <module name=""/>
-  <module name="roach1_things">
-    <function name="cal_phase_ampl">
-      <arg name="save_me"/>
-      <arg name="ab_spec"/>
-      <arg name="b_square"/>
-      <arg name="current_channel"/>
-    </function>
-  </module>
-  <module name="roach_II">
-    <function name="calibrate_gliches_1_input">
-      <arg name="fpga"/>
-      <arg name="snap"/>
-      <arg name="adc"/>
-    </function>
-    <function name="calibrate_gliches_2_input">
-      <arg name="fpga"/>
-      <arg name="snap_a"/>
-      <arg name="snapc"/>
-      <arg name="adc"/>
-    </function>
-    <function name="calibrate_adc">
-      <arg name="fpga"/>
-      <arg name="save_data"/>
-      <arg name="current_channel"/>
-      <arg name="fifo_delay_0"/>
-      <arg name="spec_0"/>
-      <arg name="fifo_delay1"/>
-      <arg name="spec_1"/>
-    </function>
-  </module>
-  <module name="roach_meassure">
-    <function name="store_matrix">
-      <arg name="data_save"/>
-      <arg name="matrix_size_x"/>
-      <arg name="matrix_size_y"/>
-      <arg name="spectrum"/>
-      <arg name="current_channel"/>
-      <arg name="observe_spect"/>
-      <arg name="file_name"/>
-    </function>
-  </module>
   <module name="roach_basic">
     <function name="extract_data_sweep">
       <arg name="save_dic"/>
@@ -66,6 +25,43 @@
       <arg name="step"/>
       <arg name="spectrum"/>
       <arg name="spectrum_ref"/>
+    </function>
+  </module>
+  <module name="roach_II">
+    <function name="calibrate_gliches">
+      <arg name="fpga"/>
+      <arg name="snap_a"/>
+      <arg name="snapc"/>
+      <arg name="adc"/>
+      <arg name="current_channel"/>
+    </function>
+    <function name="calibrate_adc">
+      <arg name="fpga"/>
+      <arg name="save_data"/>
+      <arg name="current_channel"/>
+      <arg name="fifo_delay_0"/>
+      <arg name="spec_0"/>
+      <arg name="fifo_delay1"/>
+      <arg name="spec_1"/>
+    </function>
+  </module>
+  <module name="roach1_things">
+    <function name="cal_phase_ampl">
+      <arg name="save_me"/>
+      <arg name="ab_spec"/>
+      <arg name="b_square"/>
+      <arg name="current_channel"/>
+    </function>
+  </module>
+  <module name="roach_meassure">
+    <function name="store_matrix">
+      <arg name="data_save"/>
+      <arg name="matrix_size_x"/>
+      <arg name="matrix_size_y"/>
+      <arg name="spectrum"/>
+      <arg name="current_channel"/>
+      <arg name="observe_spect"/>
+      <arg name="file_name"/>
     </function>
   </module>
 </dynamic_modules>

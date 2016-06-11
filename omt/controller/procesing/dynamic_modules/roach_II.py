@@ -5,13 +5,11 @@ import time
 import adc5g
 import Gnuplot
 
-def calibrate_gliches_2_input(fpga,snap_a,snapc, adc):
-    adc5g.sync_adc(fpga)
-    opt1, glitches1 = adc5g.calibrate_mmcm_phase(fpga, adc, [snap_a, snapc, ])
 
-def calibrate_gliches_1_input(fpga,snap, adc):
-    adc5g.sync_adc(fpga)
-    opt1, glitches1 = adc5g.calibrate_mmcm_phase(fpga, adc, [snap, ])
+def calibrate_gliches(fpga,snap_a,snapc, adc, current_channel):
+    if current_channel == 0:
+        adc5g.sync_adc(fpga)
+        opt1, glitches1 = adc5g.calibrate_mmcm_phase(fpga, adc, [snap_a, snapc, ])
 
 def calibrate_adc(fpga, save_data, current_channel, fifo_delay_0, spec_0, fifo_delay1, spec_1):
     '''autor Rafael Rodriguez'''
@@ -30,10 +28,10 @@ def calibrate_adc(fpga, save_data, current_channel, fifo_delay_0, spec_0, fifo_d
         g3.ylabel('Degrees')
         g3('set style data points')
         # g3('set terminal wxt size 500,300')
-        g3('set yrange [-180:180]')
-        g3('set xrange [0:256]')
-        g3('set ytics 20')
-        g3('set xtics 16')
+        g3('set yrange [-360:360]')
+        g3('set xrange [0:1027]')
+        g3('set ytics 10')
+        g3('set xtics 256')
         g3('set grid y')
         g3('set grid x')
 
@@ -56,7 +54,7 @@ def calibrate_adc(fpga, save_data, current_channel, fifo_delay_0, spec_0, fifo_d
     if current_channel < 10:
         return
 
-    if save_data['cont'] > 5 and save_data['ready'] < 4:
+    if save_data['cont'] >= 5 and save_data['ready'] < 4:
 
         save_data['cont'] = 0
 
@@ -68,12 +66,12 @@ def calibrate_adc(fpga, save_data, current_channel, fifo_delay_0, spec_0, fifo_d
         an_p2 = save_data['angle'][index]
         steigung = (-an_p2 + 8* an_p1 - 8*an_m1 + an_m2)/12.0
 
-        if steigung > 0.08:
+        if steigung > 0.2:
             print 'lol+'
             save_data['ready'] = 0
             delay = fpga.read_int(fifo_delay_0)
             fpga.write_int(fifo_delay_0, delay + 1)
-        elif steigung < -0.08:
+        elif steigung < -0.2:
             print 'lol-'
             save_data['ready'] = 0
             delay = fpga.read_int(fifo_delay1)
@@ -81,5 +79,5 @@ def calibrate_adc(fpga, save_data, current_channel, fifo_delay_0, spec_0, fifo_d
 
         else:
             save_data['ready'] += 1
-            print 'hi'
 
+    time.sleep(1)

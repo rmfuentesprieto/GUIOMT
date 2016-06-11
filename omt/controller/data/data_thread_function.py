@@ -41,7 +41,6 @@ class DataThread(Process):
             if not self.roach.is_conected():
                 raise Exception('Connection Fail')
 
-
             self.roach.send_bof()
             time.sleep(1)
             self.roach.program_fpga()

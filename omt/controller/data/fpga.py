@@ -95,9 +95,8 @@ class Roach_FPGA(object):
             return
 
     def config_register(self):
-        if self.program:
-            for reg_info in self.register_list:
-                self.fpga.write_int(reg_info[0],int(reg_info[1]))
+        for reg_info in self.register_list:
+            self.fpga.write_int(reg_info[0],int(reg_info[1]))
 
 
 

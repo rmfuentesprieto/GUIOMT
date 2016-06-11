@@ -101,7 +101,7 @@ class BeamScannerControllerTone(AbstractSource):
 
         self.rotate.set_hspd(angle_speed)
 
-    def tun_on(self):
+    def turn_on(self):
 
         if not self.rotate.move_absolute(self.theta):
             raise Exception('fail to rotate')
@@ -109,12 +109,16 @@ class BeamScannerControllerTone(AbstractSource):
         if not self.move_xy.move_absolute(self.x, self.y):
             raise Exception('fail to position')
 
-    def turn_off(self):
+    def stop_source(self):
         self.rotate.close_connection()
         self.move_xy.close_connection()
 
-    def stop_source(self):
-        pass
+    def turn_off(self):
+        if not self.rotate.move_absolute(0):
+            raise Exception('fail to rotate')
+
+        if not self.move_xy.move_absolute(0,0):
+            raise Exception('fail to position')
 
 
 
