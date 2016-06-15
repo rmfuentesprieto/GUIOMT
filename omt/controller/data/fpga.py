@@ -98,8 +98,6 @@ class Roach_FPGA(object):
         for reg_info in self.register_list:
             self.fpga.write_int(reg_info[0],int(reg_info[1]))
 
-
-
     def write_reg_roach(self, name, value):
         return lambda : self.fpga.write_int(name, value)
 
@@ -140,10 +138,11 @@ class Roach_FPGA(object):
 
         # extract data
         while 1:
-            breake_out = True
+            break_out = True
             for data in reg_snap_bram_things:
                 count = 0
                 # ensures that all the read data is from the same acumulation
+                acc_error = 0
                 while 1:
                     if data[0]:
                         count = self.fpga.read_int(data[0])
@@ -155,13 +154,17 @@ class Roach_FPGA(object):
                     # and a different acumulation as the last one
                     if not data[0] or (count == self.fpga.read_int(data[0]) ):#and
                         if not data[0] or count > self.last_acc_count[data[0]]:
-                            breake_out = breake_out and True
+                            break_out = break_out and True
                             self.last_acc_count[data[0]] = count
                         else:
-                            breake_out = breake_out and False
+                            break_out = break_out and False
                     #    self.last_acc_count[data[0]] = count
                         break
-            if  breake_out:
+                    else:
+                        acc_error += 1
+                        if acc_error > 5:
+                            raise Exception('Increase accumulation length')
+            if break_out:
                 break
 
         # preper the return dictionary
@@ -190,7 +193,7 @@ class Roach_FPGA(object):
                     bram['plot_'].close()
 
                 if bram['store']:
-                    files = bram['store'][0]
+                    files = bram['store_']
                     files[1].close()
             bram_cont += 1
 

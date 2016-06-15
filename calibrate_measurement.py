@@ -21,7 +21,7 @@ mag_ratio = np.zeros((2,2048))
 phase_dif = np.zeros((2,2048))
 
 # This function is the heart of the program and governs what happens during a mesaurement.
-def measurement(reading,channels,fpga,probe,g0,g1,g2,g3,generator,bw,LO,RF_power,fsteps):
+def measurement(reading, channels, fpga, probe, g0, g1, g2, g3, generator, bw, LO, RF_power, fsteps):
 
     print("LO frequency must be "+str(LO)+"[GHz] (manual set)")
     print( "Current RF power is set to: "+ str(RF_power) + "dBm")

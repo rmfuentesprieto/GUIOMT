@@ -6,6 +6,8 @@ from kivy.uix.label import Label
 from kivy.uix.popup import Popup
 from kivy.uix.switch import Switch
 from kivy.uix.textinput import TextInput
+from kivy.uix.togglebutton import ToggleButton
+from math import sqrt
 
 from omt.controller.source.beam_scanner.move_xy import MoveXY
 from omt.controller.source.beam_scanner.rotate import Rotate
@@ -143,6 +145,10 @@ class BeamScanner(AbstractSource):
         display_step.add_widget(step_label)
         display_step.add_widget(self.step_val)
 
+        # fast sweep enable
+
+        self.fast_sweepp = ToggleButton(text='fast sweep', size_hint=(1,None), size=(1,30))
+
         # goto configuration
 
         goto_label = Label(text='Go to Position')
@@ -198,6 +204,7 @@ class BeamScanner(AbstractSource):
         self.big_one.add_widget(plane_size)
         self.big_one.add_widget(frec_layout)
         self.big_one.add_widget(display_step)
+        self.big_one.add_widget(self.fast_sweepp)
         self.big_one.add_widget(goto_switch)
         self.big_one.add_widget(paddind)
 
@@ -356,15 +363,21 @@ class BeamScanner(AbstractSource):
     def get_source_config(self):
         return_dic = {}
 
-        try:
+        try :
             if self.sweep_state:
                 return_dic['size'] = float(self.size_of_plane_val.text)
                 return_dic['total_points'] = int(self.step_val.text)
                 return_dic['angle_to_measure'] = float(self.destination_angle.text)
-                return_dic['frec_number_point'] = int(self.step_val.text)
+
                 return_dic['instance'] = BeamScannerController
                 return_dic['angle_speed'] = float(self.speed_rotation_value.text)
                 return_dic['name'] = self.get_my_name()
+                return_dic['fast'] = self.fast_sweepp.state != 'normal'
+
+                if return_dic['fast']:
+                    return_dic['frec_number_point'] = (int(self.step_val.text))
+                else:
+                    return_dic['frec_number_point'] = sqrt(int(self.step_val.text))*2
             else:
                 return_dic['angle_speed'] = float(self.speed_rotation_value.text)
                 return_dic['name'] = self.get_my_name()
@@ -385,29 +398,45 @@ class BeamScanner(AbstractSource):
         dic_return = {}
 
         dic_return['on_off'] = self.active_state
-        print 'tp save',self.active_state
-        dic_return['step_val'] = self.step_val.text
-        dic_return['destination_angle'] = self.destination_angle.text
+        dic_return['sweep'] = self.sweep_state
+        dic_return['size'] = self.size_of_plane_val.text
+        dic_return['total_points'] = self.step_val.text
+        dic_return['angle_to_measure'] = self.destination_angle.text
         dic_return['angle_speed'] = self.speed_rotation_value.text
-        dic_return['plane_size'] = self.size_of_plane_val.text
+        dic_return['x'] = float(self.x_dest_val.text)
+        dic_return['y'] = float(self.y_dest_val.text)
+        dic_return['theta'] = float(self.theta_dest_val.text)
         dic_return['lambda'] = self.frec_value.text
         dic_return['step_factor'] = self.step_size.text
 
-        print dic_return
-
-        return  dic_return
-
-
+        return {self.get_my_name():dic_return}
 
     def set_configuration(self, config_dictionary):
-        self.active_state = config_dictionary['on_off']
-        print 'onoff', self.active_state
-        self.sweep_switch.active = self.active_state
-        self.step_val.text = config_dictionary['step_val']
-        self.destination_angle.text = config_dictionary['destination_angle']
-        self.speed_rotation_value.text = config_dictionary['angle_speed']
-        self.size_of_plane_val.text = config_dictionary['plane_size']
-        self.frec_value.text = config_dictionary['lambda']
-        self.step_size.text = config_dictionary['step_factor']
+        if self.get_my_name() in config_dictionary:
+            config_dictionary_ = config_dictionary[self.get_my_name()]
+            self.active_state = config_dictionary_['on_off']
+            self.sweep_state = config_dictionary_['sweep']
+            self.size_of_plane_val.text = config_dictionary_['size']
+            self.step_val.text = config_dictionary_['total_points']
+            self.destination_angle.text = config_dictionary_['angle_to_measure']
+            self.speed_rotation_value.text = config_dictionary_['angle_speed']
+            self.x_dest_val.text = str(config_dictionary_['x'])
+            self.y_dest_val.text = str(config_dictionary_['y'])
+            self.theta_dest_val.text = str(config_dictionary_['theta'])
+            self.frec_value.text = config_dictionary_['lambda']
+            self.step_size.text = config_dictionary_['step_factor']
+
+            if self.active_state:
+                if self.sweep_state:
+                    self.sweep_switch.active = True
+                else:
+                    self.goto_switch.active = True
+            else:
+                self.sweep_switch.active = False
+                self.goto_switch.active = False
+        else:
+            self.sweep_switch.active = False
+            self.goto_switch.active = False
+
 
 

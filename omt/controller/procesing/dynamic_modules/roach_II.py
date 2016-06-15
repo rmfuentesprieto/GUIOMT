@@ -11,14 +11,15 @@ def calibrate_gliches(fpga,snap_a,snapc, adc, current_channel):
         adc5g.sync_adc(fpga)
         opt1, glitches1 = adc5g.calibrate_mmcm_phase(fpga, adc, [snap_a, snapc, ])
 
+
 def calibrate_adc(fpga, save_data, current_channel, fifo_delay_0, spec_0, fifo_delay1, spec_1):
     '''autor Rafael Rodriguez'''
     if current_channel == 0:
         save_data['cont'] = 1
         save_data['ready'] = 0
         save_data['angle'] = []
-        a0 = spec_0[0][current_channel+1]
-        a1 = spec_1[0][current_channel+1]
+        a0 = spec_0[0][current_channel]
+        a1 = spec_1[0][current_channel]
         save_data['angle'].append(phase(a0*a1.conjugate()))
 
         g3 = Gnuplot.Gnuplot(debug=0)
@@ -39,8 +40,8 @@ def calibrate_adc(fpga, save_data, current_channel, fifo_delay_0, spec_0, fifo_d
 
         return
 
-    a0 = spec_0[0][current_channel+1]
-    a1 = spec_1[0][current_channel+1]
+    a0 = spec_0[0][current_channel]
+    a1 = spec_1[0][current_channel]
 
     angle_=phase(a0*a1.conjugate())* 180 /pi
     #if angle_ < 0:
@@ -66,12 +67,12 @@ def calibrate_adc(fpga, save_data, current_channel, fifo_delay_0, spec_0, fifo_d
         an_p2 = save_data['angle'][index]
         steigung = (-an_p2 + 8* an_p1 - 8*an_m1 + an_m2)/12.0
 
-        if steigung > 0.2:
+        if steigung > 0.08:
             print 'lol+'
             save_data['ready'] = 0
             delay = fpga.read_int(fifo_delay_0)
             fpga.write_int(fifo_delay_0, delay + 1)
-        elif steigung < -0.2:
+        elif steigung < -0.08:
             print 'lol-'
             save_data['ready'] = 0
             delay = fpga.read_int(fifo_delay1)

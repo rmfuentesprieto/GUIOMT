@@ -31,7 +31,11 @@ def store_matrix(data_save, matrix_size_x, matrix_size_y, spectrum, current_chan
         FILE = open(file_name, 'w')
 
         for columns in data_save['matrix']:
+            cont = 0
             for data in reversed(columns):
-                FILE.write('{:f}, '.format(data))
+                if cont > 0:
+                    FILE.write(' ,')
+                cont += 1
+                FILE.write('{:f}'.format(data))
             FILE.write('\n')
         FILE.close()

@@ -1,3 +1,5 @@
+from math import log10
+
 import numpy
 import struct
 
@@ -33,7 +35,6 @@ class BRam(Memory):
     def interact_roach(self, fpga):
         self.data_r = []
         self.data_i = []
-
 
         for name_r, name_i in self.bram_names:
             if len(name_r) > 0:
@@ -77,7 +78,12 @@ class BRam(Memory):
             aplot.clear()
 
             acc_count = self.count
-            data = 10*numpy.log10(1.0+numpy.absolute(final))
+            #data = 10*numpy.log10(1.0+numpy.absolute(final))
+            data = []
+            for val in final:
+                r2 = abs(val*val.conjugate()) + 1.0
+                power = 10*log10(r2)
+                data.append(power)
             x_range = int(numpy.amax(data) * 1.1)
             phase_max = numpy.amax(abs(numpy.angle(final)*180/3.141592))
 
@@ -103,7 +109,7 @@ class BRam(Memory):
             aplot.title('plot of data array %s, acc count %s'%(self.array_id,str(acc_count)))
             time.sleep(0.1)
 
-        if self.does_plot:
+        if self.does_write:
             files = self.write
             str_final = []
             for data in final:

@@ -20,6 +20,7 @@ import adc5g
 
 # Import any extra files
 import calibrate_measurement
+import calibrate_measurement_45
 import calibrate_plot
 
 def exit_fail():
@@ -209,6 +210,21 @@ try:
     # Second measurement
     raw_input('Press enter when ready to start the 90 degrees measurement')
     G = calibrate_measurement.measurement(1,channels,fpga,probe,g0,g1,g2,g3,generator,bw,LO,RF_power,opts.fsteps)
+
+###################################################################
+############  Begin calibration reading 45 degrees ################
+###################################################################
+
+    print("##########################################################")
+    print("           Begin calibration reading 45 degrees           ")
+    print("##########################################################")
+
+    # If this setting is set to 'yes' you can define the probe to calibrate to yourself
+    # probe = raw_input('Enter the probe number to calibrate to: (0/1/2/3)....')
+
+    # Second measurement
+    raw_input('Press enter when ready to start the 45 degrees measurement')
+    G = calibrate_measurement_45.measurement(channels,fpga,g0,g1,g2,g3,generator,LO,RF_power,opts.fsteps, G,1)
 
 ###################################################################
 ### Saving the Gain matrix and displaying it in a readable sense ##

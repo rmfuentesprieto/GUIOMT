@@ -26,6 +26,8 @@ class BeamScannerController(AbstractSource):
 
         self.rotate.set_hspd(angle_speed)
 
+        self.fast_sweep = config_dic['fast']
+
         if not self.rotate.move_absolute(angle):
             raise Exception('fail to rotate')
 
@@ -33,13 +35,19 @@ class BeamScannerController(AbstractSource):
             raise Exception('fail to position')
 
         from math import sqrt
-        self.side_points = sqrt(self.point)
+        if self.fast_sweep:
+            self.side_points = (self.point)/2
+        else:
+            self.side_points = sqrt(self.point)
         self.total_points = self.point
 
         self.distance_step = self.side_size/(self.side_points-1)
         print 'side', self.distance_step
 
-        self.move_xy.move_absolute(-self.side_size/2,-self.side_size/2)
+        if self.fast_sweep:
+            self.move_xy.move_absolute(0,-self.side_size/2)
+        else:
+            self.move_xy.move_absolute(-self.side_size/2,-self.side_size/2)
 
         self.rotate.close_connection()
 
@@ -47,7 +55,28 @@ class BeamScannerController(AbstractSource):
         self.prev_x_delta = self.distance_step
         self.delta_y = 0
 
+    def set_generator_fast_sweep(self, current_channel):
+        self.delta_x = 0
+        self.delta_y = 0
+        if current_channel >= self.side_points:
+            if current_channel == self.side_points:
+                self.move_xy.move_absolute(-self.side_size/2,0)
+            self.delta_x = self.distance_step
+        else:
+            self.delta_y = self.distance_step
+
+        self.move_xy.move_relative(self.delta_x, self.delta_y)
+
+        time.sleep(0.5)
+
+        print 'move to postion: ',int(current_channel/self.side_points), ' , ' ,current_channel%self.side_points
+
+
     def set_generator(self, current_channel):
+
+        if self.fast_sweep:
+            self.set_generator_fast_sweep()
+            return
 
         change_detector = current_channel%self.side_points
         direcction = int(current_channel/self.side_points)

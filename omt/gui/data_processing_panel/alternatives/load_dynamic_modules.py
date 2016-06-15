@@ -38,10 +38,10 @@ class LoadDynamic(Empty):
         top_layot.add_widget(self.add_function)
 
         ####
-        self.func_container = GridLayout(cols=1, spacing=0)#row_default_height=30)
+        self.func_container = GridLayout(cols=1, spacing=0, size_hint_y=None)#row_default_height=30)
         self.func_container.bind(minimum_height=self.func_container.setter('height'))
 
-        scroll_root = ScrollView()
+        scroll_root = ScrollView(size_hint=(1,1),  size=(1, 125))
         scroll_root.add_widget(self.func_container)
 
         ###
