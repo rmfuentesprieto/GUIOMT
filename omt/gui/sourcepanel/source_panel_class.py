@@ -17,6 +17,7 @@ class SourcePanel(AbstractPanel):
             'RodeSchwartz':'omt.gui.sourcepanel.alternatives.rodeschwartz',
             'BeamScanner':'omt.gui.sourcepanel.alternatives.beam_scanner',
             'PCG':'omt.gui.sourcepanel.alternatives.pcg',
+            'Anritsu':'omt.gui.sourcepanel.alternatives.anritsu',
         }
 
         return altenatives

@@ -12,12 +12,14 @@ python calibrate_domt.py 192.168.1.12 -b new_cal_2016_Jan_21_1802.bof -g 0xf0000
 '''
 
 # Import all the necessary libraries
-import corr,time,struct,sys,logging,pylab,matplotlib,Gnuplot,Gnuplot.funcutils,telnetlib
-import numpy as np
-import matplotlib.pyplot as plt
+import logging
+import telnetlib
+import time
 from math import *
-import adc5g
 
+import corr
+
+import adc5g
 # Import any extra files
 import calibrate_measurement
 import calibrate_measurement_45
@@ -163,7 +165,7 @@ try:
                 break
         except:
             pass
-    calibrate_measurement.measurement(0,channels,fpga,probe,g0,g1,g2,g3,generator,bw,LO,RF_power,opts.fsteps)
+    calibrate_measurement.measurement(0, channels, fpga, probe, g0, g1, g2, g3, generator, bw, LO, RF_power, opts.fsteps)
     raw_input('\nIt is OK?, Press enter to continue...\n')
 
 ###################################################################
@@ -186,7 +188,7 @@ try:
             pass
 
     # First measurement
-    G = calibrate_measurement.measurement(0,channels,fpga,probe,g0,g1,g2,g3,generator,bw,LO,RF_power,opts.fsteps)
+    G = calibrate_measurement.measurement(0, channels, fpga, probe, g0, g1, g2, g3, generator, bw, LO, RF_power, opts.fsteps)
 
 ###################################################################
 ############  Begin calibration reading 90 degrees ################
@@ -209,7 +211,7 @@ try:
 
     # Second measurement
     raw_input('Press enter when ready to start the 90 degrees measurement')
-    G = calibrate_measurement.measurement(1,channels,fpga,probe,g0,g1,g2,g3,generator,bw,LO,RF_power,opts.fsteps)
+    G = calibrate_measurement.measurement(1, channels, fpga, probe, g0, g1, g2, g3, generator, bw, LO, RF_power, opts.fsteps)
 
 ###################################################################
 ############  Begin calibration reading 45 degrees ################
@@ -224,7 +226,7 @@ try:
 
     # Second measurement
     raw_input('Press enter when ready to start the 45 degrees measurement')
-    G = calibrate_measurement_45.measurement(channels,fpga,g0,g1,g2,g3,generator,LO,RF_power,opts.fsteps, G,1)
+    G = calibrate_measurement_45.measurement(channels, fpga, g0, g1, g2, g3, generator, LO, RF_power, opts.fsteps, G, 1)
 
 ###################################################################
 ### Saving the Gain matrix and displaying it in a readable sense ##

@@ -27,48 +27,47 @@ class CommonSource(AbstractSource):
         self.is_source_active = False
         self.do_a_sweep = False
 
-        on_off_label = Label(text='Usar Fuente')
+        on_off_label = Label(text='Use Source')
         self.on_off_switch = Switch(active=False)
         self.on_off_switch.bind(active=self.on_off)
         on_off_layout.add_widget(on_off_label)
         on_off_layout.add_widget(self.on_off_switch)
 
-        sweep_label = Label(text='Hacer Barrido')
+        sweep_label = Label(text='Do Sweep')
         self.sweep_switch = Switch(active=False)
         self.sweep_switch.bind(active=self.sweepe_or_not)
         sweep_layout.add_widget(sweep_label)
         sweep_layout.add_widget(self.sweep_switch)
 
-        init_frec_label = Label(text='Frecuencia\ninicio',)
+        init_frec_label = Label(text='Initial\nFrequency',)
         self.init_frec_value = TextInput(multiline=False)
         self.init_frec_value.disabled = True
         self.init_frec_value.bind(text=self.update_values)
         self.init_frec_unit = UnitSpinner(UnitSpinner.hz)
 
-        final_frec_label = Label(text='Frecuencia\ntermino')
+        final_frec_label = Label(text='Final\nFrequency')
         self.final_frec_value = TextInput(multiline=False)
         self.final_frec_value.disabled = True
         self.final_frec_value.bind(text=self.update_values)
         self.final_frec_unit = UnitSpinner(UnitSpinner.hz)
 
-        delta_frec_label = Label(text='Delta\nfrecuencia')
+        delta_frec_label = Label(text='Frequency\nStep')
         self.delta_frec_value = TextInput(multiline=False)
         self.delta_frec_value.disabled = True
         self.delta_frec_value.bind(text=self.change_delta_frec)
         self.delta_frec_unit = UnitSpinner(UnitSpinner.hz)
 
-        puntos_frec_label = Label(text='Numero\nde puntos')
+        puntos_frec_label = Label(text='Number\nof Points')
         self.puntos_frec_value = TextInput(multiline=False)
         self.puntos_frec_value.disabled = True
         self.puntos_frec_value.bind(text=self.change_points_number)
         self.puntos_frec_unit = UnitSpinner(UnitSpinner.simple)
 
-        amplitud_frec_label = Label(text='Potencia')
+        amplitud_frec_label = Label(text='Power')
         self.amplitud_frec_value = TextInput(multiline=False)
         self.amplitud_frec_value.disabled = True
         self.amplitud_frec_value.bind(text=self._check_input_number)
         self.amplitud_frec_unit = UnitSpinner(UnitSpinner.db)
-
 
 
         buttons_configuration.add_widget(init_frec_label)

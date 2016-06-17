@@ -10,6 +10,17 @@
       <arg name="current_channel"/>
     </function>
   </module>
+  <module name="fast_sweep">
+    <function name="store_matrix_fast">
+      <arg name="data_save"/>
+      <arg name="matrix_size_x"/>
+      <arg name="matrix_size_y"/>
+      <arg name="spectrum"/>
+      <arg name="current_channel"/>
+      <arg name="observe_spect"/>
+      <arg name="file_name"/>
+    </function>
+  </module>
   <module name="beam_center">
     <function name="disp_max">
       <arg name="save_me"/>

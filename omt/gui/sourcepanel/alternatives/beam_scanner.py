@@ -366,7 +366,8 @@ class BeamScanner(AbstractSource):
         try :
             if self.sweep_state:
                 return_dic['size'] = float(self.size_of_plane_val.text)
-                return_dic['total_points'] = int(self.step_val.text)
+
+                return_dic['frec_number_point'] = (int(self.step_val.text))
                 return_dic['angle_to_measure'] = float(self.destination_angle.text)
 
                 return_dic['instance'] = BeamScannerController
@@ -375,9 +376,12 @@ class BeamScanner(AbstractSource):
                 return_dic['fast'] = self.fast_sweepp.state != 'normal'
 
                 if return_dic['fast']:
-                    return_dic['frec_number_point'] = (int(self.step_val.text))
-                else:
+                    return_dic['total_points'] = sqrt(int(self.step_val.text))*2
                     return_dic['frec_number_point'] = sqrt(int(self.step_val.text))*2
+                else:
+                    return_dic['total_points'] = int(self.step_val.text)
+                    return_dic['frec_number_point'] = int(self.step_val.text)
+
             else:
                 return_dic['angle_speed'] = float(self.speed_rotation_value.text)
                 return_dic['name'] = self.get_my_name()

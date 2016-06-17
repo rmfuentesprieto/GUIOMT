@@ -6,14 +6,14 @@ import adc5g
 import Gnuplot
 
 
-def calibrate_gliches(fpga,snap_a,snapc, adc, current_channel):
+def calibrate_gliches(fpga, snap_a, snapc, adc, current_channel):
     if current_channel == 0:
         adc5g.sync_adc(fpga)
         opt1, glitches1 = adc5g.calibrate_mmcm_phase(fpga, adc, [snap_a, snapc, ])
 
 
 def calibrate_adc(fpga, save_data, current_channel, fifo_delay_0, spec_0, fifo_delay1, spec_1):
-    '''autor Rafael Rodriguez'''
+    ''' autor Rafael Rodriguez '''
     if current_channel == 0:
         save_data['cont'] = 1
         save_data['ready'] = 0
@@ -43,9 +43,7 @@ def calibrate_adc(fpga, save_data, current_channel, fifo_delay_0, spec_0, fifo_d
     a0 = spec_0[0][current_channel]
     a1 = spec_1[0][current_channel]
 
-    angle_=phase(a0*a1.conjugate())* 180 /pi
-    #if angle_ < 0:
-    #    angle_ = 360 + angle_
+    angle_=phase(a0*a1.conjugate()) * 180 / pi
 
     save_data['angle'].append(angle_)
     save_data['cont'] += 1

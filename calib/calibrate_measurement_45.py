@@ -1,6 +1,5 @@
 import numpy
 
-import calibrate_functions
 import calibrate_inputs
 
 

@@ -56,6 +56,9 @@ class BeamScannerController(AbstractSource):
         self.delta_y = 0
 
     def set_generator_fast_sweep(self, current_channel):
+        if current_channel == 0:
+            return
+
         self.delta_x = 0
         self.delta_y = 0
         if current_channel >= self.side_points:
@@ -75,7 +78,7 @@ class BeamScannerController(AbstractSource):
     def set_generator(self, current_channel):
 
         if self.fast_sweep:
-            self.set_generator_fast_sweep()
+            self.set_generator_fast_sweep(current_channel)
             return
 
         change_detector = current_channel%self.side_points
