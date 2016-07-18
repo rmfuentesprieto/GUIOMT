@@ -1,17 +1,14 @@
 import csv
-import struct
 import corr
 import logging
 import time
 
 import datetime
-import numpy
 from Gnuplot import Gnuplot
 
 from omt.controller.data.memorys.bram import BRam
 from omt.controller.data.memorys.register import RegisterWrite, RegisterRead
 from omt.controller.data.memorys.snapshot import SnapShot
-from omt.util.data_type import data_type_dictionart
 
 
 class Roach_FPGA(object):

@@ -13,5 +13,5 @@ setup(
     license='',
     author='Roberto Fuentes',
     author_email='amermelao@gmail.com',
-    description=''
+    description='', requires=['corr']
 )

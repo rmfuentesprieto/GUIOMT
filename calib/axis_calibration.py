@@ -1,7 +1,7 @@
 import numpy
 
 
-def calibratoin(global_save, current_channel, initial, step, spec_a0, spec_c0, spec_a1, spec_c1, calibration_mode, fft_size,s0):
+def calibratoin_90_0(global_save, current_channel, initial, step, spec_a0, spec_c0, spec_a1, spec_c1, calibration_mode, fft_size,s0):
     '''Convention
 
     a1 = porbe 1
@@ -41,7 +41,8 @@ def calibratoin(global_save, current_channel, initial, step, spec_a0, spec_c0, s
     global_save['g_matrix'][2][calibration_mode][current_channel] = v3
     global_save['g_matrix'][3][calibration_mode][current_channel] = v4
 
-def calibratoin(global_save, current_channel, initial, step, spec_a0, spec_c0, spec_a1, spec_c1,  s0):
+
+def calibratoin_45(global_save, current_channel, initial, step, spec_a0, spec_c0, spec_a1, spec_c1, s0):
 
     s0_2 = s0*s0
     spec_a0 = spec_a0[0]

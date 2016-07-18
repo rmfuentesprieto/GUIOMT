@@ -107,7 +107,7 @@ class BRam(Memory):
 
                 aplot.plot(data)
             aplot.title('plot of data array %s, acc count %s'%(self.array_id,str(acc_count)))
-            time.sleep(0.1)
+            #time.sleep(0.1)
 
         if self.does_write:
             files = self.write

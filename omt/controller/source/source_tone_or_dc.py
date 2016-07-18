@@ -43,17 +43,23 @@ class AnritsuTone(object):
         self.power = dictionary['power']
         self.freq = dictionary['frequency']
 
-        rm = visa.ResourceManager('/usr/local/vxipnp/linux/lib64/libvisa.so')
+        rm = visa.ResourceManager('/usr/local/vxipnp/linux/lib64/libvisa.so');self.device = rm.get_instrument(self.addrs)
         self.device = rm.get_instrument(self.addrs)
         self.device.write('freq {} hz'.format(self.freq))
         self.device.write('power {} dbm'.format(self.power))
 
+
     def turn_on(self):
-        self.device.write('outp on\r\n')
+        self.device.write('outp on')
 
     def turn_off(self):
-        self.device.write('outp off\r\n')
-        time.sleep(0.1)
+        try:
+            self.device.write('outp off')
+            time.sleep(0.1)
+        except Exception:
+            rm = visa.ResourceManager('/usr/local/vxipnp/linux/lib64/libvisa.so');self.device = rm.get_instrument(self.addrs)
+            self.device = rm.get_instrument(self.addrs)
+            self.device.write('outp off')
 
     def stop_source(self):
         self.device.close()

@@ -51,6 +51,8 @@ class BeamScannerController(AbstractSource):
 
         self.rotate.close_connection()
 
+        time.sleep(5)
+
         self.delta_x = 0
         self.prev_x_delta = self.distance_step
         self.delta_y = 0

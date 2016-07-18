@@ -18,10 +18,6 @@ def calibrate_adc(fpga, save_data, current_channel, fifo_delay_0, spec_0, fifo_d
         save_data['cont'] = 1
         save_data['ready'] = 0
         save_data['angle'] = []
-        a0 = spec_0[0][current_channel]
-        a1 = spec_1[0][current_channel]
-        save_data['angle'].append(phase(a0*a1.conjugate()))
-
         g3 = Gnuplot.Gnuplot(debug=0)
         g3.clear()
         g3.title('Phase (degree)')
@@ -38,7 +34,6 @@ def calibrate_adc(fpga, save_data, current_channel, fifo_delay_0, spec_0, fifo_d
 
         save_data['plot'] = g3.plot
 
-        return
 
     a0 = spec_0[0][current_channel]
     a1 = spec_1[0][current_channel]

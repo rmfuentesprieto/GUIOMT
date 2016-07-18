@@ -28,6 +28,7 @@ class Anritsu(AbstractSource):
         init_frec_label = Label(text='Frequency',)
         self.init_frec_value = TextInput(multiline=False)
         self.init_frec_value.disabled = True
+        self.init_frec_value.text = '0.0'
         self.init_frec_unit = UnitSpinner(UnitSpinner.hz)
 
         amplitud_frec_label = Label(text='Power')
@@ -89,6 +90,7 @@ class Anritsu(AbstractSource):
             self.on_off_switch.active = self.is_source_active
             self.amplitud_frec_value.text = config_dictionary_['power']
             self.init_frec_value.text = str(config_dictionary_['frequency'])
+            self.init_frec_unit.text = 'Hz'
 
     def on_off(self, spinner, text):
         self.is_source_active = text

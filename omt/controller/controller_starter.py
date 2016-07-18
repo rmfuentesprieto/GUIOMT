@@ -3,6 +3,8 @@ from kivy.uix.label import Label
 from kivy.uix.popup import Popup
 from kivy.uix.progressbar import ProgressBar
 
+import time
+
 from omt.controller.data.data_thread_function import DataThread, RoachException
 from omt.controller.data.fpga import MissingInformation
 from omt.controller.procesing.procesing_thread_function import ProccesThread
@@ -72,6 +74,7 @@ class Coordinator(threading.Thread):
 
             while not self.end_sweep:
                 self.thread_source.set_generator(current_channel)
+                time.sleep(0.1)
                 extract_dictionary = self.thread_data.accuaire_data()
                 extract_dictionary['current_channel'] = current_channel
                 self.thread_procesing.run_execute_functions(extract_dictionary)
