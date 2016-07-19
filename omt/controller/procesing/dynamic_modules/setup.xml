@@ -10,17 +10,6 @@
       <arg name="current_channel"/>
     </function>
   </module>
-  <module name="fast_sweep">
-    <function name="store_matrix_fast">
-      <arg name="data_save"/>
-      <arg name="matrix_size_x"/>
-      <arg name="matrix_size_y"/>
-      <arg name="spectrum"/>
-      <arg name="current_channel"/>
-      <arg name="observe_spect"/>
-      <arg name="file_name"/>
-    </function>
-  </module>
   <module name="beam_center">
     <function name="disp_max">
       <arg name="save_me"/>
@@ -48,6 +37,17 @@
       <arg name="spec_1"/>
     </function>
   </module>
+  <module name="roach_meassure">
+    <function name="store_matrix">
+      <arg name="data_save"/>
+      <arg name="matrix_size_x"/>
+      <arg name="matrix_size_y"/>
+      <arg name="spectrum"/>
+      <arg name="current_channel"/>
+      <arg name="observe_spect"/>
+      <arg name="file_name"/>
+    </function>
+  </module>
   <module name="roach_basic">
     <function name="extract_data_sweep">
       <arg name="save_dic"/>
@@ -73,6 +73,49 @@
       <arg name="spectrum_ref"/>
     </function>
   </module>
+  <module name="calibrate_domt">
+    <function name="a45_calibration">
+      <arg name="current_channel"/>
+      <arg name="channel_offset"/>
+      <arg name="number_of_channels"/>
+      <arg name="save_me"/>
+      <arg name="adc_0a"/>
+      <arg name="adc_0c"/>
+      <arg name="adc_1a"/>
+      <arg name="adc_1c"/>
+    </function>
+    <function name="x_caliration">
+      <arg name="current_channel"/>
+      <arg name="channel_offset"/>
+      <arg name="number_of_channels"/>
+      <arg name="save_me"/>
+      <arg name="adc_0a"/>
+      <arg name="adc_0c"/>
+      <arg name="adc_1a"/>
+      <arg name="adc_1c"/>
+    </function>
+    <function name="y_caliration">
+      <arg name="current_channel"/>
+      <arg name="channel_offset"/>
+      <arg name="number_of_channels"/>
+      <arg name="save_me"/>
+      <arg name="adc_0a"/>
+      <arg name="adc_0c"/>
+      <arg name="adc_1a"/>
+      <arg name="adc_1c"/>
+    </function>
+    <function name="load_constant_roachII">
+      <arg name="fpga"/>
+      <arg name="current_channel"/>
+      <arg name="file_name"/>
+      <arg name="number_of_channels"/>
+    </function>
+    <function name="ideal_calibration">
+      <arg name="current_channel"/>
+      <arg name="channel_offset"/>
+      <arg name="number_of_channels"/>
+    </function>
+  </module>
   <module name="display">
     <function name="disp_max">
       <arg name="save_me"/>
@@ -80,8 +123,8 @@
       <arg name="channel"/>
     </function>
   </module>
-  <module name="roach_meassure">
-    <function name="store_matrix">
+  <module name="fast_sweep">
+    <function name="store_matrix_fast">
       <arg name="data_save"/>
       <arg name="matrix_size_x"/>
       <arg name="matrix_size_y"/>
