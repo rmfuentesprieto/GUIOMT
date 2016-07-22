@@ -27,7 +27,7 @@ class BeamConnection(object):
     def send_command(self, command):
         send_bit = 0
         print command
-        command += '+end+'
+        command += '\n'
         try:
             while 1:
                 send_now = self.connectionSocket.send(command[send_bit:])
@@ -46,7 +46,7 @@ class BeamConnection(object):
             while 1:
                 line = self.connectionSocket.recv(2048)
                 msg += line
-                if '+end+' in msg:
+                if '\n' in msg:
                     return msg[0:len(msg)-5]
                 if len(line) == 0:
                     break

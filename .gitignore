@@ -46,6 +46,7 @@ fabric.propertiesa
 # Pycharm
 build/*
 *.pyc
+*.csv
 
 # things
 *~

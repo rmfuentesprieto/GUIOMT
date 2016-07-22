@@ -3,8 +3,6 @@ from math import log10
 import numpy
 import struct
 
-import time
-
 from omt.controller.data.memorys.memory import Memory
 from omt.util.data_type import data_type_dictionart
 
@@ -94,6 +92,7 @@ class BRam(Memory):
                 aplot('set xrange [0:%s]' % (len(data),))
                 aplot('set ytics 10')
                 aplot.plot(data)
+                aplot.ylabel('Phase [degree]')
                 aplot('set ytics 20')
                 aplot('set yrange [-181:181]')
                 aplot('set xrange [0:%s]' % (len(data),))
