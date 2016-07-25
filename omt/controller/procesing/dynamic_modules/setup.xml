@@ -10,6 +10,17 @@
       <arg name="current_channel"/>
     </function>
   </module>
+  <module name="fast_sweep">
+    <function name="store_matrix_fast">
+      <arg name="data_save"/>
+      <arg name="matrix_size_x"/>
+      <arg name="matrix_size_y"/>
+      <arg name="spectrum"/>
+      <arg name="current_channel"/>
+      <arg name="observe_spect"/>
+      <arg name="file_name"/>
+    </function>
+  </module>
   <module name="beam_center">
     <function name="disp_max">
       <arg name="save_me"/>
@@ -17,6 +28,11 @@
       <arg name="spec2"/>
       <arg name="channel"/>
       <arg name="name"/>
+    </function>
+  </module>
+  <module name="hol">
+    <function name="data">
+      <arg name="data"/>
     </function>
   </module>
   <module name="roach_II">
@@ -35,17 +51,6 @@
       <arg name="spec_0"/>
       <arg name="fifo_delay1"/>
       <arg name="spec_1"/>
-    </function>
-  </module>
-  <module name="roach_meassure">
-    <function name="store_matrix">
-      <arg name="data_save"/>
-      <arg name="matrix_size_x"/>
-      <arg name="matrix_size_y"/>
-      <arg name="spectrum"/>
-      <arg name="current_channel"/>
-      <arg name="observe_spect"/>
-      <arg name="file_name"/>
     </function>
   </module>
   <module name="roach_basic">
@@ -123,8 +128,8 @@
       <arg name="channel"/>
     </function>
   </module>
-  <module name="fast_sweep">
-    <function name="store_matrix_fast">
+  <module name="roach_meassure">
+    <function name="store_matrix">
       <arg name="data_save"/>
       <arg name="matrix_size_x"/>
       <arg name="matrix_size_y"/>

@@ -701,7 +701,10 @@ class SnapShot(object):
         self.name.bind(focus=self.lose_focus)
 
     def info_dictionary(self):
-        return {'name':self.name.text, 'snap':'shot', 'is_bram':False,'array_id':self.name.text}
+        dictionary = {'name':self.name.text, 'snap':'shot', 'is_bram':False,'array_id':self.name.text}
+        dictionary['plot'] = False
+        dictionary['store'] = False
+        return dictionary
 
     def lose_focus(self, instance, value):
         if value:

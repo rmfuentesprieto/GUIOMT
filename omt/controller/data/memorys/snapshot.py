@@ -14,7 +14,7 @@ class SnapShot(Memory):
         return False
 
     def interact_roach(self, fpga):
-        self.data = numpy.fromstring(self.fpga.snapshot_get(self.name, man_trig=True, man_valid=True)['data'], dtype='>i1')
+        self.data = numpy.fromstring(fpga.snapshot_get(self.name, man_trig=True, man_valid=True)['data'], dtype='>i1')
 
     def get_value_name(self):
         return self.name
