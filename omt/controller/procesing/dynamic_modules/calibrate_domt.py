@@ -12,10 +12,10 @@ def ideal_calibration(current_channel, channel_offset, number_of_channels):
 
     for cont in range(number_of_channels):
         FILE.write('channel: {}\n'.format(cont))
-        FILE.write('{} {}\n'.format(0, 1))
-        FILE.write('{} {}\n'.format(0, -1))
-        FILE.write('{} {}\n'.format(1, 0))
-        FILE.write('{} {}\n'.format(-1, 0))
+        FILE.write('{} {}\n'.format(0, 0.5))
+        FILE.write('{} {}\n'.format(0, -0.5))
+        FILE.write('{} {}\n'.format(0.50, 0))
+        FILE.write('{} {}\n'.format(-0.50, 0))
 
     FILE.close()
 
@@ -93,7 +93,7 @@ def load_constant_roachII(fpga, current_channel, file_name, number_of_channels):
 
 
                 x_i_complex = h_matrix[0,cont2] * 2 ** 24
-                y_i_complex = g_matrix[1,cont2] * 2 ** 24
+                y_i_complex = h_matrix[1,cont2] * 2 ** 24
 
                 if not bram[cont2][0][cont1][0] in data_dic:
                     data_dic[bram[cont2][0][cont1][0]] = []

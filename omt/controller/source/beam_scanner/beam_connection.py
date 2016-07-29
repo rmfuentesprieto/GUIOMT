@@ -47,7 +47,7 @@ class BeamConnection(object):
                 line = self.connectionSocket.recv(2048)
                 msg += line
                 if '\n' in msg:
-                    return msg[0:len(msg)-5]
+                    return msg[0:len(msg)-1]
                 if len(line) == 0:
                     break
         except:

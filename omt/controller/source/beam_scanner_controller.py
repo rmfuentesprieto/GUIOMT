@@ -76,7 +76,6 @@ class BeamScannerController(AbstractSource):
 
         print 'move to postion: ',int(current_channel/self.side_points), ' , ' ,current_channel%self.side_points
 
-
     def set_generator(self, current_channel):
 
         if self.fast_sweep:
@@ -97,15 +96,12 @@ class BeamScannerController(AbstractSource):
                 if direcction%2 ==1:
                     self.prev_x_delta = -self.distance_step
                 self.delta_y = self.distance_step
-
                 self.delta_x = 0
             else:
                 self.delta_y = 0
                 self.delta_x = self.prev_x_delta
 
-
         self.move_xy.move_relative(self.delta_x, self.delta_y)
-
         time.sleep(0.5)
 
         print 'move to postion: ',int(current_channel/self.side_points), ' , ' ,current_channel%self.side_points

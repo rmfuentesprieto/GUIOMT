@@ -54,8 +54,8 @@ class SourceThread(AbstractSource):
             self.is_on = True
         self.connection.write('freq ' + str(current_channel * self.frec_step + self.frec_init) + '\r\n')
         print 'addquiere ' + str(current_channel)
-        # wait for the tone to adjust well
-        #time.sleep(1)
+        time.sleep(0.7)
+
 
     def close_process(self):
         if self.is_on:

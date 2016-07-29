@@ -27,8 +27,8 @@ def calibrate_adc(fpga, save_data, current_channel, fifo_delay_0, spec_0, fifo_d
         # g3('set terminal wxt size 500,300')
         g3('set yrange [-360:360]')
         g3('set xrange [0:1027]')
-        g3('set ytics 10')
-        g3('set xtics 256')
+        g3('set ytics 2')
+        g3('set xtics 5')
         g3('set grid y')
         g3('set grid x')
 

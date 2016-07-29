@@ -74,7 +74,6 @@ class Coordinator(threading.Thread):
 
             while not self.end_sweep:
                 self.thread_source.set_generator(current_channel)
-                time.sleep(0.1)
                 extract_dictionary = self.thread_data.accuaire_data()
                 extract_dictionary['current_channel'] = current_channel
                 self.thread_procesing.run_execute_functions(extract_dictionary)
