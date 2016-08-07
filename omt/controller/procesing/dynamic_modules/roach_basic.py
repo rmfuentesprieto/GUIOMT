@@ -32,7 +32,7 @@ def fase_difference_amplitudes(save_dic, current_channel, initial_spec, step, sp
 
         g3 = Gnuplot.Gnuplot(debug=0)
         g3.clear()
-        g3.title('Phase (degree)')
+        g3.title('Phase (degree)' + str(step))
         g3.xlabel('Channel #')
         g3.ylabel('Degrees')
         g3('set style data points')
@@ -49,13 +49,13 @@ def fase_difference_amplitudes(save_dic, current_channel, initial_spec, step, sp
 
     channel = initial_spec + current_channel*step
 
-    if channel >= len(spectrum):
-        raise Exception('Asking for a channel thats out of possible range.')
+    #if channel >= len(spectrum):
+    #    raise Exception('Asking for a channel thats out of possible range.')
 
     channel = initial_spec + current_channel*step
 
-    a1 = spectrum[channel]
-    a2 = spectrum_ref[channel]
+    a1 = spectrum[initial_spec]
+    a2 = spectrum_ref[initial_spec]
 
     angle = phase(a1*a2.conjugate())
 

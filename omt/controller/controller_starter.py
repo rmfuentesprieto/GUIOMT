@@ -1,3 +1,4 @@
+import socket
 import threading
 from kivy.uix.label import Label
 from kivy.uix.popup import Popup
@@ -41,6 +42,10 @@ class Coordinator(threading.Thread):
                 error_label = Label(text = e.message)
                 Popup(title='Source error', content=error_label, size_hint=(None, None), size=(300,300)).open()
                 return
+            except socket.error as e:
+                error_label = Label(text = 'fail to connect,\ncheck connection.')
+                Popup(title='Server error', content=error_label, size_hint=(None, None), size=(300,300)).open()
+                return
         else:
             self.frec_number_point = -1
             self.thread_source = DummySourceThread()
@@ -52,9 +57,9 @@ class Coordinator(threading.Thread):
         try:
             self.thread_data = DataThread(data_dictionary['roach'])
         except MissingInformation as e:
-
-            print 'finish for all this %s' %(e.message)
+            print 'Finish for all this %s' %(e.message)
             return
+
         self.thread_procesing = ProccesThread(fucntion_dictionary)
 
         self.end_sweep = False
@@ -93,8 +98,6 @@ class Coordinator(threading.Thread):
             Popup(title='Error', content=Label(text=e.message),\
                           size_hint=(None, None), size=(400, 120)).open()
 
-        progress_bar_popup.dismiss()
-
         print "stop it all lol"
 
         self.thread_data.close_process()
@@ -105,6 +108,8 @@ class Coordinator(threading.Thread):
             source.stop_source()
 
         self.end_sweep = True
+
+        progress_bar_popup.dismiss()
 
     def stop_the_process(self):
         print 'kill signal'

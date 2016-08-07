@@ -52,7 +52,6 @@ def calibrate_adc(fpga, save_data, current_channel, fifo_delay_0, spec_0, fifo_d
 
         save_data['cont'] = 0
 
-
         index = len(save_data['angle']) - 1
         an_m2 = save_data['angle'][index - 4]
         an_m1 = save_data['angle'][index - 3]
@@ -60,12 +59,12 @@ def calibrate_adc(fpga, save_data, current_channel, fifo_delay_0, spec_0, fifo_d
         an_p2 = save_data['angle'][index]
         steigung = (-an_p2 + 8* an_p1 - 8*an_m1 + an_m2)/12.0
 
-        if steigung > 0.08:
+        if steigung > 0.05:
             print 'lol+'
             save_data['ready'] = 0
             delay = fpga.read_int(fifo_delay_0)
             fpga.write_int(fifo_delay_0, delay + 1)
-        elif steigung < -0.08:
+        elif steigung < -0.05:
             print 'lol-'
             save_data['ready'] = 0
             delay = fpga.read_int(fifo_delay1)

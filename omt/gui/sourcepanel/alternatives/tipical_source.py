@@ -191,8 +191,12 @@ class CommonSource(AbstractSource):
         if len(frec_init) < 1 or len(frec_final) < 1:
             return
 
+
         frec_init = float(frec_init)*self.init_frec_unit.get_unit_norm()
         frec_final = float(frec_final)*self.final_frec_unit.get_unit_norm()
+
+        if frec_init > frec_final:
+            return
 
         npoint = float(self.puntos_frec_value.text)*self.puntos_frec_unit.get_unit_norm()
         if npoint < 2:

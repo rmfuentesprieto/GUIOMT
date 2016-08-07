@@ -1,3 +1,4 @@
+import socket
 import threading
 from kivy.uix.label import Label
 from kivy.uix.popup import Popup
@@ -44,6 +45,10 @@ class SuperCoordinator(threading.Thread):
                     error_label = Label(text = e.message)
                     Popup(title='Source error', content=error_label, size_hint=(None, None), size=(300,300)).open()
                     return
+                except socket.error as e:
+                    error_label = Label(text = 'fail to connect,\ncheck connection.')
+                    Popup(title='Server error', content=error_label, size_hint=(None, None), size=(300,300)).open()
+                    return
             else:
                 self.frec_number_point = -1
                 self.thread_source = DummySourceThread()
@@ -51,7 +56,7 @@ class SuperCoordinator(threading.Thread):
             self.tone_source = []
             if 'tone' in source_dictionary:
                 for source_config in source_dictionary['tone']:
-                    self.tone_source.append(ToneDCSource(source_config))
+                    self.tone_source.append(source_config['instance'](source_config))
             try:
                 self.thread_data = DataThread(data_dictionary['roach'])
             except MissingInformation as e:
@@ -96,7 +101,7 @@ class SuperCoordinator(threading.Thread):
                 Popup(title='Error', content=Label(text=e.message),\
                               size_hint=(None, None), size=(400, 120)).open()
 
-            progress_bar_popup.dismiss()
+
 
             print "stop it all lol"
 
@@ -106,6 +111,8 @@ class SuperCoordinator(threading.Thread):
             for source in self.tone_source:
                 source.turn_off()
                 source.stop_source()
+
+            progress_bar_popup.dismiss()
 
         self.end_sweep = True
 
