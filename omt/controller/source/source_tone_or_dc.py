@@ -37,7 +37,7 @@ class ToneDCSource(object):
         self.connection.close()
 
 
-class AnritsuTone(object):
+class AnritsuTone(ToneDCSource):
     def __init__(self, dictionary):
         self.addrs = dictionary['ip_direction']
         self.power = dictionary['power']

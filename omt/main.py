@@ -12,7 +12,7 @@ Install:
 
 """
 import sys
-sys.path.append("/home/roach/Desktop/Roberto/git/GUIOMT")
+sys.path.append("/home/roma/Documentos/PyCharmWS/OMTGUI/")
 from omt.gui.init import GUIStart
 
 if __name__ == "__main__":

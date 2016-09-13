@@ -11,7 +11,7 @@ class BeamConnection(object):
         self.connectionSocket = None
 
     def start_connection(self, command_id):
-        self.connectionSocket = s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.connectionSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.connectionSocket.connect(self.address)
 
         self.connectionSocket.sendall(command_id)

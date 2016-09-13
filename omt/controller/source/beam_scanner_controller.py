@@ -3,6 +3,7 @@ import time
 from omt.controller.source.beam_scanner.move_xy import MoveXY
 from omt.controller.source.beam_scanner.rotate import Rotate
 from omt.controller.source.source_thread_function import AbstractSource
+from omt.controller.source.source_tone_or_dc import ToneDCSource
 
 
 class BeamScannerController(AbstractSource):
@@ -110,7 +111,7 @@ class BeamScannerController(AbstractSource):
         self.move_xy.move_absolute(0.0,0.0)
         self.move_xy.close_connection()
 
-class BeamScannerControllerTone(AbstractSource):
+class BeamScannerControllerTone(ToneDCSource):
 
     def __init__(self, config_dic):
         print 'beam scanner controller', config_dic
