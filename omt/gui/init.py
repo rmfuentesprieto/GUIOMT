@@ -70,7 +70,6 @@ class RootWidget(BoxLayout):
             return
 
         # coordinator runs in a new thread
-        # and launch some new ones
         self.coordinator.start()
 
     def configure_super_controller(self, configuration_list):

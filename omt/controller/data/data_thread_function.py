@@ -37,16 +37,11 @@ class DataThread(Process):
 
     def start_connections(self):
         try:
-            self.roach.connect_to_roach()
+            self.roach.connect_to()
             if not self.roach.is_conected():
                 raise Exception('Connection Fail')
 
-            self.roach.send_bof()
-            time.sleep(1)
-            self.roach.program_fpga()
-            time.sleep(0.1)
-            self.roach.config_register()
-            time.sleep(0.1)
+            self.roach.configure()
         except Exception as e:
             raise RoachException(e.message)
 

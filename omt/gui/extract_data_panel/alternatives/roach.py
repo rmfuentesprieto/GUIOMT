@@ -207,7 +207,7 @@ class ROACH(Empty):
     def activate_extract(self, f):
         self.do_extraction = f
 
-    def get_source_config(self):
+    def get_config(self):
         dic_return = {}
 
         regs = []
@@ -450,7 +450,7 @@ class ROACH(Empty):
         self.clean_all()
 
     def button_save_all(self, instance):
-        self.get_source_config()
+        self.get_config()
 
     def pass_source(self, sources_):
         self.sources = sources_

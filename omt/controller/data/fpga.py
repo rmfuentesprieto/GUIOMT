@@ -79,7 +79,7 @@ class Roach_FPGA(object):
         self.logger.addHandler(self.handler)
         self.logger.setLevel(10)
 
-    def connect_to_roach(self):
+    def connect_to(self):
         self.fpga = corr.katcp_wrapper.FpgaClient(self.ip, self.port, timeout=10, logger=self.logger)
         time.sleep(1)
 
@@ -201,13 +201,21 @@ class Roach_FPGA(object):
     def get_fpga_instance(self):
         pass
 
+    def configure(self):
+        self.send_bof()
+        time.sleep(1)
+        self.program_fpga()
+        time.sleep(0.1)
+        self.config_register()
+        time.sleep(0.1)
+
 
 class DummyRoach_FPGA(Roach_FPGA):
 
     def __init__(self, data_dic):
         self.brams_info = data_dic['bram']
 
-    def connect_to_roach(self):
+    def connect_to(self):
         pass
 
     def is_conected(self):
@@ -242,6 +250,9 @@ class DummyRoach_FPGA(Roach_FPGA):
         pass
 
     def stop(self):
+        pass
+
+    def configure(self):
         pass
 
 
